@@ -26,6 +26,7 @@
     vim
     git
     tmux
+    tldr
   ];
 
   # File systems configuration for using the installer's partition layout
@@ -74,5 +75,12 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIj0aUriXCgY/wNnYMvGoXajOqAr3EXdu7AeGA23s8ZG"
     ];
   };
+  
+  # Allow NFS
+  services.nfs.server.enable = true;
+  services.nfs.server.exports = ''
+    /mnt/usb 192.168.2.69(rw,nohide,insecure)
+  '';
+  networking.firewall.allowedTCPPorts = [ 2049 ];
 
 }
