@@ -34,6 +34,11 @@
       device = "/dev/disk/by-label/NIXOS_SD";
       fsType = "ext4";
     };
+    
+    "/mnt/usb" = {
+      device = "/dev/disk/by-uuid/D28E73C08E739BA3";
+      fsType = "ntfs";
+    };
   };
 
   # Preserve space by sacrificing documentation and history documentation.nixos.enable = false
