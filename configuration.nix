@@ -2,7 +2,6 @@
 {
 
   # All imports
-  imports = [ ./home-manager.nix ]; 
 
   # NixOS wants to enable GRUB by default
   boot.loader.grub.enable = false;
@@ -27,6 +26,8 @@
     git
     tmux
     tldr
+    restic
+    rclone
   ];
 
   # File systems configuration for using the installer's partition layout
@@ -35,11 +36,12 @@
       device = "/dev/disk/by-label/NIXOS_SD";
       fsType = "ext4";
     };
-    
+
     "/mnt/usb" = {
       device = "/dev/disk/by-uuid/D28E73C08E739BA3";
       fsType = "ntfs";
     };
+
   };
 
   # Preserve space by sacrificing documentation and history documentation.nixos.enable = false
@@ -75,11 +77,10 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIj0aUriXCgY/wNnYMvGoXajOqAr3EXdu7AeGA23s8ZG"
     ];
   };
-  
-  # Allow NFS
+
   services.nfs.server.enable = true;
   services.nfs.server.exports = ''
-    /mnt/usb 192.168.2.69(rw,nohide,insecure)
+    /mnt/usb 192.168.2.69(rw,nohide,insecure) 192.168.2.10(rw,nohide,insecure)
   '';
   networking.firewall.allowedTCPPorts = [ 2049 ];
 
