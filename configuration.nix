@@ -1,6 +1,8 @@
 { config, pkgs, lib, ... }:
 {
 
+  nixpkgs.config.allowUnfree = true;
+  
   # All imports
 
   # NixOS wants to enable GRUB by default
@@ -82,7 +84,9 @@
   services.nfs.server.exports = ''
     /mnt/usb 192.168.2.69(rw,nohide,insecure) 192.168.2.10(rw,nohide,insecure)
   '';
-  networking.firewall.allowedTCPPorts = [ 2049 ];
+  networking.firewall.allowedTCPPorts = [ 
+    2049 # NFS
+  ];
 
 
   services.restic.backups = {
@@ -120,5 +124,12 @@
       ExecStart = "${pkgs.bash}/bin/bash /home/jdheyburn/dotfiles/restic/rclone-all.sh";
     };
   };
+  
+  services.unifi = {
+    enable = false;
+    maximumJavaHeapSize = 256;
+    jrePackage = pkgs.jre8_headless;
+  };
+  
 }
 
