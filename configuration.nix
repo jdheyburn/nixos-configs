@@ -106,4 +106,19 @@
       };
     };
   };
+
+  systemd.services.rclone-all = {
+    # TODO can I refer to this from output of services.restic.backups.media ?
+    wantedBy = [ "restic-backups-media.service" ];
+    after = [ "restic-backups-media.service" ];
+    environment = {
+      RCLONE_CONFIG_DIR = "/etc/nixos/secrets";
+      RCLONE = "${pkgs.rclone}/bin/rclone";
+    };
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash /home/jdheyburn/dotfiles/restic/rclone-all.sh";
+    };
+  };
 }
+
