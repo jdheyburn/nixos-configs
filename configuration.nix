@@ -8,6 +8,8 @@
   # NixOS wants to enable GRUB by default
   boot.loader.grub.enable = false;
 
+  system.stateVersion = "22.05"; 
+
   # if you have a Raspberry Pi 2 or 3, pick this:
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
@@ -126,7 +128,8 @@
   };
   
   services.unifi = {
-    enable = false;
+    enable = true;
+    unifiPackage = pkgs.unifiStable;
     maximumJavaHeapSize = 256;
     jrePackage = pkgs.jre8_headless;
   };
