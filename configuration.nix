@@ -84,4 +84,26 @@
   '';
   networking.firewall.allowedTCPPorts = [ 2049 ];
 
+
+  services.restic.backups = {
+    media = {
+      repository = "/mnt/usb/Backup/restic/media";
+      passwordFile = "/etc/nixos/secrets/restic-media-password";
+      pruneOpts = [
+        "--keep-daily 30"
+        "--keep-weekly 0"
+        "--keep-monthly 0"
+        "--keep-yearly 0"
+      ];
+      paths = [
+        "/mnt/usb/Backup/media/beets-db"
+        "/mnt/usb/Backup/media/lossless"
+        "/mnt/usb/Backup/media/music"
+        "/mnt/usb/Backup/media/vinyl"
+      ];
+      timerConfig = {
+        OnCalendar = "*-*-* 02:00:00";
+      };
+    };
+  };
 }
