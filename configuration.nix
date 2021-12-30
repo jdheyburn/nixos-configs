@@ -119,7 +119,7 @@
     wantedBy = [ "restic-backups-media.service" ];
     after = [ "restic-backups-media.service" ];
     environment = {
-      RCLONE_CONFIG_DIR = "/etc/nixos/secrets";
+      RCLONE_CONFIG = "/etc/nixos/secrets/rclone.conf";
       RCLONE = "${pkgs.rclone}/bin/rclone";
     };
     serviceConfig = {
