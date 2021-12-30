@@ -134,6 +134,14 @@
     maximumJavaHeapSize = 256;
     jrePackage = pkgs.jre8_headless;
   };
+
+  services.caddy = {
+    enable = true;
+    package = (pkgs.callPackage ./custom-caddy.nix {
+      plugins = [ "github.com/caddy-dns/cloudflare" ];
+      vendorSha256 = "sha256-HrUARAM0/apr+ijSousglLYgxVNy9SFW6MhWkSeTFU4=";
+    });
+  };
   
 }
 
