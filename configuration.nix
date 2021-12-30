@@ -88,6 +88,7 @@
   '';
   networking.firewall.allowedTCPPorts = [ 
     2049 # NFS
+    8443 # unifi controller test
   ];
 
 
