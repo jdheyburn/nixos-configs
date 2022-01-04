@@ -32,6 +32,7 @@
     tldr
     restic
     rclone
+    jq
   ];
 
   # File systems configuration for using the installer's partition layout
@@ -62,7 +63,7 @@
 
   # Use 1GB of additional swap memory in order to not run out of memory
   # when installing lots of things while running other things at the same time.
-  swapDevices = [ { device = "/swapfile"; size = 1024; } ];
+  swapDevices = [ { device = "/swapfile"; size = 2048; } ];
 
   # All my stuff now
 
@@ -88,7 +89,7 @@
   '';
   networking.firewall.allowedTCPPorts = [ 
     2049 # NFS
-    8443 # unifi controller test
+    443 # Caddy
   ];
 
 
@@ -133,7 +134,53 @@
     unifiPackage = pkgs.unifiStable;
     maximumJavaHeapSize = 256;
     jrePackage = pkgs.jre8_headless;
+    # TODO explore if this can be closed, if Caddy reverse proxies enough
+    # Port 8443 does not need to be open because caddy proxies 443 -> 8443
+    openFirewall = true;
   };
-  
+
+  services.caddy = {
+    enable = true;
+    package = (pkgs.callPackage ./custom-caddy.nix {
+      plugins = [ "github.com/caddy-dns/cloudflare" ];
+      vendorSha256 = "sha256-HrUARAM0/apr+ijSousglLYgxVNy9SFW6MhWkSeTFU4=";
+    });
+    extraConfig = ''
+      unifi.joannet.casa {
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+       
+        reverse_proxy localhost:8443 {
+          transport http {
+            tls_insecure_skip_verify
+          }
+        }
+      }
+    '';
+  };
+  systemd.services.caddy = {
+    environment = {
+      CLOUDFLARE_API_TOKEN = "REDACTED";
+    };
+
+    serviceConfig = {
+      AmbientCapabilities = "cap_net_bind_service";
+      CapabilityBoundingSet = "cap_net_bind_service";
+    };
+  };
+
+  nix.buildMachines = [{
+    hostName = "builder";
+    systems = [ "x86_64-linux" "aarch64-linux" ];
+    maxJobs = 1;
+    speedFactor = 2;
+    mandatoryFeatures = [];
+  }];
+  nix.distributedBuilds = true;
+  nix.extraOptions = ''
+    builders-use-substitutes = true
+  '';
+
 }
 
