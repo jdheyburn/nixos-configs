@@ -24,20 +24,13 @@ in buildGoModule rec {
 	pname = "caddy";
 	version = "2.4.6";
 
-	#goPackagePath = "github.com/caddyserver/caddy/v2";
 
 	subPackages = [ "cmd/caddy" ];
-
-	#src = builtins.fetchGit {
-	#	url = "https://github.com/caddyserver/caddy.git";
-	#	rev = "e7457b43e4703080ae8713ada798ce3e20b83690"; # v2.4.6
-	#};
 
         src = fetchFromGitHub {
           owner = "caddyserver";
           repo = "caddy";
           rev = "v${version}";
-          #sha256 = "1xp2j3gy7h38j2h1r1yfrz3jwprvby192zjzb3y4hpk9hg7b3l64";
           sha256 = "sha256-xNCxzoNpXkj8WF9+kYJfO18ux8/OhxygkGjA49+Q4vY=";
         };
 
