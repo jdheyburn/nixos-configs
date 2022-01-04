@@ -62,7 +62,6 @@
 
   # Use 1GB of additional swap memory in order to not run out of memory
   # when installing lots of things while running other things at the same time.
-  # JH - increased to 2GB to allow for custom-caddy.nix build
   swapDevices = [ { device = "/swapfile"; size = 2048; } ];
 
   # All my stuff now
@@ -90,6 +89,7 @@
   networking.firewall.allowedTCPPorts = [ 
     2049 # NFS
     8443 # unifi controller test
+    443 # Caddy
   ];
 
 
@@ -134,6 +134,7 @@
     unifiPackage = pkgs.unifiStable;
     maximumJavaHeapSize = 256;
     jrePackage = pkgs.jre8_headless;
+    openFirewall = true;
   };
 
   services.caddy = {
@@ -142,7 +143,44 @@
       plugins = [ "github.com/caddy-dns/cloudflare" ];
       vendorSha256 = "sha256-HrUARAM0/apr+ijSousglLYgxVNy9SFW6MhWkSeTFU4=";
     });
+    extraConfig = ''
+      unifi.joannet.casa {
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+       
+        reverse_proxy localhost:8443 {
+          transport http {
+            tls_insecure_skip_verify
+          }
+        }
+      }
+    '';
   };
-  
+  systemd.services.caddy = {
+    environment = {
+      CLOUDFLARE_API_TOKEN = "REDACTED";
+    };
+
+    serviceConfig = {
+      AmbientCapabilities = "cap_net_bind_service";
+      CapabilityBoundingSet = "cap_net_bind_service";
+    };
+  };
+
+  nix.buildMachines = [{
+    hostName = "builder";
+    #system = "aarch64-linux";
+    #system = "x86_64-linux";
+    systems = [ "x86_64-linux" "aarch64-linux" ];
+    maxJobs = 1;
+    speedFactor = 2;
+    mandatoryFeatures = [];
+  }];
+  nix.distributedBuilds = true;
+  nix.extraOptions = ''
+    builders-use-substitutes = true
+  '';
+
 }
 
