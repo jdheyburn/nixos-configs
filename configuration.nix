@@ -32,6 +32,7 @@
     tldr
     restic
     rclone
+    jq
   ];
 
   # File systems configuration for using the installer's partition layout
@@ -88,7 +89,6 @@
   '';
   networking.firewall.allowedTCPPorts = [ 
     2049 # NFS
-    8443 # unifi controller test
     443 # Caddy
   ];
 
@@ -134,6 +134,8 @@
     unifiPackage = pkgs.unifiStable;
     maximumJavaHeapSize = 256;
     jrePackage = pkgs.jre8_headless;
+    # TODO explore if this can be closed, if Caddy reverse proxies enough
+    # Port 8443 does not need to be open because caddy proxies 443 -> 8443
     openFirewall = true;
   };
 
@@ -170,8 +172,6 @@
 
   nix.buildMachines = [{
     hostName = "builder";
-    #system = "aarch64-linux";
-    #system = "x86_64-linux";
     systems = [ "x86_64-linux" "aarch64-linux" ];
     maxJobs = 1;
     speedFactor = 2;
