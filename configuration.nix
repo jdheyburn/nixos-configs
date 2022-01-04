@@ -90,6 +90,7 @@
   networking.firewall.allowedTCPPorts = [ 
     2049 # NFS
     443 # Caddy
+    53 # DNS server
   ];
 
 
@@ -157,6 +158,13 @@
           }
         }
       }
+      adguard.joannet.casa {
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+       
+        reverse_proxy localhost:9000 
+      }
     '';
   };
   systemd.services.caddy = {
@@ -165,11 +173,17 @@
     };
 
     serviceConfig = {
+      # Required to use ports < 1024
       AmbientCapabilities = "cap_net_bind_service";
       CapabilityBoundingSet = "cap_net_bind_service";
     };
   };
 
+  services.adguardhome = {
+    enable = true;
+  };
+
+  # Attempted remote builds (blocked on matching system / platform, I don't have an aarch64-linux machine)
   nix.buildMachines = [{
     hostName = "builder";
     systems = [ "x86_64-linux" "aarch64-linux" ];
