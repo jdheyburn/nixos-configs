@@ -89,9 +89,14 @@
   '';
   networking.firewall.allowedTCPPorts = [ 
     2049 # NFS
+    80 # Caddy
     443 # Caddy
     53 # DNS server
   ];
+  networking.firewall.allowedUDPPorts = [ 
+    53 # DNS server
+  ];
+
 
 
   services.restic.backups = {
@@ -137,6 +142,7 @@
     jrePackage = pkgs.jre8_headless;
     # TODO explore if this can be closed, if Caddy reverse proxies enough
     # Port 8443 does not need to be open because caddy proxies 443 -> 8443
+    # But other ports may need to be open for unifi operations
     openFirewall = true;
   };
 
@@ -147,7 +153,7 @@
       vendorSha256 = "sha256-HrUARAM0/apr+ijSousglLYgxVNy9SFW6MhWkSeTFU4=";
     });
     extraConfig = ''
-      unifi.joannet.casa {
+      unifi.svc.joannet.casa {
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         }
@@ -158,12 +164,12 @@
           }
         }
       }
-      adguard.joannet.casa {
+      adguard.svc.joannet.casa {
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         }
        
-        reverse_proxy localhost:9000 
+        reverse_proxy localhost:3000
       }
     '';
   };
@@ -184,17 +190,17 @@
   };
 
   # Attempted remote builds (blocked on matching system / platform, I don't have an aarch64-linux machine)
-  nix.buildMachines = [{
-    hostName = "builder";
-    systems = [ "x86_64-linux" "aarch64-linux" ];
-    maxJobs = 1;
-    speedFactor = 2;
-    mandatoryFeatures = [];
-  }];
-  nix.distributedBuilds = true;
-  nix.extraOptions = ''
-    builders-use-substitutes = true
-  '';
+#  nix.buildMachines = [{
+#    hostName = "builder";
+#    systems = [ "x86_64-linux" "aarch64-linux" ];
+#    maxJobs = 1;
+#    speedFactor = 2;
+#    mandatoryFeatures = [];
+#  }];
+#  nix.distributedBuilds = true;
+#  nix.extraOptions = ''
+#    builders-use-substitutes = true
+#  '';
 
 }
 
