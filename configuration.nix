@@ -89,8 +89,14 @@
   '';
   networking.firewall.allowedTCPPorts = [ 
     2049 # NFS
+    80 # Caddy
     443 # Caddy
+    53 # DNS server
   ];
+  networking.firewall.allowedUDPPorts = [ 
+    53 # DNS server
+  ];
+
 
 
   services.restic.backups = {
@@ -113,15 +119,46 @@
         OnCalendar = "*-*-* 02:00:00";
       };
     };
+    small-files = {
+      repository = "/mnt/usb/Backup/restic/small-files";
+      passwordFile = "/etc/nixos/secrets/restic-small-files-password";
+      pruneOpts = [
+        "--keep-daily 7"
+        "--keep-weekly 5"
+        "--keep-monthly 12"
+        "--keep-yearly 3"
+      ];
+      paths = [
+        "/var/lib/unifi/data/backup/autobackup"
+        "/var/lib/AdGuardHome/"
+      ];
+      timerConfig = {
+        OnCalendar = "*-*-* 02:00:00";
+      };
+    };
   };
 
-  systemd.services.rclone-all = {
+  systemd.services.rclone-media = {
     # TODO can I refer to this from output of services.restic.backups.media ?
     wantedBy = [ "restic-backups-media.service" ];
     after = [ "restic-backups-media.service" ];
     environment = {
       RCLONE_CONFIG = "/etc/nixos/secrets/rclone.conf";
       RCLONE = "${pkgs.rclone}/bin/rclone";
+      BACKUP_TYPE = "media";
+    };
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash /home/jdheyburn/dotfiles/restic/rclone-all.sh";
+    };
+  };
+  systemd.services.rclone-small-files = {
+    wantedBy = [ "restic-backups-small-files.service" ];
+    after = [ "restic-backups-small-files.service" ];
+    environment = {
+      RCLONE_CONFIG = "/etc/nixos/secrets/rclone.conf";
+      RCLONE = "${pkgs.rclone}/bin/rclone";
+      BACKUP_TYPE = "small-files";
     };
     serviceConfig = {
       Type = "oneshot";
@@ -136,6 +173,7 @@
     jrePackage = pkgs.jre8_headless;
     # TODO explore if this can be closed, if Caddy reverse proxies enough
     # Port 8443 does not need to be open because caddy proxies 443 -> 8443
+    # But other ports may need to be open for unifi operations
     openFirewall = true;
   };
 
@@ -146,7 +184,7 @@
       vendorSha256 = "sha256-HrUARAM0/apr+ijSousglLYgxVNy9SFW6MhWkSeTFU4=";
     });
     extraConfig = ''
-      unifi.joannet.casa {
+      unifi.svc.joannet.casa {
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         }
@@ -157,6 +195,13 @@
           }
         }
       }
+      adguard.svc.joannet.casa {
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+       
+        reverse_proxy localhost:3000
+      }
     '';
   };
   systemd.services.caddy = {
@@ -165,22 +210,28 @@
     };
 
     serviceConfig = {
+      # Required to use ports < 1024
       AmbientCapabilities = "cap_net_bind_service";
       CapabilityBoundingSet = "cap_net_bind_service";
     };
   };
 
-  nix.buildMachines = [{
-    hostName = "builder";
-    systems = [ "x86_64-linux" "aarch64-linux" ];
-    maxJobs = 1;
-    speedFactor = 2;
-    mandatoryFeatures = [];
-  }];
-  nix.distributedBuilds = true;
-  nix.extraOptions = ''
-    builders-use-substitutes = true
-  '';
+  services.adguardhome = {
+    enable = true;
+  };
+
+  # Attempted remote builds (blocked on matching system / platform, I don't have an aarch64-linux machine)
+#  nix.buildMachines = [{
+#    hostName = "builder";
+#    systems = [ "x86_64-linux" "aarch64-linux" ];
+#    maxJobs = 1;
+#    speedFactor = 2;
+#    mandatoryFeatures = [];
+#  }];
+#  nix.distributedBuilds = true;
+#  nix.extraOptions = ''
+#    builders-use-substitutes = true
+#  '';
 
 }
 
