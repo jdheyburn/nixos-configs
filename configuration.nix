@@ -131,6 +131,7 @@
       paths = [
         "/var/lib/unifi/data/backup/autobackup"
         "/var/lib/AdGuardHome/"
+        "/var/lib/private/AdGuardHome"
       ];
       timerConfig = {
         OnCalendar = "*-*-* 02:00:00";
