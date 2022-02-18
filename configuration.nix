@@ -231,7 +231,6 @@
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         }
-       
         reverse_proxy localhost:8443 {
           transport http {
             tls_insecure_skip_verify
@@ -242,8 +241,35 @@
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         }
-       
         reverse_proxy localhost:3000
+      }
+      portainer.svc.joannet.casa {
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy frank.joannet.casa:9000
+      }
+      home.svc.joannet.casa {
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy frank.joannet.casa:49154
+      }
+      huginn.svc.joannet.casa {
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy frank.joannet.casa:3000
+      }
+      proxmox.svc.joannet.casa {
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy pve0.joannet.casa:8006 {
+          transport http {
+            tls_insecure_skip_verify
+          }
+        }
       }
     '';
   };
