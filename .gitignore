@@ -2,3 +2,5 @@
 # Symlink to the host directory
 host 
 
+# If nixos-rebuild test was executed here, don't commit the output
+result
