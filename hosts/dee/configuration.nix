@@ -26,15 +26,15 @@
     libraspberrypi
 
     # Packages I've added
-    vim
-    git
-    tmux
-    tldr
+    # vim
+    # git
+    # tmux
+    # tldr
     restic
-    rclone
-    jq
-    htop
-    fzf
+    # rclone
+    # jq
+    # htop
+    # fzf
     python39
     kid3
   ];
@@ -59,11 +59,11 @@
   boot.cleanTmpDir = true;
 
   # Configure basic SSH access
-  services.openssh = {
-    enable = true;
-    permitRootLogin = "no";
-    passwordAuthentication = false;
-  };
+  # services.openssh = {
+  #   enable = true;
+  #   permitRootLogin = "no";
+  #   passwordAuthentication = false;
+  # };
 
   # Use 1GB of additional swap memory in order to not run out of memory
   # when installing lots of things while running other things at the same time.
@@ -71,8 +71,7 @@
 
   # All my stuff now
 
-  networking = {
-    hostName = "dee";
+  networking.hostName = "dee";
     #domain = "joannet.casa";
     #useDHCP = false;
 
@@ -86,7 +85,7 @@
    #  "1.1.1.1"
    #];
 
-   firewall = {
+  networking.firewall = {
      allowedTCPPorts = [
        2049 # NFS
        111 # NFS
@@ -100,22 +99,22 @@
        2049 # NFS
      ];
    };
-  };
+  # };
 
-  time.timeZone = "Europe/London";
+  # time.timeZone = "Europe/London";
 
-  users.mutableUsers = false;
-  users.users.jdheyburn = {
-    isNormalUser = true;
-    home = "/home/jdheyburn";
-    extraGroups = [ "wheel" "networkmanager" ];
-    hashedPassword = "$6$gFv39xwgs6Trun89$0uSAiTKWURlFUk5w4NoxmZXWlCKRamWYbTFdta7LSW1svzAUeuR3FGH2jX4UIcOaaMlLBJfqWLPUXKx1P1gch0";
+  # users.mutableUsers = false;
+  # users.users.jdheyburn = {
+  #   isNormalUser = true;
+  #   home = "/home/jdheyburn";
+  #   extraGroups = [ "wheel" "networkmanager" ];
+  #   hashedPassword = "$6$gFv39xwgs6Trun89$0uSAiTKWURlFUk5w4NoxmZXWlCKRamWYbTFdta7LSW1svzAUeuR3FGH2jX4UIcOaaMlLBJfqWLPUXKx1P1gch0";
 
 
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIj0aUriXCgY/wNnYMvGoXajOqAr3EXdu7AeGA23s8ZG"
-    ];
-  };
+  #   openssh.authorizedKeys.keys = [
+  #     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIj0aUriXCgY/wNnYMvGoXajOqAr3EXdu7AeGA23s8ZG"
+  #   ];
+  # };
 
   services.nfs.server.enable = true;
   # couldn't get 1.25 to work on macos, leaving here so i can see what did and didn't work
@@ -301,8 +300,5 @@
   # nix.extraOptions = ''
   #   builders-use-substitutes = true
   # '';
-
-
-  users.users.jdheyburn.uid = 1001;
 }
 

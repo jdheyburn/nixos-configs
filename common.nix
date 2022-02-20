@@ -31,6 +31,7 @@
 
         services.openssh = {
             enable = true;
+            permitRootLogin = "yes";
             # passwordAuthentication = false;
             # challengeResponseAuthentication = false;
         };
@@ -42,8 +43,9 @@
         ## User accounts
         #############################################################################
 
+        users.mutableUsers = false;
         users.users.jdheyburn = {
-            # uid = 1001; 1000 on dennis, 1001 on dee. need to fix
+            uid = 1000;
             description = "Joseph Heyburn";
             isNormalUser = true;
             home = "/home/jdheyburn";
@@ -71,6 +73,7 @@
             jq
             ncdu
             python3
+            rclone
             rsync
             tldr
             tmux
