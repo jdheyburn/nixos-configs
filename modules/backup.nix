@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 
-{ 
+{
 
   services.restic.backups = {
     media = {
@@ -18,11 +18,9 @@
         "/mnt/usb/Backup/media/music"
         "/mnt/usb/Backup/media/vinyl"
       ];
-      timerConfig = {
-        OnCalendar = "*-*-* 02:00:00";
-      };
+      timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
     };
-    
+
     small-files = {
       repository = "/mnt/usb/Backup/restic/small-files";
       passwordFile = "/etc/nixos/secrets/restic-small-files-password";
@@ -37,9 +35,7 @@
         "/var/lib/AdGuardHome/"
         "/var/lib/private/AdGuardHome"
       ];
-      timerConfig = {
-        OnCalendar = "*-*-* 02:00:00";
-      };
+      timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
     };
   };
 
@@ -54,7 +50,8 @@
     };
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash /home/jdheyburn/dotfiles/restic/rclone-all.sh";
+      ExecStart =
+        "${pkgs.bash}/bin/bash /home/jdheyburn/dotfiles/restic/rclone-all.sh";
     };
   };
 
@@ -68,7 +65,8 @@
     };
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash /home/jdheyburn/dotfiles/restic/rclone-all.sh";
+      ExecStart =
+        "${pkgs.bash}/bin/bash /home/jdheyburn/dotfiles/restic/rclone-all.sh";
     };
   };
 }

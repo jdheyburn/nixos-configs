@@ -1,14 +1,13 @@
 { config, pkgs, lib, ... }:
 
-{ 
+{
 
   networking.firewall = {
-     allowedTCPPorts = [
-       80  # Caddy
-       443 # Caddy
-     ];
-   };
-
+    allowedTCPPorts = [
+      80 # Caddy
+      443 # Caddy
+    ];
+  };
 
   services.caddy = {
     enable = true;
@@ -72,7 +71,8 @@
 
   systemd.services.caddy = {
     environment = {
-      CLOUDFLARE_API_TOKEN = (builtins.readFile /etc/nixos/secrets/cloudflare-api-token);
+      CLOUDFLARE_API_TOKEN =
+        (builtins.readFile /etc/nixos/secrets/cloudflare-api-token);
     };
 
     serviceConfig = {
@@ -81,6 +81,5 @@
       CapabilityBoundingSet = "cap_net_bind_service";
     };
   };
-
 
 }
