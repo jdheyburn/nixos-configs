@@ -290,17 +290,19 @@
   };
 
   # Attempted remote builds (blocked on matching system / platform, I don't have an aarch64-linux machine)
-  nix.buildMachines = [{
-    hostName = "buildervm";
-    systems = [ "aarch64-linux" ];
-    maxJobs = 1;
-    speedFactor = 2;
-    mandatoryFeatures = [];
-  }];
-  nix.distributedBuilds = true;
-  nix.extraOptions = ''
-    builders-use-substitutes = true
-  '';
+  # nix.buildMachines = [{
+  #   hostName = "buildervm";
+  #   systems = [ "aarch64-linux" ];
+  #   maxJobs = 1;
+  #   speedFactor = 2;
+  #   mandatoryFeatures = [];
+  # }];
+  # nix.distributedBuilds = true;
+  # nix.extraOptions = ''
+  #   builders-use-substitutes = true
+  # '';
 
+
+  users.users.jdheyburn.uid = 1001;
 }
 

@@ -43,7 +43,7 @@
         #############################################################################
 
         users.users.jdheyburn = {
-            uid = 1001;
+            # uid = 1001; 1000 on dennis, 1001 on dee. need to fix
             description = "Joseph Heyburn";
             isNormalUser = true;
             home = "/home/jdheyburn";

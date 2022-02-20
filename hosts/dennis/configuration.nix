@@ -66,12 +66,12 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.jdheyburn = {
-    isNormalUser = true;
-    home = "/home/jdheyburn";
-    extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
-    password = "password123";
-  };
+#   users.users.jdheyburn = {
+#     isNormalUser = true;
+#     home = "/home/jdheyburn";
+#     extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
+#     password = "password123";
+#   };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -112,5 +112,7 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "21.11"; # Did you read the comment?
 
+
+  users.users.jdheyburn.uid = 1000;
 }
 
