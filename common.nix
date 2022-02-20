@@ -61,7 +61,7 @@
         };
 
         #############################################################################
-        ## User accounts
+        ## Package management
         #############################################################################
 
         # Preserve space by sacrificing documentation and history documentation.nixos.enable = false

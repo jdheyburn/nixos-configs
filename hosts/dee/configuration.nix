@@ -1,24 +1,37 @@
 { config, pkgs, lib, ... }:
 {
 
-  imports = [
-    ./hardware-configuration.nix
-  ];
+    imports = [
+      ./hardware-configuration.nix
+      ../modules/unifi.nix
+    ];
 
-  system.stateVersion = "22.05"; 
+    ###############################################################################
+    ## General
+    ###############################################################################
 
-  environment.systemPackages = with pkgs; [
-    libraspberrypi
-    restic
-    python39
-    kid3
-  ];
+    networking.hostName = "dee";
 
+    # This value determines the NixOS release from which the default
+    # settings for stateful data, like file locations and database versions
+    # on your system were taken. It‘s perfectly fine and recommended to leave
+    # this value at the release version of the first install of this system.
+    # Before changing this value read the documentation for this option
+    # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+    system.stateVersion = "22.05"; 
 
-  
+    #############################################################################
+    ## Package management
+    #############################################################################
 
+    environment.systemPackages = with pkgs; [
+      libraspberrypi
 
-  networking.hostName = "dee";
+      kid3
+      python39
+      restic      
+    ];
+
 
   networking.firewall = {
      allowedTCPPorts = [
@@ -125,17 +138,6 @@
       Type = "oneshot";
       ExecStart = "${pkgs.bash}/bin/bash /home/jdheyburn/dotfiles/restic/rclone-all.sh";
     };
-  };
-  
-  services.unifi = {
-    enable = true;
-    unifiPackage = pkgs.unifiStable;
-    maximumJavaHeapSize = 256;
-    jrePackage = pkgs.jre8_headless;
-    # TODO explore if this can be closed, if Caddy reverse proxies enough
-    # Port 8443 does not need to be open because caddy proxies 443 -> 8443
-    # But other ports may need to be open for unifi operations
-    openFirewall = true;
   };
 
   services.caddy = {
