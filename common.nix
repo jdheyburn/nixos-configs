@@ -10,6 +10,8 @@
         # Pi uses 21.05
         # system.stateVersion = "21.11";
 
+        boot.cleanTmpDir = true;
+
         #############################################################################
         ## Locale
         #############################################################################
@@ -61,6 +63,10 @@
         #############################################################################
         ## User accounts
         #############################################################################
+
+        # Preserve space by sacrificing documentation and history documentation.nixos.enable = false
+        nix.gc.automatic = true;
+        nix.gc.options = "--delete-older-than 30d";
 
         # Allow packages with non-free licenses.
         nixpkgs.config.allowUnfree = true;
