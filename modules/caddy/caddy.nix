@@ -63,10 +63,10 @@
       }
     '';
   };
-  
+
   systemd.services.caddy = {
     environment = {
-      CLOUDFLARE_API_TOKEN = "REDACTED";
+      CLOUDFLARE_API_TOKEN = (builtins.readFile /etc/nixos/secrets/cloudflare-api-token);
     };
 
     serviceConfig = {
