@@ -73,7 +73,8 @@
 
         # System-wide packages
         environment.systemPackages = with pkgs; [
-            busybox
+            bind     # Gets dig
+            busybox  # Gets nslookup
             fzf
             git
             htop
