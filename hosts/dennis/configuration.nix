@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ./modules/prometheus-stack.nix ];
+  imports = [ ./hardware-configuration.nix ../modules/prometheus-stack.nix ];
 
   ###############################################################################
   ## General
