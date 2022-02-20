@@ -73,6 +73,7 @@
 
         # System-wide packages
         environment.systemPackages = with pkgs; [
+            busybox
             fzf
             git
             htop
