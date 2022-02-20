@@ -14,7 +14,7 @@ in {
     addr = "0.0.0.0";
   };
 
- services.prometheus = {
+  services.prometheus = {
     enable = true;
     port = 9001;
     exporters = {
@@ -26,11 +26,26 @@ in {
     };
     scrapeConfigs = [
       {
-	job_name = "dennis";
-	static_configs = [{
-	  targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ];
-	}];
+        job_name = "dennis";
+        static_configs = [{
+          targets = [
+            "127.0.0.1:${
+              toString config.services.prometheus.exporters.node.port
+            }"
+          ];
+        }];
       }
+      {
+        job_name = "dee";
+        static_configs = [{
+          targets = [
+            "dee.joannet.casa:${
+              toString config.services.prometheus.exporters.node.port
+            }"
+          ];
+        }];
+      }
+
     ];
   };
 }
