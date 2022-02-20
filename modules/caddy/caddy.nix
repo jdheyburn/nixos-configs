@@ -2,12 +2,10 @@
 
 {
 
-  networking.firewall = {
-    allowedTCPPorts = [
-      80 # Caddy
-      443 # Caddy
-    ];
-  };
+  networking.firewall.allowedTCPPorts = [
+    80 # Caddy
+    443 # Caddy
+  ];
 
   services.caddy = {
     enable = true;
