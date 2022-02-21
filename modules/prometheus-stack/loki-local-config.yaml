@@ -3,6 +3,14 @@ auth_enabled: false
 server:
   http_listen_port: 3100
 
+compactor:
+  working_directory: /var/lib/loki
+  shared_store: filesystem
+  compactor_ring:
+    kvstore:
+      store: inmemory
+
+
 ingester:
   lifecycler:
     address: 0.0.0.0
