@@ -1,6 +1,9 @@
 { config, pkgs, lib, ... }:
 
 {
+
+  imports = [ ./promtail.nix ];
+
   networking.firewall.allowedTCPPorts = [ 9002 ];
 
   services.prometheus = {

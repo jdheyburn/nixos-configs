@@ -2,10 +2,14 @@
 
 with lib;
 
-let grafanaPort = 2342;
+let
+  grafanaPort = 2342;
+  lokiPort = 3100;
 in {
 
-  networking.firewall.allowedTCPPorts = [ grafanaPort ];
+  imports = [ ../promtail.nix ];
+
+  networking.firewall.allowedTCPPorts = [ grafanaPort lokiPort ];
 
   services.grafana = {
     enable = true;
@@ -54,40 +58,4 @@ in {
     configFile = ./loki-local-config.yaml;
   };
 
-  services.promtail = {
-    enable = true;
-    configuration = {
-      server = {
-        http_listen_port = 28183;
-        grpc_listen_port = 0;
-      };
-      positions = { filename = "/tmp/positions.yaml"; };
-      clients = [{ url = "http://dennis.joannet.casa:3100/loki/api/v1/push"; }];
-      scrape_configs = [{
-        job_name = "journal";
-        journal = {
-          max_age = "12h";
-          labels = {
-            job = "systemd-journal";
-            host = "dennis";
-          };
-        };
-        relabel_configs = [{
-          source_labels = [ "__journal__systemd_unit" ];
-          target_label = "unit";
-        }];
-      }];
-    };
-  };
-
-  # systemd.services.promtail = {
-  #   description = "Promtail service for Loki";
-  #   wantedBy = [ "multi-user.target" ];
-
-  #   serviceConfig = {
-  #     ExecStart = ''
-  #       ${pkgs.grafana-loki}/bin/promtail --config.file ${./promtail.yaml}
-  #     '';
-  #   };
-  # };
 }
