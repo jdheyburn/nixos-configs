@@ -4,6 +4,10 @@ with lib;
 
 let unifiMinJavaHeapSize = 256;
 in {
+
+  networking.firewall.allowedTCPPorts =
+    [ config.services.prometheus.exporters.unifi-poller.port ];
+
   services.unifi = {
     enable = true;
     unifiPackage = pkgs.unifiStable;
@@ -14,4 +18,6 @@ in {
     # But other ports may need to be open for unifi operations
     openFirewall = true;
   };
+
+  services.prometheus.exporters.unifi-poller = { enable = true; };
 }

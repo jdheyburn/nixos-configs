@@ -5,6 +5,8 @@ with lib;
 let
   grafanaPort = 2342;
   lokiPort = 3100;
+  nodeExporterPort = 9002;
+  prometheusPort = 9001;
 in {
 
   imports = [ ../promtail.nix ];
@@ -20,12 +22,12 @@ in {
 
   services.prometheus = {
     enable = true;
-    port = 9001;
+    port = prometheusPort;
     exporters = {
       node = {
         enable = true;
         enabledCollectors = [ "systemd" ];
-        port = 9002;
+        port = nodeExporterPort;
       };
     };
     scrapeConfigs = [
