@@ -4,7 +4,7 @@
   imports = [
     ./hardware-configuration.nix
     ../modules/prometheus-stack/prometheus-stack.nix
-    ../modules/monitoring.nix
+    # ../modules/monitoring.nix
   ];
 
   ###############################################################################
