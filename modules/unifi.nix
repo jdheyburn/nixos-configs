@@ -21,14 +21,32 @@ in {
 
   services.unifi-poller = {
     # TODO needs config of user and password here?
-    unifi.url = "https://localhost:8443";
-    unifi.user = "unifipoller";
-    unifi.pass = "/etc/nixos/secrets/unifi-poller-password";
-    unifi.verify_ssl = false;
+    unifi = {
+      controllers = [
+        {
+    url = "https://localhost:8443";
+    user = "unifipoller";
+    pass = "/etc/nixos/secrets/unifi-poller-password";
+    verify_ssl = false;
+          
+        }
+      ];
+    };
   };
 
   services.prometheus.exporters.unifi-poller = {
     enable = true;
-
+    extraOpts = {
+      
+      controllers = [
+        {
+    url = "https://localhost:8443";
+    user = "unifipoller";
+    pass = "/etc/nixos/secrets/unifi-poller-password";
+    verify_ssl = false;
+          
+        }
+      ];
+    };
   };
 }
