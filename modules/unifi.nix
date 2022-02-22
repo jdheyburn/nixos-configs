@@ -19,34 +19,13 @@ in {
     openFirewall = true;
   };
 
-  services.unifi-poller = {
-    # TODO needs config of user and password here?
-    unifi = {
-      controllers = [
-        {
-    url = "https://localhost:8443";
-    user = "unifipoller";
-    pass = "/etc/nixos/secrets/unifi-poller-password";
-    verify_ssl = false;
-          
-        }
-      ];
-    };
-  };
-
   services.prometheus.exporters.unifi-poller = {
     enable = true;
-    extraOpts = {
-      
-      controllers = [
-        {
-    url = "https://localhost:8443";
-    user = "unifipoller";
-    pass = "/etc/nixos/secrets/unifi-poller-password";
-    verify_ssl = false;
-          
-        }
-      ];
-    };
+    controllers = [{
+      url = "https://localhost:8443";
+      user = "unifipoller";
+      pass = "/etc/nixos/secrets/unifi-poller-password";
+      verify_ssl = false;
+    }];
   };
 }
