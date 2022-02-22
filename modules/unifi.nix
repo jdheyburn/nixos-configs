@@ -22,10 +22,18 @@ in {
   services.prometheus.exporters.unifi-poller = {
     enable = true;
     controllers = [{
-      url = "https://localhost:8443";
+      url = "https://unifi.svc.joannet.casa";
       user = "unifipoller";
       pass = "/etc/nixos/secrets/unifi-poller-password";
-      verify_ssl = false;
+      save_ids = true;
+      save_events = true;
+      save_alarms = true;
+      save_anomalies = true;
     }];
+
+    # loki = {
+    #   url = "https://loki.svc.joannet.casa"
+
+    # };
   };
 }
