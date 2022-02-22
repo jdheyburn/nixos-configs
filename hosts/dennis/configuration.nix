@@ -38,4 +38,22 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+
+
+
+  services.prometheus.exporters.unifi-poller = {
+    enable = true;
+    extraOpts = {
+      
+      controllers = [
+        {
+    url = "https://unifi.svc.joannet.casa";
+    user = "unifipoller";
+    pass = "/etc/nixos/secrets/unifi-poller-password";
+    # verify_ssl = false;
+          
+        }
+      ];
+    };
+  };
 }
