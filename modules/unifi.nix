@@ -19,5 +19,16 @@ in {
     openFirewall = true;
   };
 
-  services.prometheus.exporters.unifi-poller = { enable = true; };
+  services.unifi-poller = {
+    # TODO needs config of user and password here?
+    unifi.url = "https://localhost:8443";
+    unifi.user = "unifipoller";
+    unifi.pass = "/etc/nixos/secrets/unifi-poller-password";
+    unifi.verify_ssl = false;
+  };
+
+  services.prometheus.exporters.unifi-poller = {
+    enable = true;
+
+  };
 }

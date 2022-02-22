@@ -51,6 +51,16 @@ in {
           ];
         }];
       }
+      {
+        job_name = "unifi";
+        static_configs = [{
+          targets = [
+            "dee.joannet.casa:${
+              toString config.services.prometheus.exporters.unifi-poller.port
+            }"
+          ];
+        }];
+      }
 
     ];
   };
