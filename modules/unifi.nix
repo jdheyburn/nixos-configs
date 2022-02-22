@@ -31,9 +31,9 @@ in {
       save_anomalies = true;
     }];
 
-    # loki = {
-    #   url = "https://loki.svc.joannet.casa"
-
-    # };
+    loki = {
+      url = "https://loki.svc.joannet.casa";
+      verify_ssl = true;
+    };
   };
 }
