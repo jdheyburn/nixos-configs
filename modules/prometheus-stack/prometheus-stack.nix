@@ -27,12 +27,12 @@ in {
         {
           name = "Prometheus";
           type = "prometheus";
-          url = "http://localhost:${prometheusPort}";
+          url = "http://localhost:${toString prometheusPort}";
           isDefault = true;
         }
       ];
 
-    }
+    };
   };
 
   services.prometheus = {
