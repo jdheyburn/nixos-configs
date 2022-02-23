@@ -30,8 +30,12 @@ in {
           url = "http://localhost:${toString prometheusPort}";
           isDefault = true;
         }
+        {
+          name = "Loki";
+          type = "loki";
+          url = "http://localhost:${toString lokiPort}";
+        }
       ];
-
     };
   };
 
