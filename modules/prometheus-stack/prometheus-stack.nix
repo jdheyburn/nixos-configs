@@ -47,7 +47,7 @@ in {
         }];
         # https://stackoverflow.com/questions/49896956/relabel-instance-to-hostname-in-prometheus
         relabel_configs = [{
-          source_labels = ["_address_"];
+          source_labels = ["__address__"];
           target_label = "instance";
           regex = "([^:]+)(:[0-9]+)?";
           replacement = "\${1}";
