@@ -74,6 +74,12 @@ in
         }
         reverse_proxy dennis.joannet.casa:3100
       }
+      prometheus.svc.joannet.casa {
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy dennis.joannet.casa:9001
+      }
     '';
   };
 
