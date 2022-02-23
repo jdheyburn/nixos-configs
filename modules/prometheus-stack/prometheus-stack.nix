@@ -18,6 +18,8 @@ in {
     domain = "grafana.svc.joannet.casa";
     port = grafanaPort;
     addr = "0.0.0.0";
+
+    declarativePlugins = with pkgs.grafanaPlugins; [ grafana-piechart-panel ];
   };
 
   services.prometheus = {
@@ -32,23 +34,23 @@ in {
     };
     scrapeConfigs = [
       {
-        job_name = "dennis";
+        job_name = "node";
         static_configs = [{
           targets = [
-            "127.0.0.1:${
+            "dennis.joannet.casa:${
               toString config.services.prometheus.exporters.node.port
             }"
-          ];
-        }];
-      }
-      {
-        job_name = "dee";
-        static_configs = [{
-          targets = [
             "dee.joannet.casa:${
               toString config.services.prometheus.exporters.node.port
             }"
           ];
+        }];
+        # https://stackoverflow.com/questions/49896956/relabel-instance-to-hostname-in-prometheus
+        relabel_configs = [{
+          source_labels = ["_address_"];
+          target_label = "instance";
+          regex = "([^:]+)(:[0-9]+)?";
+          replacement = "\${1}";
         }];
       }
       {
@@ -58,6 +60,14 @@ in {
             "dee.joannet.casa:${
               toString config.services.prometheus.exporters.unifi-poller.port
             }"
+          ];
+        }];
+      }
+      {
+        job_name = "caddy";
+        static_configs = [{
+          targets = [
+            "dee.joannet.casa:2019"
           ];
         }];
       }

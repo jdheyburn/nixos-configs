@@ -12,6 +12,8 @@
 
     boot.cleanTmpDir = true;
 
+    networking.domain = "joannet.casa";
+
     #############################################################################
     ## Locale
     #############################################################################
@@ -33,9 +35,9 @@
 
     services.openssh = {
       enable = true;
-      permitRootLogin = "yes";
-      # passwordAuthentication = false;
-      # challengeResponseAuthentication = false;
+      # permitRootLogin = "yes";
+      passwordAuthentication = false;
+      challengeResponseAuthentication = false;
     };
 
     # Start ssh-agent as a systemd user service

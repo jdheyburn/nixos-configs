@@ -1,10 +1,14 @@
 { config, pkgs, lib, ... }:
 
+let
+caddyMetricsPort = 2019;
+in
 {
 
   networking.firewall.allowedTCPPorts = [
     80 # Caddy
     443 # Caddy
+    caddyMetricsPort
   ];
 
   services.caddy = {
