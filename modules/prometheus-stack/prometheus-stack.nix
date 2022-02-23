@@ -20,6 +20,19 @@ in {
     addr = "0.0.0.0";
 
     declarativePlugins = with pkgs.grafanaPlugins; [ grafana-piechart-panel ];
+
+    provision = {
+      enable = true;
+      datasources = [
+        {
+          name = "Prometheus";
+          type = "prometheus";
+          url = "http://localhost:${prometheusPort}";
+          isDefault = true;
+        }
+      ];
+
+    }
   };
 
   services.prometheus = {
@@ -45,6 +58,7 @@ in {
             }"
           ];
         }];
+        # Convert instance label "<hostname>:<port>" -> "<hostname>"
         # https://stackoverflow.com/questions/49896956/relabel-instance-to-hostname-in-prometheus
         relabel_configs = [{
           source_labels = ["__address__"];
