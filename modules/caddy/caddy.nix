@@ -17,7 +17,7 @@ in
       plugins = [ "github.com/caddy-dns/cloudflare" ];
       vendorSha256 = "sha256-HrUARAM0/apr+ijSousglLYgxVNy9SFW6MhWkSeTFU4=";
     });
-    configFile = "./Caddyfile";
+    configFile = "/etc/nixos/modules/caddy/Caddyfile";
   };
 
   systemd.services.caddy = {
