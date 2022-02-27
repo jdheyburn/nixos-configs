@@ -7,7 +7,7 @@ let
   lokiPort = 3100;
   nodeExporterPort = 9002;
   prometheusPort = 9001;
-  nodeExporterTargets = [ "dee.joannet.casa" "dennis.joannet.casa" ];
+  nodeExporterTargets = [ "dee.joannet.casa" "dennis.joannet.casa" "frank.joannet.casa" ];
 in {
 
   imports = [ ../promtail.nix ];
@@ -55,7 +55,7 @@ in {
         job_name = "node";
         static_configs = [{
           targets = map (node:
-            node + toString config.services.prometheus.exporters.node.port)
+            "${node}:${toString config.services.prometheus.exporters.node.port}")
             nodeExporterTargets;
         }];
         # Convert instance label "<hostname>:<port>" -> "<hostname>"
