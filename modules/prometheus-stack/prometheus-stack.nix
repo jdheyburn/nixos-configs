@@ -7,7 +7,7 @@ let
   lokiPort = 3100;
   nodeExporterPort = 9002;
   prometheusPort = 9001;
-  nodeExporterTargets = [ "dee.joannet.casa" "dennis.joannet.casa" "frank.joannet.casa" ];
+  nodeExporterTargets = [ "dee.joannet.casa" "dennis.joannet.casa" "frank.joannet.casa" "paddys.joannet.casa" ];
 in {
 
   imports = [ ../promtail.nix ];
