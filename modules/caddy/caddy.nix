@@ -1,9 +1,7 @@
 { config, pkgs, lib, ... }:
 
-let
-caddyMetricsPort = 2019;
-in
-{
+let caddyMetricsPort = 2019;
+in {
 
   networking.firewall.allowedTCPPorts = [
     80 # Caddy

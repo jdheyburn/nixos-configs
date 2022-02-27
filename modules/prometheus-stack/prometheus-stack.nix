@@ -7,6 +7,7 @@ let
   lokiPort = 3100;
   nodeExporterPort = 9002;
   prometheusPort = 9001;
+  nodeExporterTargets = [ "dee.joannet.casa" "dennis.joannet.casa" ];
 in {
 
   imports = [ ../promtail.nix ];
@@ -53,19 +54,14 @@ in {
       {
         job_name = "node";
         static_configs = [{
-          targets = [
-            "dennis.joannet.casa:${
-              toString config.services.prometheus.exporters.node.port
-            }"
-            "dee.joannet.casa:${
-              toString config.services.prometheus.exporters.node.port
-            }"
-          ];
+          targets = map (node:
+            node + toString config.services.prometheus.exporters.node.port)
+            nodeExporterTargets;
         }];
         # Convert instance label "<hostname>:<port>" -> "<hostname>"
         # https://stackoverflow.com/questions/49896956/relabel-instance-to-hostname-in-prometheus
         relabel_configs = [{
-          source_labels = ["__address__"];
+          source_labels = [ "__address__" ];
           target_label = "instance";
           regex = "([^:]+)(:[0-9]+)?";
           replacement = "\${1}";
@@ -83,11 +79,7 @@ in {
       }
       {
         job_name = "caddy";
-        static_configs = [{
-          targets = [
-            "dee.joannet.casa:2019"
-          ];
-        }];
+        static_configs = [{ targets = [ "dee.joannet.casa:2019" ]; }];
       }
 
     ];
