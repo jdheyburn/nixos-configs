@@ -60,7 +60,7 @@ in {
         job_name = "prometheus";
         scrape_interval = "5s";
         static_configs = [{
-          targets = ["localhost:${prometheusPort}"];
+          targets = ["localhost:${toString prometheusPort}"];
         }];
       }
       {
