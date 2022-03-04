@@ -92,7 +92,7 @@ in {
         job_name = "blackbox";
         metrics_path = "/probe";
         params = {
-          module = [ "http_2xx" ];
+          module = [ "http_2xx" "tls_connect" ];
         };
         static_configs = [{
           targets = [
