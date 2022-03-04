@@ -11,6 +11,12 @@
     ];
   };
 
-  services.adguardhome = { enable = true; };
+  services.adguardhome = { 
+    enable = true;
+    extraArgs = [ 
+      # Router knows best, i.e. stop returning 127.0.0.1 for DNS calls for self
+      "--no-etc-hosts"
+       ];
+    };
 
 }
