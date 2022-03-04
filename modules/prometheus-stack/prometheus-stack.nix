@@ -80,7 +80,7 @@ in {
       {
         job_name = "caddy";
         static_configs = [{ targets = [ "dee.joannet.casa:2019" ]; }];
-      },
+      }
       {
         job_name = "blackbox";
         metrics_path = "/probe";
