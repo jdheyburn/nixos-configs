@@ -55,6 +55,14 @@ in {
       };
     };
     scrapeConfigs = [
+      # Scrape self
+      {
+        job_name = "prometheus";
+        scrape_interval = "5s";
+        static_configs = [{
+          targets = ["localhost:${prometheusPort}"];
+        }];
+      }
       {
         job_name = "node";
         static_configs = [{
