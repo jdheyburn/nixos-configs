@@ -49,6 +49,10 @@ in {
         enabledCollectors = [ "systemd" ];
         port = nodeExporterPort;
       };
+      blackbox = {
+        enable = true;
+        configFile = ./blackbox.yaml
+      };
     };
     scrapeConfigs = [
       {
@@ -82,6 +86,7 @@ in {
         static_configs = [{ targets = [ "dee.joannet.casa:2019" ]; }];
       }
       {
+        # https://github.com/prometheus/blackbox_exporter#prometheus-configuration
         job_name = "blackbox";
         metrics_path = "/probe";
         params = {
@@ -106,6 +111,10 @@ in {
             {
               source_labels = ["__param_target"];
               target_label = "instance";
+            }
+            {
+              target_label = "__address__";
+              replacement = "127.0.0.1:9115";
             }
         ];   
       }
