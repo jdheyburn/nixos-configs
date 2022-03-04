@@ -12,7 +12,7 @@ in {
 
   imports = [ ../promtail.nix ];
 
-  networking.firewall.allowedTCPPorts = [ grafanaPort lokiPort ];
+  networking.firewall.allowedTCPPorts = [ prometheusPort grafanaPort lokiPort ];
 
   services.grafana = {
     enable = true;
@@ -98,8 +98,8 @@ in {
             "https://grafana.svc.joannet.casa"
             "https://home.svc.joannet.casa"
             "https://huginn.svc.joannet.casa"
-            "https://loki.svc.joannet.casa"
             "https://portainer.svc.joannet.casa"
+            "https://prometheus.svc.joannet.casa"
             "https://proxmox.svc.joannet.casa"
             "https://unifi.svc.joannet.casa"
           ];
