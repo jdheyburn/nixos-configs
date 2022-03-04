@@ -3,9 +3,7 @@ modules:
     prober: http
     timeout: 5s
     http:
-      method: GET
-      tls_config:
-        insecure_skip_verify: false
+      preferred_ip_protocol: "ip4"
   tls_connect:
     prober: tcp
     timeout: 5s

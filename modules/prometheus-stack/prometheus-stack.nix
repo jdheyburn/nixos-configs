@@ -86,31 +86,46 @@ in {
         static_configs = [{ targets = [ "dee.joannet.casa:2019" ]; }];
       }
       {
-        # https://github.com/prometheus/blackbox_exporter#prometheus-configuration
+        # Inspiration from:
+        #   https://github.com/prometheus/blackbox_exporter#prometheus-configuration
+        #   https://github.com/maxandersen/internet-monitoring/blob/master/prometheus/prometheus.yml
         job_name = "blackbox";
         metrics_path = "/probe";
         params = {
-          module = [ "http_2xx" "tls_connect" ];
+          module = [ "http_2xx" ];
         };
         static_configs = [{
           targets = [
-            "https://adguard.svc.joannet.casa"
-            "https://grafana.svc.joannet.casa"
-            "https://home.svc.joannet.casa"
-            "https://huginn.svc.joannet.casa"
-            "https://portainer.svc.joannet.casa"
-            "https://prometheus.svc.joannet.casa"
-            "https://proxmox.svc.joannet.casa"
-            "https://unifi.svc.joannet.casa"
+            "https://google.com;google.com;external"
+            "https://github.com;github.com;external"
+            "https://bbc.co.uk;bbc.co.uk;external"
+            "https://adguard.svc.joannet.casa;adguard;internal"
+            "https://grafana.svc.joannet.casa;grafana;internal"
+            "https://home.svc.joannet.casa;heimdall;internal"
+            "https://huginn.svc.joannet.casa;huginn;internal"
+            "https://portainer.svc.joannet.casa;portainer;internal"
+            "https://prometheus.svc.joannet.casa;prometheus;internal"
+            "https://proxmox.svc.joannet.casa;proxmox;internal"
+            "https://unifi.svc.joannet.casa;unifi;internal"
           ];
         }];
         relabel_configs = [{
             source_labels = ["__address__"]; 
-            target_label = "__param_target"; 
+            regex= "(.*);(.*);(.*)";  # first is the url, thus unique for instance
+            target_label = "instance"; 
+            replacement = "$1";
             }
             {
-              source_labels = ["__param_target"];
-              target_label = "instance";
+              source_labels = ["__address__"]; 
+            regex= "(.*);(.*);(.*)";  # second is humanname to use in charts
+            target_label = "humanname"; 
+            replacement = "$2";
+            }
+            {
+              source_labels = ["__address__"]; 
+            regex= "(.*);(.*);(.*)";  # third state whether this is testing external or internal network
+            target_label = "routing"; 
+            replacement = "$3";
             }
             {
               target_label = "__address__";
