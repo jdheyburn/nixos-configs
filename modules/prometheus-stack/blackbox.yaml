@@ -7,7 +7,7 @@ modules:
       tls_config:
         insecure_skip_verify: false
   tls_connect:
-    proper: tcp
+    prober: tcp
     timeout: 5s
     tcp:
       tls: true
