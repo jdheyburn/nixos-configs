@@ -51,7 +51,7 @@ in {
       };
       blackbox = {
         enable = true;
-        configFile = ./blackbox.yaml
+        configFile = ./blackbox.yaml;
       };
     };
     scrapeConfigs = [
