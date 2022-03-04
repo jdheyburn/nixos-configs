@@ -80,8 +80,36 @@ in {
       {
         job_name = "caddy";
         static_configs = [{ targets = [ "dee.joannet.casa:2019" ]; }];
+      },
+      {
+        job_name = "blackbox";
+        metrics_path = "/probe";
+        params = {
+          module = [ "http_2xx" "tls_connect" ];
+        };
+        static_configs = [{
+          targets = [
+            "https://adguard.svc.joannet.casa"
+            "https://grafana.svc.joannet.casa"
+            "https://home.svc.joannet.casa"
+            "https://huginn.svc.joannet.casa"
+            "https://loki.svc.joannet.casa"
+            "https://portainer.svc.joannet.casa"
+            "https://proxmox.svc.joannet.casa"
+            "https://unifi.svc.joannet.casa"
+          ];
+        }];
+        relabel_configs = [{
+          {
+            source_labels = ["__address__"]; 
+            target_label = "__param_target"; 
+            }
+            {
+              source_labels = ["__param_target"];
+              target_label = "instance";
+            }
+        }];   
       }
-
     ];
   };
 

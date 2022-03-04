@@ -1,0 +1,13 @@
+modules:
+  http_2xx:
+    prober: http
+    timeout: 5s
+    http:
+      method: GET
+      tls_config:
+        insecure_skip_verify: false
+  tls_connect:
+    proper: tcp
+    timeout: 5s
+    tcp:
+      tls: true
