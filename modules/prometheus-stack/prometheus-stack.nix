@@ -100,7 +100,6 @@ in {
           ];
         }];
         relabel_configs = [{
-          {
             source_labels = ["__address__"]; 
             target_label = "__param_target"; 
             }
@@ -108,7 +107,7 @@ in {
               source_labels = ["__param_target"];
               target_label = "instance";
             }
-        }];   
+        ];   
       }
     ];
   };
