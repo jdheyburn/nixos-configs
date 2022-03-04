@@ -128,6 +128,10 @@ in {
             replacement = "$3";
             }
             {
+              source_labels = ["instance"]; 
+            target_label = "__param_target"; 
+            }
+            {
               target_label = "__address__";
               replacement = "127.0.0.1:9115";
             }
