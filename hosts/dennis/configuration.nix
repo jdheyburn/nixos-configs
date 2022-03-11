@@ -4,7 +4,6 @@
   imports = [
     ./hardware-configuration.nix
     ../modules/prometheus-stack/prometheus-stack.nix
-    ../modules/adguard-exporter.nix
     # ../modules/monitoring.nix
   ];
 
