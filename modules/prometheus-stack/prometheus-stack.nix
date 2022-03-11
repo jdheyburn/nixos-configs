@@ -7,7 +7,12 @@ let
   lokiPort = 3100;
   nodeExporterPort = 9002;
   prometheusPort = 9001;
-  nodeExporterTargets = [ "dee.joannet.casa" "dennis.joannet.casa" "frank.joannet.casa" "paddys.joannet.casa" ];
+  nodeExporterTargets = [
+    "dee.joannet.casa"
+    "dennis.joannet.casa"
+    "frank.joannet.casa"
+    "paddys.joannet.casa"
+  ];
 in {
 
   imports = [ ../promtail.nix ];
@@ -59,16 +64,16 @@ in {
       {
         job_name = "prometheus";
         scrape_interval = "5s";
-        static_configs = [{
-          targets = ["localhost:${toString prometheusPort}"];
-        }];
+        static_configs =
+          [{ targets = [ "localhost:${toString prometheusPort}" ]; }];
       }
       {
         job_name = "node";
         static_configs = [{
           targets = map (node:
-            "${node}:${toString config.services.prometheus.exporters.node.port}")
-            nodeExporterTargets;
+            "${node}:${
+              toString config.services.prometheus.exporters.node.port
+            }") nodeExporterTargets;
         }];
         # Convert instance label "<hostname>:<port>" -> "<hostname>"
         # https://stackoverflow.com/questions/49896956/relabel-instance-to-hostname-in-prometheus
@@ -99,9 +104,7 @@ in {
         #   https://github.com/maxandersen/internet-monitoring/blob/master/prometheus/prometheus.yml
         job_name = "blackbox";
         metrics_path = "/probe";
-        params = {
-          module = [ "http_2xx" "tls_connect" ];
-        };
+        params = { module = [ "http_2xx" "tls_connect" ]; };
         static_configs = [{
           targets = [
             "https://google.com;google.com;external"
@@ -117,33 +120,36 @@ in {
             "https://unifi.svc.joannet.casa;unifi;internal"
           ];
         }];
-        relabel_configs = [{
-            source_labels = ["__address__"]; 
-            regex= "(.*);(.*);(.*)";  # first is the url, thus unique for instance
-            target_label = "instance"; 
+        relabel_configs = [
+          {
+            source_labels = [ "__address__" ];
+            regex =
+              "(.*);(.*);(.*)"; # first is the url, thus unique for instance
+            target_label = "instance";
             replacement = "$1";
-            }
-            {
-              source_labels = ["__address__"]; 
-            regex= "(.*);(.*);(.*)";  # second is humanname to use in charts
-            target_label = "humanname"; 
+          }
+          {
+            source_labels = [ "__address__" ];
+            regex = "(.*);(.*);(.*)"; # second is humanname to use in charts
+            target_label = "humanname";
             replacement = "$2";
-            }
-            {
-              source_labels = ["__address__"]; 
-            regex= "(.*);(.*);(.*)";  # third state whether this is testing external or internal network
-            target_label = "routing"; 
+          }
+          {
+            source_labels = [ "__address__" ];
+            regex =
+              "(.*);(.*);(.*)"; # third state whether this is testing external or internal network
+            target_label = "routing";
             replacement = "$3";
-            }
-            {
-              source_labels = ["instance"]; 
-            target_label = "__param_target"; 
-            }
-            {
-              target_label = "__address__";
-              replacement = "127.0.0.1:9115";
-            }
-        ];   
+          }
+          {
+            source_labels = [ "instance" ];
+            target_label = "__param_target";
+          }
+          {
+            target_label = "__address__";
+            replacement = "127.0.0.1:9115";
+          }
+        ];
       }
     ];
   };

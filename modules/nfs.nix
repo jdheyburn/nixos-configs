@@ -41,13 +41,11 @@
     '';
   };
 
-  services.minidlna= {
+  services.minidlna = {
     enable = true;
     announceInterval = 60;
     friendlyName = "dee";
-    mediaDirs = [
-      "V,/mnt/nfs/Backup/media/tv/"
-      "A,/mnt/nfs/Backup/media/music/"
-    ];
+    mediaDirs =
+      [ "V,/mnt/nfs/Backup/media/tv/" "A,/mnt/nfs/Backup/media/music/" ];
   };
 }
