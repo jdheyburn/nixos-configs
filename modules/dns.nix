@@ -5,6 +5,7 @@
   networking.firewall = {
     allowedTCPPorts = [
       53 # DNS server
+      config.services.adguard-exporter.server_port
     ];
     allowedUDPPorts = [
       53 # DNS server
@@ -19,4 +20,12 @@
        ];
     };
 
+  # TODO change to prometheus when it is added there
+  services.adguard-exporter = {
+    enable = true;
+    protocol = "http";
+    username = "admin";
+    passwordFile = "/etc/nixos/secrets/adguard-password";
+    port = config.services.adguardhome.port;
+  };
 }
