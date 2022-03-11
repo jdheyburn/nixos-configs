@@ -6,11 +6,13 @@
     allowedTCPPorts = [
       2049 # NFS
       111 # NFS
+      8200 # minidlna
     ];
 
     allowedUDPPorts = [
       111 # NFS
       2049 # NFS
+      8200 # minidlna
     ];
   };
 
@@ -37,5 +39,15 @@
       hosts allow = 192.168.1.20 192.168.1.25 192.168.1.25 localhost
       hosts deny = 0.0.0.0/0
     '';
+  };
+
+  services.minidlna= {
+    enable = true;
+    announceInterval = 60;
+    friendlyName = "dee";
+    mediaDirs = [
+      "V,/mnt/nfs/Backup/media/tv/"
+      "A,/mnt/nfs/Backup/media/music/"
+    ];
   };
 }
