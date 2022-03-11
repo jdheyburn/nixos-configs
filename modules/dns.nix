@@ -5,7 +5,7 @@
   networking.firewall = {
     allowedTCPPorts = [
       53 # DNS server
-      config.services.adguard-exporter.server_port
+      config.services.adguard-exporter.exporterPort
     ];
     allowedUDPPorts = [
       53 # DNS server
