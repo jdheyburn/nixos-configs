@@ -35,9 +35,9 @@
 
     services.openssh = {
       enable = true;
-      # permitRootLogin = "yes";
+      permitRootLogin = "no";
       passwordAuthentication = false;
-      challengeResponseAuthentication = false;
+      kbdInteractiveAuthentication = false;
     };
 
     # Start ssh-agent as a systemd user service

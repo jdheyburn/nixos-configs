@@ -2,26 +2,22 @@
 
 {
 
-  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+    imports = ["${fetchTarball "https://github.com/NixOS/nixos-hardware/archive/feceb4d24f582817d8f6e737cd40af9e162dee05.tar.gz" }/raspberry-pi/4"];
+#  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
-  boot.extraModulePackages = [ ];
+  hardware.raspberry-pi."4".fkms-3d.enable = true;
 
-  # NixOS wants to enable GRUB by default
-  boot.loader.grub.enable = false;
-
-  boot.loader.raspberryPi = {
-    enable = true;
-    version = 4;
-  };
+  #boot.loader.raspberryPi = {
+  #  enable = true;
+  #  version = 4;
+  #};
 
   # File systems configuration for using the installer's partition layout
   fileSystems = {
     "/" = {
       device = "/dev/disk/by-label/NIXOS_SD";
       fsType = "ext4";
+      options = [ "noatime" ];
     };
 
     # "/mnt/usb" = {
