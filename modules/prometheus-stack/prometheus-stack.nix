@@ -98,10 +98,10 @@ in {
         job_name = "caddy";
         static_configs = [{ targets = [ "dee.joannet.casa:2019" ]; }];
       }
-      {
-        job_name = "adguard";
-        static_configs = [{ targets = [ "dee.joannet.casa:9617" ]; }];
-      }
+      # {
+      #   job_name = "adguard";
+      #   static_configs = [{ targets = [ "dee.joannet.casa:9617" ]; }];
+      # }
       {
         # Inspiration from:
         #   https://github.com/prometheus/blackbox_exporter#prometheus-configuration

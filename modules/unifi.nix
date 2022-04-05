@@ -20,7 +20,7 @@ in {
   };
 
   services.prometheus.exporters.unifi-poller = {
-    enable = false;
+    enable = true;
     controllers = [{
       url = "https://unifi.svc.joannet.casa";
       user = "unifipoller";
