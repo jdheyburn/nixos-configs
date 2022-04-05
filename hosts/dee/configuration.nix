@@ -2,10 +2,10 @@
 
   imports = [
     ./hardware-configuration.nix
-    # ../modules/backup.nix
+    ../modules/backup.nix
     ../modules/caddy/caddy.nix
-     ../modules/dns.nix
-    # ../modules/monitoring.nix
+    ../modules/dns.nix
+    ../modules/monitoring.nix
     ../modules/nfs.nix
     ../modules/unifi.nix
   ];
@@ -14,7 +14,7 @@
   ## General
   ###############################################################################
 
-  networking.hostName = "dee2";
+  networking.hostName = "dee";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
