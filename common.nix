@@ -35,9 +35,9 @@
 
     services.openssh = {
       enable = true;
-      # permitRootLogin = "yes";
+      permitRootLogin = "no";
       passwordAuthentication = false;
-      challengeResponseAuthentication = false;
+      kbdInteractiveAuthentication = false;
     };
 
     # Start ssh-agent as a systemd user service
@@ -76,7 +76,7 @@
     # System-wide packages
     environment.systemPackages = with pkgs; [
       bind # Gets dig
-      busybox # Gets nslookup
+      # busybox # Gets nslookup - but disabled since reboot was clashing with systemd
       fzf
       git
       htop

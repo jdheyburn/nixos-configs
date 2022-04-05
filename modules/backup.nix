@@ -4,7 +4,7 @@
 
   services.restic.backups = {
     media = {
-      repository = "/mnt/usb/Backup/restic/media";
+      repository = "/mnt/nfs/Backup/restic/media";
       passwordFile = "/etc/nixos/secrets/restic-media-password";
       pruneOpts = [
         "--keep-daily 30"
@@ -22,7 +22,7 @@
     };
 
     small-files = {
-      repository = "/mnt/usb/Backup/restic/small-files";
+      repository = "/mnt/nfs/Backup/restic/small-files";
       passwordFile = "/etc/nixos/secrets/restic-small-files-password";
       pruneOpts = [
         "--keep-daily 7"
@@ -40,33 +40,35 @@
   };
 
   systemd.services.rclone-media = {
+    enable = true;
     # TODO can I refer to this from output of services.restic.backups.media ?
     wantedBy = [ "restic-backups-media.service" ];
     after = [ "restic-backups-media.service" ];
-    environment = {
-      RCLONE_CONFIG = "/etc/nixos/secrets/rclone.conf";
-      RCLONE = "${pkgs.rclone}/bin/rclone";
-      BACKUP_TYPE = "media";
-    };
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart =
-        "${pkgs.bash}/bin/bash /home/jdheyburn/dotfiles/restic/rclone-all.sh";
-    };
+    script = ''
+      echo "rcloning beets-db -> gdrive:media/beets-db"
+       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/beets-db gdrive:media/beets-db --config=/etc/nixos/secrets/rclone.conf
+
+       echo "rcloning music -> gdrive:media/music"
+       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/music gdrive:media/music --config=/etc/nixos/secrets/rclone.conf
+       
+       echo "rcloning lossless -> gdrive:media/lossless"
+       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/lossless gdrive:media/lossless --config=/etc/nixos/secrets/rclone.conf
+       
+       echo "rcloning vinyl -> gdrive:media/vinyl"
+       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/vinyl gdrive:media/vinyl --config=/etc/nixos/secrets/rclone.conf
+       
+       echo "rcloning restic/media -> b2:restic/media"
+       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/restic/media b2:iifu8Noi-backups/restic/media --config=/etc/nixos/secrets/rclone.conf
+    '';
   };
 
   systemd.services.rclone-small-files = {
+    enable = true;
     wantedBy = [ "restic-backups-small-files.service" ];
     after = [ "restic-backups-small-files.service" ];
-    environment = {
-      RCLONE_CONFIG = "/etc/nixos/secrets/rclone.conf";
-      RCLONE = "${pkgs.rclone}/bin/rclone";
-      BACKUP_TYPE = "small-files";
-    };
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart =
-        "${pkgs.bash}/bin/bash /home/jdheyburn/dotfiles/restic/rclone-all.sh";
-    };
+    script = ''
+      echo "rclone restic/small-files -> b2:restic/small-files"
+      ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=/etc/nixos/secrets/rclone.conf
+    '';
   };
 }

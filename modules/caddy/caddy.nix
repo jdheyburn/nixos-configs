@@ -9,6 +9,10 @@ in {
     caddyMetricsPort
   ];
 
+  # TODO I should have a reverse proxy on every host, 
+  # reversing every service on it
+  # just because I do maint on caddy server (dee) should not 
+  # mean I lose access to services running elsewhere
   services.caddy = {
     enable = true;
     package = (pkgs.callPackage ./custom-caddy.nix {
