@@ -20,7 +20,7 @@ in {
   };
 
   services.prometheus.exporters.unifi-poller = {
-    enable = true;
+    enable = false;
     controllers = [{
       url = "https://unifi.svc.joannet.casa";
       user = "unifipoller";
@@ -31,9 +31,9 @@ in {
       save_anomalies = true;
     }];
 
-    loki = {
-      url = "https://loki.svc.joannet.casa";
-      verify_ssl = true;
-    };
+   # loki = {
+   #   url = "https://loki.svc.joannet.casa";
+   #   verify_ssl = true;
+   # };
   };
 }

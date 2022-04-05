@@ -4,7 +4,7 @@
 
   services.restic.backups = {
     media = {
-      repository = "/mnt/usb/Backup/restic/media";
+      repository = "/mnt/nfs/Backup/restic/media";
       passwordFile = "/etc/nixos/secrets/restic-media-password";
       pruneOpts = [
         "--keep-daily 30"
@@ -13,16 +13,16 @@
         "--keep-yearly 0"
       ];
       paths = [
-        "/mnt/usb/Backup/media/beets-db"
-        "/mnt/usb/Backup/media/lossless"
-        "/mnt/usb/Backup/media/music"
-        "/mnt/usb/Backup/media/vinyl"
+        "/mnt/nfs/Backup/media/beets-db"
+        "/mnt/nfs/Backup/media/lossless"
+        "/mnt/nfs/Backup/media/music"
+        "/mnt/nfs/Backup/media/vinyl"
       ];
       timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
     };
 
     small-files = {
-      repository = "/mnt/usb/Backup/restic/small-files";
+      repository = "/mnt/nfs/Backup/restic/small-files";
       passwordFile = "/etc/nixos/secrets/restic-small-files-password";
       pruneOpts = [
         "--keep-daily 7"

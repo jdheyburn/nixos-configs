@@ -20,10 +20,10 @@
       options = [ "noatime" ];
     };
 
-    # "/mnt/usb" = {
-    #   device = "/dev/disk/by-uuid/D28E73C08E739BA3";
-    #   fsType = "ntfs";
-    # };
+    "/mnt/nfs" = {
+      device = "/dev/disk/by-uuid/D28E73C08E739BA3";
+      fsType = "ntfs";
+    };
   };
 
   swapDevices = [ ];

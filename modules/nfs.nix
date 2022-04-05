@@ -19,7 +19,7 @@
   services.nfs.server.enable = true;
   # couldn't get 1.25 to work on macos, leaving here so i can see what did and didn't work
   services.nfs.server.exports = ''
-    /mnt/usb 192.168.1.20(rw,nohide,insecure) 192.168.1.25(rw,nohide,insecure,no_subtree_check,all_squash,anonuid=1001,anongid=1001) 192.168.1.26(rw,nohide,insecure)
+    /mnt/nfs 192.168.1.20(rw,nohide,insecure) 192.168.1.25(rw,nohide,insecure,no_subtree_check,all_squash,anonuid=1001,anongid=1001) 192.168.1.26(rw,nohide,insecure)
   '';
 
   # Did some experimenting with this in the past, might come back to it
@@ -28,7 +28,7 @@
     openFirewall = true;
     shares = {
       usb = {
-        path = "/mnt/usb";
+        path = "/mnt/nfs";
         writeable = "yes";
         "force user" = "root";
         "force group" = "root";
