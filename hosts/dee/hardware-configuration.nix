@@ -2,8 +2,13 @@
 
 {
 
-    imports = ["${fetchTarball "https://github.com/NixOS/nixos-hardware/archive/feceb4d24f582817d8f6e737cd40af9e162dee05.tar.gz" }/raspberry-pi/4"];
-#  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+  imports = [
+    "${
+      fetchTarball
+      "https://github.com/NixOS/nixos-hardware/archive/feceb4d24f582817d8f6e737cd40af9e162dee05.tar.gz"
+    }/raspberry-pi/4"
+  ];
+  #  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
   hardware.raspberry-pi."4".fkms-3d.enable = true;
 

@@ -45,20 +45,20 @@
     wantedBy = [ "restic-backups-media.service" ];
     after = [ "restic-backups-media.service" ];
     script = ''
-     echo "rcloning beets-db -> gdrive:media/beets-db"
-      ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/beets-db gdrive:media/beets-db --config=/etc/nixos/secrets/rclone.conf
-  
-      echo "rcloning music -> gdrive:media/music"
-      ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/music gdrive:media/music --config=/etc/nixos/secrets/rclone.conf
-      
-      echo "rcloning lossless -> gdrive:media/lossless"
-      ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/lossless gdrive:media/lossless --config=/etc/nixos/secrets/rclone.conf
-      
-      echo "rcloning vinyl -> gdrive:media/vinyl"
-      ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/vinyl gdrive:media/vinyl --config=/etc/nixos/secrets/rclone.conf
-      
-      echo "rcloning restic/media -> b2:restic/media"
-      ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/restic/media b2:iifu8Noi-backups/restic/media --config=/etc/nixos/secrets/rclone.conf
+      echo "rcloning beets-db -> gdrive:media/beets-db"
+       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/beets-db gdrive:media/beets-db --config=/etc/nixos/secrets/rclone.conf
+
+       echo "rcloning music -> gdrive:media/music"
+       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/music gdrive:media/music --config=/etc/nixos/secrets/rclone.conf
+       
+       echo "rcloning lossless -> gdrive:media/lossless"
+       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/lossless gdrive:media/lossless --config=/etc/nixos/secrets/rclone.conf
+       
+       echo "rcloning vinyl -> gdrive:media/vinyl"
+       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/vinyl gdrive:media/vinyl --config=/etc/nixos/secrets/rclone.conf
+       
+       echo "rcloning restic/media -> b2:restic/media"
+       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/restic/media b2:iifu8Noi-backups/restic/media --config=/etc/nixos/secrets/rclone.conf
     '';
   };
 
