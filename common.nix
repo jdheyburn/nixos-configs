@@ -76,7 +76,7 @@
     # System-wide packages
     environment.systemPackages = with pkgs; [
       bind # Gets dig
-      busybox # Gets nslookup
+      # busybox # Gets nslookup - but disabled since reboot was clashing with systemd
       fzf
       git
       htop
