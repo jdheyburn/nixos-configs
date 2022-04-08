@@ -49,6 +49,7 @@
     ## User accounts
     #############################################################################
 
+    users.defaultUserShell = pkgs.zsh;
     users.mutableUsers = false;
     users.users.jdheyburn = {
       uid = 1000;

@@ -14,6 +14,33 @@ in {
       userEmail = "jdheyburn@gmail.com";
     };
 
+    programs.zsh = {
+      enable = true;
+      enableAutosuggestions = true;
+      enableCompletion = true;
+      enableSyntaxHighlighting = true;
+
+      history = {
+        save = 10000000;
+        size = 10000000;
+      };
+
+      shellGlobalAliases = {
+        G = "| grep";
+      };
+
+      oh-my-zsh = {
+        enable = true;
+        theme = "agnoster";
+
+        plugins = [
+          "colored-man-pages"
+          "git"
+          "sudo"
+        ];
+      };
+    };
+
   };
 
 }
