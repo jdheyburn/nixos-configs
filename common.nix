@@ -85,6 +85,7 @@
       htop
       jq
       ncdu
+      nixfmt
       python3
       rclone
       rsync

@@ -29,12 +29,7 @@ in {
         G = "| grep";
       };
 
-      initExtra = ''
-        if [ -n "$\{commands[fzf-share]\}" ]; then
-          source "$(fzf-share)/key-bindings.zsh"
-          source "$(fzf-share)/completion.zsh"
-        fi
-      '';
+      initExtra = builtins.readFile ./dotfiles/zsh-initExtra;
 
       oh-my-zsh = {
         enable = true;
