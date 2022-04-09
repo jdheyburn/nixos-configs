@@ -7,7 +7,7 @@ g.mapleader = " "
 
 
 -- misc utils
-local scopes = {o = vim.o, b = vim.bo, w = vim.wo}
+local scopes = {o = vim.o, b = vim.bo, w = vim.wo, g = vim.g}
 
 local function opt(scope, key, value)
     scopes[scope][key] = value
@@ -32,4 +32,9 @@ opt("w", "cursorline", false)
 opt("w", "number", true)
 -- keep cursor from top/bottom
 opt("w", "scrolloff", 10)
+-- fix tabs on paste
+opt("g", "paste", true)
+-- tabs
+opt("b", "expandtab", true)
+opt("b", "tabstop", 4)
 
