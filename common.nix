@@ -92,7 +92,6 @@
       tldr
       tmux
       unzip
-      vim
       wget
     ];
   };
