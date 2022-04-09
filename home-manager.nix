@@ -29,6 +29,13 @@ in {
         G = "| grep";
       };
 
+      initExtra = ''
+        if [ -n "$\{commands[fzf-share]\}" ]; then
+          source "$(fzf-share)/key-bindings.zsh"
+          source "$(fzf-share)/completion.zsh"
+        fi
+      '';
+
       oh-my-zsh = {
         enable = true;
         theme = "agnoster";
@@ -38,6 +45,14 @@ in {
           "git"
           "sudo"
         ];
+      };
+      
+      prezto = {
+        enable = false;
+        tmux = {
+          autoStartRemote = true;
+          defaultSessionName = "joe-test";
+        };
       };
     };
 
