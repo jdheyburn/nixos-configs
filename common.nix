@@ -43,6 +43,8 @@
     # Start ssh-agent as a systemd user service
     programs.ssh.startAgent = true;
 
+    services.tailscale.enable = true;
+
     #############################################################################
     ## User accounts
     #############################################################################
