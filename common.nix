@@ -87,6 +87,7 @@
       ncdu
       nixfmt
       python3
+      ranger
       rclone
       rsync
       tldr
