@@ -2,6 +2,12 @@
 
 {
 
+  system.activationScripts = {
+    symlinkNFS.text = ''
+      ln -sfn /mnt/nfs /mnt/usb
+    '';
+  };
+
   services.restic.backups = {
     media = {
       repository = "/mnt/nfs/Backup/restic/media";
