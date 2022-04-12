@@ -44,9 +44,9 @@ in {
       localVariables = { EDITOR = "nvim"; };
 
       initExtra = ''
-        ${builtins.readFile ./dotfiles/zsh-initExtra-kubectl_aliases}
-        ${builtins.readFile ./dotfiles/zsh-initExtra-functions}
-        ${builtins.readFile ./dotfiles/zsh-initExtra-misc}
+        ${builtins.readFile ./dotfiles/zsh-initExtra-kubectl_aliases.zsh}
+        ${builtins.readFile ./dotfiles/zsh-initExtra-functions.zsh}
+        ${builtins.readFile ./dotfiles/zsh-initExtra-misc.zsh}
       '';
 
       oh-my-zsh = {
