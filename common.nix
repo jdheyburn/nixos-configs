@@ -49,6 +49,7 @@
     ## User accounts
     #############################################################################
 
+    users.defaultUserShell = pkgs.zsh;
     users.mutableUsers = false;
     users.users.jdheyburn = {
       uid = 1000;
@@ -84,13 +85,14 @@
       htop
       jq
       ncdu
+      nixfmt
       python3
+      ranger
       rclone
       rsync
       tldr
       tmux
       unzip
-      vim
       wget
     ];
   };

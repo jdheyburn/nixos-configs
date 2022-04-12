@@ -23,6 +23,11 @@
       device = "/dev/disk/by-uuid/D28E73C08E739BA3";
       fsType = "ntfs";
     };
+
+    "/mnt/usb" = {
+      device = "/mnt/nfs";
+      options = [ "bind" ];
+    };
   };
 
   swapDevices = [ ];
