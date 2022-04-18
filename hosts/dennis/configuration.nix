@@ -3,7 +3,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../modules/prometheus-stack/prometheus-stack.nix
+    ../../modules/prometheus-stack/prometheus-stack.nix
     # ../modules/monitoring.nix
   ];
 
@@ -38,4 +38,12 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+
+  nix = {
+    package = pkgs.nixFlakes;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
+
 }
