@@ -1,14 +1,6 @@
 { config, pkgs, lib, ... }: {
 
-  imports = [
-    ./hardware-configuration.nix
-    ../modules/backup.nix
-    ../modules/caddy/caddy.nix
-    ../modules/dns.nix
-    ../modules/monitoring.nix
-    ../modules/nfs.nix
-    ../modules/unifi.nix
-  ];
+  imports = [ ./hardware-configuration.nix ];
 
   ###############################################################################
   ## General

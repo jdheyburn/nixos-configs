@@ -33,10 +33,37 @@
     in {
 
       nixosConfigurations = {
-        dennis = mkLinuxSystem [
-          ./hosts/dennis/configuration.nix
-          ./hosts/dennis/hardware-configuration.nix
-        ];
+        # TODO need to find a way to pass in the system as a variable
+        #        dennis = mkLinuxSystem [
+        #          ./hosts/dennis/configuration.nix
+        #          ./modules/prometheus-stack/prometheus-stack.nix
+        #        ];
+
+        dennis = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          pkgs = nixpkgs.legacyPackages.${system};
+          specialArgs = { inherit inputs; };
+          modules = common ++ homeFeatures ++ [
+            ./hosts/dennis/configuration.nix
+            ./modules/prometheus-stack/prometheus-stack.nix
+          ];
+        };
+
+        dee = nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          pkgs = nixpkgs.legacyPackages.${system};
+          specialArgs = { inherit inputs; };
+          modules = common ++ homeFeatures ++ [
+            ./hosts/dee/configuration.nix
+            ./modules/backup.nix
+            ./modules/caddy/caddy.nix
+            ./modules/dns.nix
+            ./modules/monitoring.nix
+            ./modules/nfs.nix
+            ./modules/unifi.nix
+          ];
+        };
+
       };
 
     };
