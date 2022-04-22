@@ -9,6 +9,7 @@ in {
     caddyMetricsPort
   ];
 
+
   # TODO I should have a reverse proxy on every host, 
   # reversing every service on it
   # just because I do maint on caddy server (dee) should not 
@@ -24,8 +25,9 @@ in {
 
   systemd.services.caddy = {
     environment = {
-      CLOUDFLARE_API_TOKEN =
-        (builtins.readFile /etc/nixos/secrets/cloudflare-api-token);
+       CLOUDFLARE_API_TOKEN = config.age.secrets.cloudflare-api-token.path;
+#      CLOUDFLARE_API_TOKEN =
+#        (builtins.readFile /etc/nixos/secrets/cloudflare-api-token);
     };
 
     serviceConfig = {
