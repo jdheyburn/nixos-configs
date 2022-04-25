@@ -16,17 +16,10 @@ let
     "paddys.joannet.casa"
   ];
 in {
-
-  imports = [ ../promtail.nix ];
-
   options.modules.prometheusStack = {
     enable = mkOption {
       type = types.bool;
       default = false;
-    };
-    enablePromtail = mkOption {
-      type = types.bool;
-      default = true;
     };
   };
 
@@ -34,8 +27,6 @@ in {
 
     networking.firewall.allowedTCPPorts =
       [ prometheusPort grafanaPort lokiPort ];
-
-    modules.promtail.enable = cfg.enablePromtail;
 
     services.grafana = {
       enable = true;

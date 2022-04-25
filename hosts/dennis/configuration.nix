@@ -38,10 +38,6 @@
   ###############################################################################
 
   modules.monitoring.enable = true;
-  # promtail is managed by prometheusStack
-  # TODO test this
-  modules.monitoring.enablePromtail = false;
 
   modules.prometheusStack.enable = true;
-
 }
