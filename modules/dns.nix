@@ -1,6 +1,17 @@
 { config, pkgs, lib, ... }:
 
+with lib;
+
+let
+  cfg = config.modules.dns;
+in
 {
+
+  options.modules.dns = {
+    enable = mkOption { type = types.bool; default = false; };
+  };
+
+  config = mkIf cfg.enable {
 
   networking.firewall = {
     allowedTCPPorts = [
@@ -28,4 +39,6 @@
   #  passwordFile = "/etc/nixos/secrets/adguard-password";
   #  port = config.services.adguardhome.port;
   #};
+
+  }; 
 }

@@ -1,9 +1,22 @@
 
 
 { config, pkgs, lib, ... }:
-let promtailPort = 28183;
 
+
+with lib;
+
+let
+  cfg = config.modules.promtail;
+
+  promtailPort = 28183;
 in {
+
+  options.modules.promtail = {
+    enable = mkOption { type = types.bool; default = false; };
+  };
+
+  config = mkIf cfg.enable {
+
   networking.firewall.allowedTCPPorts = [ promtailPort ];
 
   services.promtail = {
@@ -30,5 +43,7 @@ in {
         }];
       }];
     };
+  };
+
   };
 }

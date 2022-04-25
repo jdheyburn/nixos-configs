@@ -1,6 +1,20 @@
 { config, pkgs, lib, ... }:
 
+with lib;
+
+let
+
+  cfg = config.modules.backupUSB;
+
+in
 {
+
+  options.modules.backupUSB = {
+    enable = mkOption { type = types.bool; default = false; };
+  };
+
+
+  config = mkIf cfg.enable {
 
   services.restic.backups = {
     media = {
@@ -70,5 +84,7 @@
       echo "rclone restic/small-files -> b2:restic/small-files"
       ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=/etc/nixos/secrets/rclone.conf
     '';
+  };
+
   };
 }

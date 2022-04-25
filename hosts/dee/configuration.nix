@@ -1,15 +1,5 @@
 { config, pkgs, lib, ... }: {
 
-  imports = [
-    ./hardware-configuration.nix
-    ../modules/backup.nix
-    ../modules/caddy/caddy.nix
-    ../modules/dns.nix
-    ../modules/monitoring.nix
-    ../modules/nfs.nix
-    ../modules/unifi.nix
-  ];
-
   ###############################################################################
   ## General
   ###############################################################################
@@ -35,6 +25,17 @@
     python39
     restic
   ];
+
+  #############################################################################
+  ## Modules
+  #############################################################################
+
+  modules.backupUSB.enable = true;
+  modules.caddy.enable = true;
+  modules.dns.enable = true;
+  modules.monitoring.enable = true;
+  modules.nfs.enable = true;
+  modules.unifi.enable = true;
 
   # Attempted remote builds (blocked on matching system / platform, I don't have an aarch64-linux machine)
   # nix.buildMachines = [{

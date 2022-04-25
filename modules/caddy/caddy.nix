@@ -1,7 +1,23 @@
 { config, pkgs, lib, ... }:
 
-let caddyMetricsPort = 2019;
+with lib;
+
+let
+
+  cfg = config.modules.caddy;
+
+  caddyMetricsPort = 2019;
 in {
+
+  options = {
+    modules = {
+      caddy = {
+        enable = mkOption { type = types.bool; default = false; };
+      };
+    };
+  };
+
+  config = mkIf cfg.enable { 
 
   networking.firewall.allowedTCPPorts = [
     80 # Caddy
@@ -34,5 +50,11 @@ in {
       CapabilityBoundingSet = "cap_net_bind_service";
     };
   };
+
+
+
+
+  };
+
 
 }

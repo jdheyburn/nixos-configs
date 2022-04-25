@@ -1,6 +1,18 @@
 { config, pkgs, lib, ... }:
 
+with lib;
+
+let
+  cfg = config.modules.nfs;
+in
 {
+
+  options.modules.nfs = {
+    enable = mkOption { type = types.bool; default = false; };
+  };
+
+  config = mkIf cfg.enable {
+
   networking.firewall = {
 
     allowedTCPPorts = [
@@ -47,5 +59,7 @@
     friendlyName = "dee";
     mediaDirs =
       [ "V,/mnt/nfs/Backup/media/tv/" "A,/mnt/nfs/Backup/media/music/" ];
+  };
+
   };
 }

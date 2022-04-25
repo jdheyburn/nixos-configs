@@ -1,12 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  imports = [
-    ./hardware-configuration.nix
-    ../modules/prometheus-stack/prometheus-stack.nix
-    # ../modules/monitoring.nix
-  ];
-
   ###############################################################################
   ## General
   ###############################################################################
@@ -38,4 +32,16 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+
+  ###############################################################################
+  ## Modules
+  ###############################################################################
+
+  modules.monitoring.enable = true;
+  # promtail is managed by prometheusStack
+  # TODO test this
+  modules.monitoring.enablePromtail = false;
+
+  modules.prometheusStack.enable = true;
+
 }

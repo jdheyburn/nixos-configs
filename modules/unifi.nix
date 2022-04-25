@@ -2,8 +2,17 @@
 
 with lib;
 
-let unifiMinJavaHeapSize = 256;
+let
+  cfg = config.modules.unifi;  
+
+  unifiMinJavaHeapSize = 256;
 in {
+
+  options.modules.unifi = {
+    enable = mkOption { type = types.bool; default = false; };
+  };
+
+  config = mkIf cfg.enable {
 
   networking.firewall.allowedTCPPorts =
     [ config.services.prometheus.exporters.unifi-poller.port ];
@@ -35,5 +44,7 @@ in {
     #   url = "https://loki.svc.joannet.casa";
     #   verify_ssl = true;
     # };
+  };
+
   };
 }

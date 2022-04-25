@@ -3,6 +3,8 @@
 with lib;
 
 let
+  cfg = config.modules.prometheusStack;
+
   grafanaPort = 2342;
   lokiPort = 3100;
   nodeExporterPort = 9002;
@@ -17,7 +19,16 @@ in {
 
   imports = [ ../promtail.nix ];
 
+  options.modules.prometheusStack = {
+    enable = mkOption { type = types.bool; default = false; };
+    enablePromtail = mkOption { type = types.bool; default = true; };
+  };
+
+  config = mkIf cfg.enable {
+
   networking.firewall.allowedTCPPorts = [ prometheusPort grafanaPort lokiPort ];
+
+  modules.promtail.enable = cfg.enablePromtail;
 
   services.grafana = {
     enable = true;
@@ -161,6 +172,8 @@ in {
   services.loki = {
     enable = true;
     configFile = ./loki-local-config.yaml;
+  };
+
   };
 
 }
