@@ -11,5 +11,6 @@
     ./modules/nfs.nix
     ./modules/prometheus-stack/prometheus-stack.nix
     ./modules/unifi.nix
+    "${builtins.fetchTarball "https://github.com/ryantm/agenix/archive/main.tar.gz"}/modules/age.nix"
   ];
 }

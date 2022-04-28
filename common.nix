@@ -69,9 +69,10 @@
     ## Package management
     #############################################################################
 
-    # Preserve space by sacrificing documentation and history documentation.nixos.enable = false
+    # Preserve space by gc-ing and optimising store
     nix.gc.automatic = true;
     nix.gc.options = "--delete-older-than 30d";
+    nix.autoOptimiseStore = true;
 
     # Allow packages with non-free licenses.
     nixpkgs.config.allowUnfree = true;
@@ -85,6 +86,7 @@
       htop
       jq
       ncdu
+      neovim    # so that root can have it - TODO set in home-manager?
       nixfmt
       python3
       ranger
