@@ -24,9 +24,6 @@
     kid3
     python39
     restic
-
-    # agenix on the cli
-    (pkgs.callPackage <agenix/pkgs/agenix.nix> { })
   ];
 
   #############################################################################

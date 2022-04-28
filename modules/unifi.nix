@@ -20,6 +20,9 @@ in {
     networking.firewall.allowedTCPPorts =
       [ config.services.prometheus.exporters.unifi-poller.port ];
 
+
+    age.secrets."unifi-poller-password".file = ../secrets/unifi-poller-password.age;
+
     services.unifi = {
       enable = true;
       unifiPackage = pkgs.unifiStable;
@@ -36,7 +39,7 @@ in {
       controllers = [{
         url = "https://unifi.svc.joannet.casa";
         user = "unifipoller";
-        pass = "/etc/nixos/secrets/unifi-poller-password";
+        pass = config.age.secrets."unifi-poller-password".path;
         save_ids = true;
         save_events = true;
         save_alarms = true;
