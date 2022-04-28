@@ -9,7 +9,6 @@ let
   caddyMetricsPort = 2019;
 in {
 
-
   options = {
     modules = {
       caddy = {
@@ -29,7 +28,8 @@ in {
       caddyMetricsPort
     ];
 
-    age.secrets."caddy-environment-file".file = ../../secrets/caddy-environment-file.age;
+    age.secrets."caddy-environment-file".file =
+      ../../secrets/caddy-environment-file.age;
 
     # TODO I should have a reverse proxy on every host, 
     # reversing every service on it

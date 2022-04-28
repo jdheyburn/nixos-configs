@@ -26,7 +26,7 @@
     restic
 
     # agenix on the cli
-    (pkgs.callPackage <agenix/pkgs/agenix.nix> {})
+    (pkgs.callPackage <agenix/pkgs/agenix.nix> { })
   ];
 
   #############################################################################

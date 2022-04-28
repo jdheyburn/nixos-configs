@@ -86,7 +86,7 @@
       htop
       jq
       ncdu
-      neovim    # so that root can have it - TODO set in home-manager?
+      neovim # so that root can have it - TODO set in home-manager?
       nixfmt
       python3
       ranger
