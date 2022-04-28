@@ -8,5 +8,10 @@ let
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIozTzNnp+KQAwlMUdJuIcvuQmM+Dz5wlB7H15Qx3iZT"
   ];
   users = jdheyburn;
-in { "caddy-environment-file.age".publicKeys = servers ++ users; }
+in {
+  "caddy-environment-file.age".publicKeys = servers ++ users;
+  "restic-small-files-password.age".publicKeys = servers ++ users;
+  "restic-media-password.age".publicKeys = servers ++ users;
+  "rclone.conf.age".publicKeys = servers ++ users;
+}
 

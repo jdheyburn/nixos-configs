@@ -17,10 +17,18 @@ in {
 
   config = mkIf cfg.enable {
 
+    age.secrets."rclone.conf".file = ../secrets/rclone.conf.age;
+
+    age.secrets."restic-media-password".file =
+      ../secrets/restic-media-password.age;
+
+    age.secrets."restic-small-files-password".file =
+      ../secrets/restic-small-files-password.age;
+
     services.restic.backups = {
       media = {
         repository = "/mnt/nfs/Backup/restic/media";
-        passwordFile = "/etc/nixos/secrets/restic-media-password";
+        passwordFile = config.age.secrets."restic-media-password".path;
         pruneOpts = [
           "--keep-daily 30"
           "--keep-weekly 0"
@@ -38,7 +46,7 @@ in {
 
       small-files = {
         repository = "/mnt/nfs/Backup/restic/small-files";
-        passwordFile = "/etc/nixos/secrets/restic-small-files-password";
+        passwordFile = config.age.secrets."restic-small-files-password".path;
         pruneOpts = [
           "--keep-daily 7"
           "--keep-weekly 5"
@@ -59,21 +67,24 @@ in {
       # TODO can I refer to this from output of services.restic.backups.media ?
       wantedBy = [ "restic-backups-media.service" ];
       after = [ "restic-backups-media.service" ];
+      environment = {
+        RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
+      };
       script = ''
         echo "rcloning beets-db -> gdrive:media/beets-db"
-         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/beets-db gdrive:media/beets-db --config=/etc/nixos/secrets/rclone.conf
+         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/beets-db gdrive:media/beets-db --config=$RCLONE_CONF_PATH
 
          echo "rcloning music -> gdrive:media/music"
-         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/music gdrive:media/music --config=/etc/nixos/secrets/rclone.conf
+         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/music gdrive:media/music --config=$RCLONE_CONF_PATH
          
          echo "rcloning lossless -> gdrive:media/lossless"
-         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/lossless gdrive:media/lossless --config=/etc/nixos/secrets/rclone.conf
+         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/lossless gdrive:media/lossless --config=$RCLONE_CONF_PATH
          
          echo "rcloning vinyl -> gdrive:media/vinyl"
-         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/vinyl gdrive:media/vinyl --config=/etc/nixos/secrets/rclone.conf
+         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/media/vinyl gdrive:media/vinyl --config=$RCLONE_CONF_PATH
          
          echo "rcloning restic/media -> b2:restic/media"
-         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/restic/media b2:iifu8Noi-backups/restic/media --config=/etc/nixos/secrets/rclone.conf
+         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/restic/media b2:iifu8Noi-backups/restic/media --config=$RCLONE_CONF_PATH
       '';
     };
 
@@ -81,9 +92,12 @@ in {
       enable = true;
       wantedBy = [ "restic-backups-small-files.service" ];
       after = [ "restic-backups-small-files.service" ];
+      environment = {
+        RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
+      };
       script = ''
         echo "rclone restic/small-files -> b2:restic/small-files"
-        ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=/etc/nixos/secrets/rclone.conf
+        ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=$RCLONE_CONF_PATH
       '';
     };
 
