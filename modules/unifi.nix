@@ -22,6 +22,7 @@ in {
 
 
     age.secrets."unifi-poller-password".file = ../secrets/unifi-poller-password.age;
+    age.secrets."unifi-poller-password".owner = config.services.prometheus.exporters.unifi-poller.user;
 
     services.unifi = {
       enable = true;
