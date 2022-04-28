@@ -2,7 +2,8 @@ let
   dee =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIELgWHUsrtcGcZ2A/IlBTuRtvE5lcL7n6PGIEHEXW81k";
 
-  dennis = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDL0adtqBxktlaeesYq+C0a9Wu2196VGKoC4CA2mnTf0";
+  dennis =
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDL0adtqBxktlaeesYq+C0a9Wu2196VGKoC4CA2mnTf0";
 
   servers = [ dee dennis ];
 
