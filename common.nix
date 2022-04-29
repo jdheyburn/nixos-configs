@@ -73,7 +73,7 @@
     nix.gc.automatic = true;
     nix.gc.options = "--delete-older-than 30d";
     nix.autoOptimiseStore = true;
-    
+
     # Enable flakes
     nix.package = pkgs.nixFlakes;
     nix.extraOptions = ''

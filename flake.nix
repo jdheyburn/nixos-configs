@@ -26,30 +26,23 @@
         {
           # Fixes https://github.com/divnix/digga/issues/30
           home-manager.useGlobalPkgs = true;
-          home-manager.extraSpecialArgs = { 
-            inherit system inputs; 
-          };
-          home-manager.users.jdheyburn = {
-            imports = [ ./home-manager.nix ];
-          };
+          home-manager.extraSpecialArgs = { inherit system inputs; };
+          home-manager.users.jdheyburn = { imports = [ ./home-manager.nix ]; };
         }
       ];
-     mkLinuxSystem = system: extraModules:
-       nixpkgs.lib.nixosSystem {
-         inherit system;
-         specialArgs = {
-          inherit system inputs;
+      mkLinuxSystem = system: extraModules:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit system inputs; };
+          modules = common ++ homeFeatures system ++ extraModules;
         };
-         modules = common ++ homeFeatures system ++ extraModules;
-       };
     in {
 
       nixosConfigurations = {
-                dennis = mkLinuxSystem "x86_64-linux" [
-                  ./hosts/dennis/configuration.nix
-                ];
-      
-      dee = mkLinuxSystem "aarch64-linux" [ ./hosts/dee/configuration.nix ];
+        dennis =
+          mkLinuxSystem "x86_64-linux" [ ./hosts/dennis/configuration.nix ];
+
+        dee = mkLinuxSystem "aarch64-linux" [ ./hosts/dee/configuration.nix ];
 
       };
 
