@@ -28,6 +28,9 @@ in {
       caddyMetricsPort
     ];
 
+    age.secrets."caddy-environment-file".file =
+      ../../secrets/caddy-environment-file.age;
+
     # TODO I should have a reverse proxy on every host, 
     # reversing every service on it
     # just because I do maint on caddy server (dee) should not 
@@ -42,15 +45,11 @@ in {
     };
 
     systemd.services.caddy = {
-      environment = {
-        CLOUDFLARE_API_TOKEN =
-          (builtins.readFile /etc/nixos/secrets/cloudflare-api-token);
-      };
-
       serviceConfig = {
         # Required to use ports < 1024
         AmbientCapabilities = "cap_net_bind_service";
         CapabilityBoundingSet = "cap_net_bind_service";
+        EnvironmentFile = config.age.secrets."caddy-environment-file".path;
       };
     };
 
