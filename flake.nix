@@ -10,7 +10,6 @@
 
   outputs = inputs@{ self, home-manager, nixpkgs, agenix, ... }:
     let
-    
       common = [
         ./common.nix
         agenix.nixosModule
@@ -38,7 +37,6 @@
      mkLinuxSystem = system: extraModules:
        nixpkgs.lib.nixosSystem {
          inherit system;
-         pkgs = nixpkgs.legacyPackages.${system};
          specialArgs = {
           inherit system inputs;
         };
@@ -52,43 +50,6 @@
                 ];
       
       dee = mkLinuxSystem "aarch64-linux" [ ./hosts/dee/configuration.nix ];
-
-    #    dennis = nixpkgs.lib.nixosSystem {
-    #      system = "x86_64-linux";
-    #      pkgs = nixpkgs.legacyPackages."x86_64-linux";
-    #      specialArgs = { inherit inputs; };
-    #      modules = common ++ homeFeatures ++ [
-    #        ./hosts/dennis/configuration.nix
-    #      ];
-    #    };
-
-      #  dee = nixpkgs.lib.nixosSystem {
-      #    #system = "aarch64-linux";
-      #    pkgs = nixpkgs.legacyPackages."aarch64-linux";
-      #    specialArgs = { inherit inputs; };
-      #    modules = common ++ [
-      #      home-manager.nixosModules.home-manager
-      #      {
-      #        # Fixes https://github.com/divnix/digga/issues/30
-      #        home-manager.useGlobalPkgs = true;
-      #        home-manager.extraSpecialArgs = {
-      #          inherit inputs;
-      #          system = "aarch64-linux";
-      #        };
-      #        home-manager.users.jdheyburn = {
-      #          imports = [ ./home/home-manager.nix ];
-      #        };
-      #      }
-      #    ] ++ [
-      #      ./hosts/dee/configuration.nix
-      #      ./modules/backup.nix
-      #      ./modules/caddy/caddy.nix
-      #      ./modules/dns.nix
-      #      ./modules/monitoring.nix
-      #      ./modules/nfs.nix
-      #      ./modules/unifi.nix
-      #    ];
-      #  };
 
       };
 
