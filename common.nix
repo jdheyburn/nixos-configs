@@ -74,6 +74,12 @@
     nix.gc.options = "--delete-older-than 30d";
     nix.autoOptimiseStore = true;
 
+    # Enable flakes
+    nix.package = pkgs.nixFlakes;
+    nix.extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+
     # Allow packages with non-free licenses.
     nixpkgs.config.allowUnfree = true;
 
@@ -96,14 +102,6 @@
       tmux
       unzip
       wget
-
-      # agenix on the cli
-      (pkgs.callPackage "${
-          builtins.fetchTarball
-          "https://github.com/ryantm/agenix/archive/main.tar.gz"
-        }/pkgs/agenix.nix" { })
-
-      #(pkgs.callPackage <agenix/pkgs/agenix.nix> { })
     ];
   };
 
