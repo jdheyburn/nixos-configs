@@ -10,8 +10,6 @@
 
   outputs = inputs@{ self, home-manager, nixpkgs, agenix, ... }:
     let
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
       common = [
         ./common.nix
         agenix.nixosModule
@@ -23,28 +21,32 @@
         ./modules/nfs.nix
         ./modules/unifi.nix
       ];
-      homeFeatures = [
+      homeFeatures = system: [
         home-manager.nixosModules.home-manager
         {
           # Fixes https://github.com/divnix/digga/issues/30
           home-manager.useGlobalPkgs = true;
-          home-manager.extraSpecialArgs = { inherit system inputs; };
+          home-manager.extraSpecialArgs = { 
+            inherit system inputs; 
+          };
           home-manager.users.jdheyburn = {
             imports = [ ./home-manager.nix ];
           };
         }
       ];
-     mkLinuxSystem = extraModules:
+     mkLinuxSystem = system: extraModules:
        nixpkgs.lib.nixosSystem {
-         system = "x86_64-linux";
+         inherit system;
          pkgs = nixpkgs.legacyPackages.${system};
-         specialArgs = { inherit system inputs; };
-         modules = common ++ homeFeatures ++ extraModules;
+         specialArgs = {
+          inherit system inputs;
+        };
+         modules = common ++ homeFeatures system ++ extraModules;
        };
     in {
 
       nixosConfigurations = {
-                dennis = mkLinuxSystem [
+                dennis = mkLinuxSystem "x86_64-linux" [
                   ./hosts/dennis/configuration.nix
                 ];
 
