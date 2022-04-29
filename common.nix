@@ -103,11 +103,13 @@
       unzip
       wget
 
+      #agenix.defaultPackage.x86_64-linux
+
       # agenix on the cli
-      (pkgs.callPackage "${
-          builtins.fetchTarball
-          "https://github.com/ryantm/agenix/archive/main.tar.gz"
-        }/pkgs/agenix.nix" { })
+      #(pkgs.callPackage "${
+      #    builtins.fetchTarball
+      #    "https://github.com/ryantm/agenix/archive/main.tar.gz"
+      #  }/pkgs/agenix.nix" { })
 
       #(pkgs.callPackage <agenix/pkgs/agenix.nix> { })
     ];
