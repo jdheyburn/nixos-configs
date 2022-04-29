@@ -60,7 +60,6 @@ in {
       exporters = {
         node = {
           enable = true;
-          #enabledCollectors = [ "systemd" ];
           port = nodeExporterPort;
         };
         blackbox = {
