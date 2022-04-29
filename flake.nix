@@ -10,6 +10,7 @@
 
   outputs = inputs@{ self, home-manager, nixpkgs, agenix, ... }:
     let
+    
       common = [
         ./common.nix
         agenix.nixosModule
@@ -49,6 +50,8 @@
                 dennis = mkLinuxSystem "x86_64-linux" [
                   ./hosts/dennis/configuration.nix
                 ];
+      
+      dee = mkLinuxSystem "aarch64-linux" [ ./hosts/dee/configuration.nix ];
 
     #    dennis = nixpkgs.lib.nixosSystem {
     #      system = "x86_64-linux";
