@@ -1,11 +1,13 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-
-  imports = [
+ imports = [
     "${
-      fetchTarball
-      "https://github.com/NixOS/nixos-hardware/archive/feceb4d24f582817d8f6e737cd40af9e162dee05.tar.gz"
+      fetchTarball {
+        url =
+          "https://github.com/NixOS/nixos-hardware/archive/feceb4d24f582817d8f6e737cd40af9e162dee05.tar.gz";
+        sha256 = "1q92jq6xf5b1pshai9j72cj17r0ah3fhrx669h3vc58rj7xvgiw7";
+      }
     }/raspberry-pi/4"
   ];
 
