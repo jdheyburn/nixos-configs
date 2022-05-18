@@ -8,9 +8,12 @@
 
   boot.initrd.availableKernelModules =
     [ "ata_piix" "uhci_hcd" "virtio_pci" "virtio_scsi" "sd_mod" "sr_mod" ];
+
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
+
+  boot.kernelParams = [ "console=tty1" "console=ttyS0,115200" ];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/278a6de8-dadb-488f-ad09-477c43ceddb3";
