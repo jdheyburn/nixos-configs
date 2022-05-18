@@ -43,4 +43,6 @@
   modules.monitoring.enable = true;
 
   modules.prometheusStack.enable = true;
+
+  services.qemuGuest.enable = true;
 }
