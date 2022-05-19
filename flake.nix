@@ -42,7 +42,7 @@
         dennis =
           mkLinuxSystem "x86_64-linux" [ ./hosts/dennis/configuration.nix ];
 
-        dee = mkLinuxSystem "aarch64-linux" [ ./hosts/dee/configuration.nix ];
+        dee = mkLinuxSystem "aarch64-linux" [ ./hosts/dee/configuration.nix ./modules/rescue_boot.nix ];
 
       };
 
