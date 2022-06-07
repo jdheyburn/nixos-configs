@@ -18,32 +18,32 @@
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
   boot.initrd.supportedFilesystems = [ "zfs" ];
-  boot.supportedFilesystems = [ "zfs" ]; 
+  boot.supportedFilesystems = [ "zfs" ];
 
-  fileSystems."/" =
-    { device = "rpool/root/nixos";
-      fsType = "zfs";
-    };
+  fileSystems."/" = {
+    device = "rpool/root/nixos";
+    fsType = "zfs";
+  };
 
-  fileSystems."/home" =
-    { device = "rpool/home";
-      fsType = "zfs";
-    };
+  fileSystems."/home" = {
+    device = "rpool/home";
+    fsType = "zfs";
+  };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/D36D-B744";
-      fsType = "vfat";
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/D36D-B744";
+    fsType = "vfat";
+  };
 
   fileSystems."/mnt/nfs" = {
-      device = "/dev/disk/by-uuid/D28E73C08E739BA3";
-      fsType = "ntfs";
-    };
+    device = "/dev/disk/by-uuid/D28E73C08E739BA3";
+    fsType = "ntfs";
+  };
 
   fileSystems."/mnt/usb" = {
-      device = "/mnt/nfs";
-      options = [ "bind" ];
-    };
+    device = "/mnt/nfs";
+    options = [ "bind" ];
+  };
 
   swapDevices = [ ];
 
@@ -52,5 +52,4 @@
   # high-resolution display
   hardware.video.hidpi.enable = lib.mkDefault true;
 }
-
 
