@@ -7,6 +7,7 @@
   ###############################################################################
 
   networking.hostName = "dee";
+  networking.hostId = "5468c04f";
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
