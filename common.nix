@@ -44,6 +44,9 @@
     programs.ssh.startAgent = true;
 
     services.tailscale.enable = true;
+    # Tailscale wants this setting for: "Strict reverse path filtering breaks Tailscale exit node use and some subnet routing setups"
+    # If making tailscale optional in future, consider conditionally setting below if enabled
+    networking.firewall.checkReversePath = "loose";
 
     #############################################################################
     ## User accounts

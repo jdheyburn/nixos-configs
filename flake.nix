@@ -27,7 +27,14 @@
           # Fixes https://github.com/divnix/digga/issues/30
           home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit system inputs; };
-          home-manager.users.jdheyburn = { imports = [ ./home-manager.nix ]; };
+          # TODO loop over root and jdheyburn, to prevent duplicate common.nix declaration
+          home-manager.users.root = {
+            imports = [ ./home-manager/common.nix ./home-manager/root.nix ];
+          };
+          home-manager.users.jdheyburn = {
+            imports =
+              [ ./home-manager/common.nix ./home-manager/jdheyburn.nix ];
+          };
         }
       ];
       mkLinuxSystem = system: extraModules:

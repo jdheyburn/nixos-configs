@@ -1,13 +1,20 @@
-{ config, pkgs, ... }:
+{ config, pkgs, ... }: {
 
-{
-  programs.git = {
+  programs.neovim = {
     enable = true;
-    userName = "Joseph Heyburn";
-    userEmail = "jdheyburn@gmail.com";
-    extraConfig = {
-      core = { pager = "${pkgs.diff-so-fancy}/bin/diff-so-fancy | less -RF"; };
-    };
+    viAlias = true;
+    vimAlias = true;
+    plugins = with pkgs.vimPlugins; [ gundo-vim vim-nix ];
+    extraConfig = ''
+      " Remember last position
+      if has("autocmd")
+        au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+      endif
+
+      lua << EOF
+      ${builtins.readFile ./dotfiles/init.lua}
+      EOF
+    '';
   };
 
   programs.zsh = {
@@ -60,28 +67,4 @@
       };
     };
   };
-
-  programs.neovim = {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-    plugins = with pkgs.vimPlugins; [ gundo-vim vim-nix ];
-    extraConfig = ''
-      " Remember last position
-      if has("autocmd")
-        au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-      endif
-
-      lua << EOF
-      ${builtins.readFile ./dotfiles/init.lua}
-      EOF
-    '';
-  };
-
-  programs.gh = {
-    enable = true;
-    settings = { git_protocol = "ssh"; };
-  };
-
 }
-
