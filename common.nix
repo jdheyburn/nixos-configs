@@ -90,19 +90,17 @@
     environment.systemPackages = with pkgs; [
       bind # Gets dig
       # busybox # Gets nslookup - but disabled since reboot was clashing with systemd
-      fzf
       git
       htop
       jq
       ncdu
-      neovim # so that root can have it - TODO set in home-manager?
       nixfmt
       python3
       ranger
       rclone
       rsync
+      sysstat # collection of perf mon tools for linux
       tldr
-      tmux
       unzip
       wget
     ];
