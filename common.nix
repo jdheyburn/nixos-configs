@@ -90,6 +90,7 @@
     environment.systemPackages = with pkgs; [
       bind # Gets dig
       # busybox # Gets nslookup - but disabled since reboot was clashing with systemd
+      fd # better find commmand - search for files matching a name
       git
       htop
       jq
@@ -99,6 +100,7 @@
       ranger
       rclone
       rsync
+      silver-searcher # exposes ag - used to search strings in files
       sysstat # collection of perf mon tools for linux
       tldr
       unzip

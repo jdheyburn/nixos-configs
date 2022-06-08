@@ -35,10 +35,26 @@
     '';
   };
 
+  # inspo from https://gist.github.com/markandrewj/ead05ebc20f3968ec07e
   programs.tmux = {
     enable = true;
     clock24 = true;
     keyMode = "vi";
+    terminal = "screen-256color";
+
+    extraConfig = ''
+      set -g status-left-length 85
+      set -g status-left " #h | #(curl icanhazip.com) | #(ifconfig eth0 | grep 'inet ' | awk '{print \"eth0 \" $2}') | "
+
+      set -g mouse on
+      bind -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'select-pane -t=; copy-mode -e; send-keys -M'"
+      bind -n WheelDownPane select-pane -t= \; send-keys -M
+
+      # divider color
+      set -g pane-border-style fg=green
+      set -g pane-active-border-style bg=default,fg=blue
+    '';
+
     plugins = with pkgs; [
       {
         plugin = tmuxPlugins.cpu;
@@ -61,6 +77,9 @@
         extraConfig = ''
           set -g @continuum-restore 'on'
         '';
+      }
+      {
+        plugin = tmuxPlugins.tmux-fzf;
       }
     ];
   };
