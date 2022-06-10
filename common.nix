@@ -89,6 +89,7 @@
     # System-wide packages
     environment.systemPackages = with pkgs; [
       bind # Gets dig
+      exa # posh ls
       # busybox # Gets nslookup - but disabled since reboot was clashing with systemd
       fd # better find commmand - search for files matching a name
       git
@@ -99,6 +100,7 @@
       python3
       ranger
       rclone
+      ripgrep # silver-searcher but newer
       rsync
       silver-searcher # exposes ag - used to search strings in files
       sysstat # collection of perf mon tools for linux

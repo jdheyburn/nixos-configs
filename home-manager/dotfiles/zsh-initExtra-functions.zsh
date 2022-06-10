@@ -32,7 +32,7 @@ function mc() {
 }
 
 # SearchDirectory - recursive search through the targeted dir for the text in any file
-function sd() {
+function sdd() {
     local searchTerm=$1
     local searchDir=$2
     if [ -z "$searchTerm" ]; then
