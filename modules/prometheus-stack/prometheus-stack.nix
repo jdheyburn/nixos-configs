@@ -44,6 +44,9 @@ in {
             type = "prometheus";
             url = "http://localhost:${toString prometheusPort}";
             isDefault = true;
+            jsonData = {
+              timeInterval = "5s"; # node is scraping at 5s
+            };
           }
           {
             name = "Loki";
@@ -77,6 +80,7 @@ in {
         }
         {
           job_name = "node";
+          scrape_interval = "5s";
           static_configs = [{
             targets = map (node:
               "${node}:${
