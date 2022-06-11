@@ -78,9 +78,7 @@
           set -g @continuum-restore 'on'
         '';
       }
-      {
-        plugin = tmuxPlugins.tmux-fzf;
-      }
+      { plugin = tmuxPlugins.tmux-fzf; }
     ];
   };
 

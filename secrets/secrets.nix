@@ -12,11 +12,14 @@ let
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC0kg1FOtTN0y3Dpigb6OyPiMtvcPHTfWJXLeO6yyzUp jdheyburn@dennis"
   ];
   users = jdheyburn;
+
+  default = servers ++ users;
 in {
-  "caddy-environment-file.age".publicKeys = servers ++ users;
-  "restic-small-files-password.age".publicKeys = servers ++ users;
-  "restic-media-password.age".publicKeys = servers ++ users;
-  "rclone.conf.age".publicKeys = servers ++ users;
-  "unifi-poller-password.age".publicKeys = servers ++ users;
+  "adguard-password.age".publicKeys = default;
+  "caddy-environment-file.age".publicKeys = default;
+  "restic-small-files-password.age".publicKeys = default;
+  "restic-media-password.age".publicKeys = default;
+  "rclone.conf.age".publicKeys = default;
+  "unifi-poller-password.age".publicKeys = default;
 }
 
