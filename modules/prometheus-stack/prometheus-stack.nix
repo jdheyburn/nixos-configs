@@ -33,6 +33,7 @@ in {
       domain = "grafana.svc.joannet.casa";
       port = grafanaPort;
       addr = "0.0.0.0";
+      analytics.reporting.enable = false;
 
       declarativePlugins = with pkgs.grafanaPlugins; [ grafana-piechart-panel ];
 
