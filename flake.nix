@@ -6,6 +6,10 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     agenix.url = "github:ryantm/agenix";
+
+    forgit.url = "github:wfxr/forgit";
+    forgit.flake = false;
+
   };
 
   outputs = inputs@{ self, home-manager, nixpkgs, agenix, ... }:
@@ -40,10 +44,12 @@
       mkLinuxSystem = system: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit system inputs; };
+          specialArgs = { inherit system; flake-self = self; } // inputs;
           modules = common ++ homeFeatures system ++ extraModules;
         };
     in {
+
+      overlays.default = final: prev: (import ./overlays inputs) final prev;
 
       nixosConfigurations = {
         dennis =

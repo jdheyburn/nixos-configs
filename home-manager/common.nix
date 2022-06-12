@@ -127,6 +127,14 @@
       plugins = [ "colored-man-pages" "git" "sudo" ];
     };
 
+    plugins = [
+      {
+        name = "forgit";
+        file = "forgit.plugin.zsh";
+        src = "${pkgs.forgit}/share/forgit";
+      }
+    ];
+
     prezto = {
       enable = false;
       tmux = {
