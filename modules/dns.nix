@@ -35,7 +35,8 @@ in {
       settings = {
         users = [{
           name = "admin";
-          password = "$2a$10$4rSCa07722Xa9G8BXaBTP.HX973a4FiH7HXJ5Go0GIilPuR85KPLi";
+          password =
+            "$2a$10$4rSCa07722Xa9G8BXaBTP.HX973a4FiH7HXJ5Go0GIilPuR85KPLi";
         }];
         dns = {
           # bind_hosts = [ "0.0.0.0" ];
@@ -54,12 +55,10 @@ in {
           #  "2620:fe::10"
           #  "2620:fe::fe:10"
           #];
-          rewrites = [
-            {
-              domain = "*.svc.joannet.casa";
-              answer = "192.168.1.10";
-            }
-          ];
+          rewrites = [{
+            domain = "*.svc.joannet.casa";
+            answer = "192.168.1.10";
+          }];
           resolve_clients = true;
         };
 
