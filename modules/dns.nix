@@ -66,7 +66,8 @@ in {
           "@@||skyads.ott.skymedia.co.uk^$client='192.168.1.112'"
           "||www.bbc.com^$client='192.168.1.25'"
           "||www.bbc.co.uk^$client='192.168.1.25'"
-          "@@||skyads.ott.skymedia.co.uk^$important"
+          "@@||skyads.ott.skymedia.co.uk^$important" # permits skyads, undoes the block in line 1
+          "@@||stats.grafana.org^$important" # permits grafana stats
         ];
       };
     };
