@@ -33,6 +33,19 @@
   ## Modules
   #############################################################################
 
+  age.secrets."restic-small-files-password".file =
+    ../../secrets/restic-small-files-password.age;
+
+  modules.backupSF = {
+    enable = true;
+    passwordFile = config.age.secrets."restic-small-files-password".path;
+    paths = [
+      "/var/lib/unifi/data/backup/autobackup"
+      "/var/lib/AdGuardHome/"
+      "/var/lib/private/AdGuardHome"
+    ];
+  };
+
   modules.backupUSB.enable = true;
   modules.caddy.enable = true;
   modules.dns.enable = true;

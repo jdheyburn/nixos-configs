@@ -22,9 +22,6 @@ in {
     age.secrets."restic-media-password".file =
       ../secrets/restic-media-password.age;
 
-    age.secrets."restic-small-files-password".file =
-      ../secrets/restic-small-files-password.age;
-
     services.restic.backups = {
       media = {
         repository = "/mnt/nfs/Backup/restic/media";
@@ -40,23 +37,6 @@ in {
           "/mnt/usb/Backup/media/lossless"
           "/mnt/usb/Backup/media/music"
           "/mnt/usb/Backup/media/vinyl"
-        ];
-        timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
-      };
-
-      small-files = {
-        repository = "/mnt/nfs/Backup/restic/small-files";
-        passwordFile = config.age.secrets."restic-small-files-password".path;
-        pruneOpts = [
-          "--keep-daily 7"
-          "--keep-weekly 5"
-          "--keep-monthly 12"
-          "--keep-yearly 3"
-        ];
-        paths = [
-          "/var/lib/unifi/data/backup/autobackup"
-          "/var/lib/AdGuardHome/"
-          "/var/lib/private/AdGuardHome"
         ];
         timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
       };
@@ -90,8 +70,6 @@ in {
 
     systemd.services.rclone-small-files = {
       enable = true;
-      wantedBy = [ "restic-backups-small-files.service" ];
-      after = [ "restic-backups-small-files.service" ];
       environment = {
         RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
       };
@@ -99,6 +77,14 @@ in {
         echo "rclone restic/small-files -> b2:restic/small-files"
         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/Backup/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=$RCLONE_CONF_PATH
       '';
+    };
+
+    # Job starts at 3am to allow other hosts to finish their backups,
+    # which starts at 2am
+    systemd.timers.rclone-small-files = {
+      enable = true;
+      wantedBy = [ "timers.target" ];
+      timerConfig.OnCalendar = [ "*-*-* 03:00:00" ];
     };
 
   };

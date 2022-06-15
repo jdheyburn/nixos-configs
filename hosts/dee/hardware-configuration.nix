@@ -1,6 +1,7 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
+  # TODO nix flake nixos-hardware instead
   imports = [
     "${
       fetchTarball {
