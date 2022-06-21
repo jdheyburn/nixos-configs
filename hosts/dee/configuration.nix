@@ -44,6 +44,7 @@
       "/var/lib/AdGuardHome/"
       "/var/lib/private/AdGuardHome"
     ];
+    backupTime = "*-*-* 02:10:00";
   };
 
   modules.backupUSB.enable = true;
