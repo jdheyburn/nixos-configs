@@ -23,7 +23,7 @@
 
   environment.systemPackages = with pkgs; [
     libraspberrypi
-
+    smartmontools
     kid3
     python39
     restic
@@ -36,8 +36,10 @@
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
 
+  age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
+
   modules.backupSF = {
-    enable = true;
+    enable = false;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     paths = [
       "/var/lib/unifi/data/backup/autobackup"
@@ -47,11 +49,11 @@
     backupTime = "*-*-* 02:10:00";
   };
 
-  modules.backupUSB.enable = true;
+  modules.backupUSB.enable = false;
   modules.caddy.enable = true;
   modules.dns.enable = true;
   modules.monitoring.enable = true;
-  modules.nfs.enable = true;
+  modules.nfs.enable = false;
   modules.unifi.enable = true;
 
   # Attempted remote builds (blocked on matching system / platform, I don't have an aarch64-linux machine)

@@ -36,16 +36,16 @@
     fsType = "vfat";
   };
 
-  fileSystems."/mnt/nfs" = {
-    device = "/dev/disk/by-uuid/D28E73C08E739BA3";
-    fsType = "ntfs";
-    options = [ "nofail" ];
-  };
+  #fileSystems."/mnt/nfs" = {
+  #  device = "/dev/disk/by-uuid/2198683e-cd03-425e-b72e-c583013e24db";
+  #  fsType = "ext4";
+  #  options = [ "nofail" ];
+  #};
 
-  fileSystems."/mnt/usb" = {
-    device = "/mnt/nfs";
-    options = [ "bind" ];
-  };
+#  fileSystems."/mnt/usb" = {
+#    device = "/mnt/nfs";
+#    options = [ "bind" ];
+#  };
 
   swapDevices = [ ];
 
