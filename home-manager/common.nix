@@ -123,8 +123,8 @@
     oh-my-zsh = {
       enable = true;
       theme = "agnoster";
-
-      plugins = [ "colored-man-pages" "git" "sudo" ];
+      plugins =
+        [ "ag" "colored-man-pages" "fd" "fzf" "git" "ripgrep" "sudo" "tmux" ];
     };
 
     prezto = {

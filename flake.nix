@@ -11,10 +11,13 @@
   outputs = inputs@{ self, home-manager, nixpkgs, agenix, ... }:
     let
       common = [
+        # TODO change my modules to default.nix, then loop over
+        # directories 
         ./common.nix
         agenix.nixosModule
         ./modules/prometheus-stack/prometheus-stack.nix
-        ./modules/backup.nix
+        ./modules/backup-small-files.nix
+        ./modules/backup-usb.nix
         ./modules/caddy/caddy.nix
         ./modules/dns.nix
         ./modules/monitoring.nix
