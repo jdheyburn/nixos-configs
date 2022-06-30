@@ -20,11 +20,11 @@
     fsType = "ext4";
   };
 
-  fileSystems."/mnt/nfs" = {
-    device = "192.168.1.10:/mnt/nfs";
-    fsType = "nfs";
-    options = [ "x-systemd.automount" "noauto" ];
-  };
+#  fileSystems."/mnt/nfs" = {
+#    device = "192.168.1.10:/mnt/nfs";
+#    fsType = "nfs";
+#    options = [ "x-systemd.automount" "noauto" ];
+#  };
 
   swapDevices = [ ];
 
