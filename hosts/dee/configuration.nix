@@ -36,9 +36,6 @@
   ## Modules
   #############################################################################
 
-  home-manager.users.jdheyburn.home.stateVersion = "22.05";
-  home-manager.users.root.home.stateVersion = "22.05";
-
 
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
