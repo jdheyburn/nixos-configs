@@ -44,7 +44,7 @@
     ../../secrets/restic-small-files-password.age;
 
   modules.backupSF = {
-    enable = true;
+    enable = false;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     paths = [
       "/var/lib/grafana/data"
