@@ -21,6 +21,8 @@
   boot.initrd.supportedFilesystems = [ "zfs" ];
   boot.supportedFilesystems = [ "zfs" ];
 
+  boot.consoleLogLevel = 7;
+
   fileSystems."/" = {
     device = "rpool/root/nixos";
     fsType = "zfs";
@@ -35,6 +37,12 @@
     device = "/dev/disk/by-uuid/D36D-B744";
     fsType = "vfat";
   };
+
+  #fileSystems."/mnt/nfs" = {
+  #  device = "/dev/disk/by-uuid/242E77B52E777F1C";
+  #  fsType = "ntfs";
+  #  options = [ "nofail" ];
+  #};
 
   #fileSystems."/mnt/nfs" = {
   #  device = "/dev/disk/by-uuid/2198683e-cd03-425e-b72e-c583013e24db";

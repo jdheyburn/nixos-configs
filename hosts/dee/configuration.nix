@@ -22,11 +22,14 @@
   #############################################################################
 
   environment.systemPackages = with pkgs; [
+    atop
     libraspberrypi
+    iotop
     smartmontools
     kid3
     python39
     restic
+    sysstat
   ];
 
   #############################################################################
@@ -58,6 +61,7 @@
   modules.dns.enable = true;
   modules.monitoring.enable = true;
   modules.nfs.enable = false;
+  modules.plex.enable = true;
   modules.unifi.enable = true;
 
   # Attempted remote builds (blocked on matching system / platform, I don't have an aarch64-linux machine)

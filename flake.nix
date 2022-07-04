@@ -22,6 +22,7 @@
         ./modules/dns.nix
         ./modules/monitoring.nix
         ./modules/nfs.nix
+        ./modules/plex.nix
         ./modules/unifi.nix
       ];
       homeFeatures = system: [
