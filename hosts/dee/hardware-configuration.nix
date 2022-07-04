@@ -14,6 +14,8 @@
 
   hardware.raspberry-pi."4".fkms-3d.enable = true;
 
+  #boot.kernelPackages = pkgs.linuxKernel.packages.linux_5_10;
+
   boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" "uas" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
