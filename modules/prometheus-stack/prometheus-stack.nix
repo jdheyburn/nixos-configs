@@ -183,7 +183,7 @@ in {
           compactor_ring.kvstore.store = "inmemory";
         };
 
-        ingestor = {
+        ingester = {
           lifecycler = {
             address = "0.0.0.0";
             ring = {
@@ -203,7 +203,7 @@ in {
           max_transfer_retries = 0; # Chunk transfers disabled
         };
 
-        schema_configs = {
+        schema_config = {
           configs = [{
             from = "2020-10-24";
             store = "boltdb-shipper";
