@@ -3,12 +3,13 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs-2205.url = "nixpkgs/nixos-22.05";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     agenix.url = "github:ryantm/agenix";
   };
 
-  outputs = inputs@{ self, home-manager, nixpkgs, agenix, ... }:
+  outputs = inputs@{ self, home-manager, nixpkgs, nixpkgs-2205, agenix, ... }:
     let
       common = [
         # TODO change my modules to default.nix, then loop over
@@ -22,6 +23,7 @@
         ./modules/dns.nix
         ./modules/monitoring.nix
         ./modules/nfs.nix
+        ./modules/plex.nix
         ./modules/unifi.nix
       ];
       homeFeatures = system: [
@@ -46,13 +48,20 @@
           specialArgs = { inherit system inputs; };
           modules = common ++ homeFeatures system ++ extraModules;
         };
+      mkLinuxSystemDee = system: extraModules:
+        nixpkgs-2205.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit system inputs; };
+          modules = common ++ homeFeatures system ++ extraModules;
+        };
     in {
 
       nixosConfigurations = {
         dennis =
           mkLinuxSystem "x86_64-linux" [ ./hosts/dennis/configuration.nix ];
 
-        dee = mkLinuxSystem "aarch64-linux" [ ./hosts/dee/configuration.nix ];
+        dee =
+          mkLinuxSystemDee "aarch64-linux" [ ./hosts/dee/configuration.nix ];
 
       };
 

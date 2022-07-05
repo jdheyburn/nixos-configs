@@ -36,7 +36,7 @@ in {
     '';
 
     #services.nfs.server.exports = ''
-   #   /mnt/nfs 192.168.1.20(rw,nohide,insecure) 192.168.1.25(rw,nohide,insecure,all_squash,anonuid=1000,anongid=100) 192.168.1.26(rw,nohide,insecure,anonuid=1000,anongid=100) 192.168.1.12(rw,nohide,insecure)
+    #   /mnt/nfs 192.168.1.20(rw,nohide,insecure) 192.168.1.25(rw,nohide,insecure,all_squash,anonuid=1000,anongid=100) 192.168.1.26(rw,nohide,insecure,anonuid=1000,anongid=100) 192.168.1.12(rw,nohide,insecure)
     #'';
 
     # Did some experimenting with this in the past, might come back to it
