@@ -60,7 +60,8 @@
         dennis =
           mkLinuxSystem "x86_64-linux" [ ./hosts/dennis/configuration.nix ];
 
-        dee = mkLinuxSystemDee "aarch64-linux" [ ./hosts/dee/configuration.nix ];
+        dee =
+          mkLinuxSystemDee "aarch64-linux" [ ./hosts/dee/configuration.nix ];
 
       };
 

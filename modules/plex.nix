@@ -16,8 +16,8 @@ in {
   config = mkIf cfg.enable {
 
     services.plex = {
-enable = true; 
-openFirewall = true;
-};
+      enable = true;
+      openFirewall = true;
+    };
   };
 }

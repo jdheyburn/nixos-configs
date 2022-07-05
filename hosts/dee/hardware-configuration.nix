@@ -13,10 +13,14 @@
   ];
 
   hardware.raspberry-pi."4".fkms-3d.enable = true;
+  hardware.raspberry-pi."4".dwc2.enable = false;
 
-  #boot.kernelPackages = pkgs.linuxKernel.packages.linux_5_10;
+  boot.kernelPackages = pkgs.linuxPackages_rpi4;
+  boot.kernelParams =
+    [ "8250.nr_uarts=1" "console=ttyAMA0,115200" "console=tty1" "cma=128M" ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" "uas" ];
+  boot.initrd.availableKernelModules =
+    [ "xhci_pci" "usbhid" "uas" "usb_storage" "vc4" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
@@ -52,10 +56,10 @@
   #  options = [ "nofail" ];
   #};
 
-#  fileSystems."/mnt/usb" = {
-#    device = "/mnt/nfs";
-#    options = [ "bind" ];
-#  };
+  #  fileSystems."/mnt/usb" = {
+  #    device = "/mnt/nfs";
+  #    options = [ "bind" ];
+  #  };
 
   swapDevices = [ ];
 

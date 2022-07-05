@@ -36,7 +36,6 @@
   ## Modules
   #############################################################################
 
-
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
 
