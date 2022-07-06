@@ -42,7 +42,7 @@
   age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
 
   modules.backupSF = {
-    enable = false;
+    enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     paths = [
       "/var/lib/unifi/data/backup/autobackup"
@@ -52,11 +52,11 @@
     backupTime = "*-*-* 02:10:00";
   };
 
-  modules.backupUSB.enable = false;
+  modules.backupUSB.enable = true;
   modules.caddy.enable = true;
   modules.dns.enable = true;
   modules.monitoring.enable = true;
-  modules.nfs.enable = false;
+  modules.nfs.enable = true;
   modules.plex.enable = true;
   modules.unifi.enable = true;
 
