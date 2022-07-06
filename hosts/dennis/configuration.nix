@@ -44,7 +44,7 @@
     ../../secrets/restic-small-files-password.age;
 
   modules.backupSF = {
-    enable = false;
+    enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     paths = [ "/var/lib/grafana/data" "/var/lib/prometheus2/data" ];
   };
