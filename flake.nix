@@ -2,14 +2,15 @@
   description = "A very basic flake";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
-    nixpkgs-2205.url = "nixpkgs/nixos-22.05";
+    agenix.url = "github:ryantm/agenix";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    agenix.url = "github:ryantm/agenix";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs-2205.url = "nixpkgs/nixos-22.05";
+    nixos-hardware.url = github:NixOS/nixos-hardware/master;
   };
 
-  outputs = inputs@{ self, home-manager, nixpkgs, nixpkgs-2205, agenix, ... }:
+  outputs = inputs@{ self, agenix, home-manager, nixpkgs, nixpkgs-2205, nixos-hardware, ... }:
     let
       common = [
         # TODO change my modules to default.nix, then loop over
@@ -61,7 +62,7 @@
           mkLinuxSystem "x86_64-linux" [ ./hosts/dennis/configuration.nix ];
 
         dee =
-          mkLinuxSystemDee "aarch64-linux" [ ./hosts/dee/configuration.nix ];
+          mkLinuxSystemDee "aarch64-linux" [ ./hosts/dee/configuration.nix nixos-hardware.nixosModules.raspberry-pi-4];
 
       };
 
