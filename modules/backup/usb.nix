@@ -9,18 +9,15 @@ let
 in {
 
   options.modules.backupUSB = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
+    enable = mkEnableOption "Enable backup of media and rclone to cloud";
   };
 
   config = mkIf cfg.enable {
 
-    age.secrets."rclone.conf".file = ../secrets/rclone.conf.age;
+    age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
 
     age.secrets."restic-media-password".file =
-      ../secrets/restic-media-password.age;
+      ../../secrets/restic-media-password.age;
 
     #    services.restic.backups = {
     #      media = {

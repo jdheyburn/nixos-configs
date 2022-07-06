@@ -11,19 +11,11 @@ in {
   imports = [ ./promtail.nix ];
 
   options.modules.monitoring = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
-    enablePromtail = mkOption {
-      type = types.bool;
-      default = true;
-    };
+    enable = mkEnableOption "Enable Prometheus monitoring of this box";
+    enablePromtail = mkEnableOption "Enable promtail module";
   };
 
   config = mkIf cfg.enable {
-
-    # TODO enables promtail by default - should make this configurable?
 
     networking.firewall.allowedTCPPorts = [ nodeExporterPort ];
 

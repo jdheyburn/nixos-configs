@@ -9,10 +9,7 @@ let
 in {
 
   options.modules.backupSF = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
+    enable = mkEnableOption "Enable backup of defined paths to small-files repo";
 
     repository = mkOption {
       type = types.str;

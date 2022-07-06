@@ -6,10 +6,7 @@ let cfg = config.modules.nfs;
 in {
 
   options.modules.nfs = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
+    enable = mkEnableOption "Deploy NFS server";
   };
 
   config = mkIf cfg.enable {

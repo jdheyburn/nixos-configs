@@ -13,19 +13,16 @@
   outputs = inputs@{ self, agenix, home-manager, nixpkgs, nixpkgs-2205, nixos-hardware, ... }:
     let
       common = [
-        # TODO change my modules to default.nix, then loop over
-        # directories 
-        ./common.nix
+        ./common
         agenix.nixosModule
-        ./modules/prometheus-stack/prometheus-stack.nix
-        ./modules/backup-small-files.nix
-        ./modules/backup-usb.nix
-        ./modules/caddy/caddy.nix
-        ./modules/dns.nix
-        ./modules/monitoring.nix
-        ./modules/nfs.nix
-        ./modules/plex.nix
-        ./modules/unifi.nix
+        ./modules/prometheus-stack
+        ./modules/backup
+        ./modules/caddy
+        ./modules/dns
+        ./modules/monitoring
+        ./modules/nfs
+        ./modules/plex
+        ./modules/unifi
       ];
       homeFeatures = system: [
         home-manager.nixosModules.home-manager

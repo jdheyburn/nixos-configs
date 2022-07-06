@@ -17,10 +17,7 @@ let
   ];
 in {
   options.modules.prometheusStack = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
+    enable = mkEnableOption "Deploy Prometheus suite";
   };
 
   config = mkIf cfg.enable {
