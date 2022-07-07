@@ -11,9 +11,7 @@ in {
 
   options = {
     modules = {
-      caddy = {
-        enable = mkEnableOption "Deploy reverse proxy Caddy";
-      };
+      caddy = { enable = mkEnableOption "Deploy reverse proxy Caddy"; };
     };
   };
 

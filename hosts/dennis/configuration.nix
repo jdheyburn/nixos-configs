@@ -49,6 +49,7 @@
     paths = [ "/var/lib/grafana/data" "/var/lib/prometheus2/data" ];
   };
   modules.monitoring.enable = true;
+  modules.monitoring.enablePromtail = false;
 
   modules.prometheusStack.enable = true;
 

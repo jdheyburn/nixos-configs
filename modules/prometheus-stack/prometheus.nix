@@ -13,7 +13,7 @@ in {
   exporters = {
     node = {
       enable = true;
-      port = config.services.prometheus.exporters.node.port;
+      port = catalog.services.nodeExporter.port;
     };
     blackbox = {
       enable = true;

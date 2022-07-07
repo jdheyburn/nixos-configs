@@ -12,10 +12,11 @@
 
     nixpkgs.url = "nixpkgs/nixos-unstable";
     nixpkgs-2205.url = "nixpkgs/nixos-22.05";
-    nixos-hardware.url = github:NixOS/nixos-hardware/master;
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = inputs@{ self, agenix, flake-utils, home-manager, nixpkgs, nixpkgs-2205, nixos-hardware, ... }:
+  outputs = inputs@{ self, agenix, flake-utils, home-manager, nixpkgs
+    , nixpkgs-2205, nixos-hardware, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
       catalog = import ./catalog.nix { inherit system; };
@@ -52,7 +53,7 @@
       mkLinuxSystem = system: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit system inputs; };
+          specialArgs = { inherit catalog system inputs; };
           modules = common ++ homeFeatures system ++ extraModules;
         };
       mkLinuxSystemDee = system: extraModules:
@@ -67,8 +68,10 @@
         dennis =
           mkLinuxSystem "x86_64-linux" [ ./hosts/dennis/configuration.nix ];
 
-        dee =
-          mkLinuxSystemDee "aarch64-linux" [ ./hosts/dee/configuration.nix nixos-hardware.nixosModules.raspberry-pi-4];
+        dee = mkLinuxSystemDee "aarch64-linux" [
+          ./hosts/dee/configuration.nix
+          nixos-hardware.nixosModules.raspberry-pi-4
+        ];
 
       };
 

@@ -24,7 +24,9 @@
       {
         name = "Loki";
         type = "loki";
-        url = "http://localhost:${toString config.services.loki.configuration.server.http_listen_port}";
+        url = "http://localhost:${
+            toString config.services.loki.configuration.server.http_listen_port
+          }";
       }
     ];
   };

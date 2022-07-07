@@ -5,9 +5,7 @@ with lib;
 let cfg = config.modules.dns;
 in {
 
-  options.modules.dns = {
-    enable = mkEnableOption "Deploy AdGuardHome";
-  };
+  options.modules.dns = { enable = mkEnableOption "Deploy AdGuardHome"; };
 
   config = mkIf cfg.enable {
 

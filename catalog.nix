@@ -18,18 +18,14 @@
   };
 
   services = {
-    
-    grafana = {
-      port = 2342;
-    };
-    
-    loki = {
-      port = 3100;
-    };
 
-    prometheus = {
-      port = 9001;
-    };
+    grafana = { port = 2342; };
+
+    loki = { port = 3100; };
+
+    nodeExporter = { port = 9002; };
+
+    prometheus = { port = 9001; };
 
   };
 
