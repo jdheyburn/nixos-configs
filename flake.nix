@@ -3,18 +3,26 @@
 
   inputs = {
     agenix.url = "github:ryantm/agenix";
+
+    flake-utils.url = "github:numtide/flake-utils";
+    flake-utils.inputs.nixpkgs.follows = "nixpkgs";
+
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
     nixpkgs.url = "nixpkgs/nixos-unstable";
     nixpkgs-2205.url = "nixpkgs/nixos-22.05";
     nixos-hardware.url = github:NixOS/nixos-hardware/master;
   };
 
-  outputs = inputs@{ self, agenix, home-manager, nixpkgs, nixpkgs-2205, nixos-hardware, ... }:
+  outputs = inputs@{ self, agenix, flake-utils, home-manager, nixpkgs, nixpkgs-2205, nixos-hardware, ... }:
     let
+      inherit (flake-utils.lib) eachSystemMap system;
+      catalog = import ./catalog.nix { inherit system; };
       common = [
         ./common
         agenix.nixosModule
+        # TODO loop over each dir in modules
         ./modules/prometheus-stack
         ./modules/backup
         ./modules/caddy
@@ -31,6 +39,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit system inputs; };
           # TODO loop over root and jdheyburn, to prevent duplicate common.nix declaration
+          # TODO home-manager should be imported via dir like above
           home-manager.users.root = {
             imports = [ ./home-manager/common.nix ./home-manager/root.nix ];
           };
@@ -49,7 +58,7 @@
       mkLinuxSystemDee = system: extraModules:
         nixpkgs-2205.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit system inputs; };
+          specialArgs = { inherit catalog system inputs; };
           modules = common ++ homeFeatures system ++ extraModules;
         };
     in {

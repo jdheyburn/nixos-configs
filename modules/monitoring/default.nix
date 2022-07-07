@@ -12,7 +12,10 @@ in {
 
   options.modules.monitoring = {
     enable = mkEnableOption "Enable Prometheus monitoring of this box";
-    enablePromtail = mkEnableOption "Enable promtail module";
+    enablePromtail = mkOption {
+      default = true;
+      type = types.bool;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -26,6 +29,6 @@ in {
     };
 
     modules.promtail.enable = cfg.enablePromtail;
-
   };
 }
+
