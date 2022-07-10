@@ -14,7 +14,6 @@ in {
 
     repository = mkOption {
       type = types.str;
-      default = "/mnt/nfs/restic/small-files";
     };
 
     passwordFile = mkOption { type = types.path; };
