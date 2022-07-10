@@ -43,6 +43,7 @@
     enable = true;
     repository = "/mnt/nfs/restic/dee";
     passwordFile = config.age.secrets."restic-dee-password".path;
+    # TODO should conditionally set these
     paths = [
       "/var/lib/unifi/data/backup/autobackup"
       "/var/lib/AdGuardHome/"

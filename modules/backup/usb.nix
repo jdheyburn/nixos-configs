@@ -71,8 +71,10 @@ in {
         RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
       };
       script = ''
-        echo "rclone restic/small-files -> b2:restic/small-files"
-        ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=$RCLONE_CONF_PATH
+        echo "rclone restic/dee -> b2:restic/dee"
+        ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/dee b2:iifu8noi-backups/restic/dee --config=$RCLONE_CONFIG_PATH
+        echo "rclone restic/dennis -> b2:restic/dennis"
+        ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/dennis b2:iifu8noi-backups/restic/dennis --config=$RCLONE_CONFIG_PATH
       '';
     };
 
