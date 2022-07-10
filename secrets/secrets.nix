@@ -18,6 +18,7 @@ in {
   "adguard-password.age".publicKeys = default;
   "caddy-environment-file.age".publicKeys = default;
   "restic-dee-password.age".publicKeys = default;
+  "restic-dennis-password.age".publicKeys = default;
   "restic-media-password.age".publicKeys = default;
   "rclone.conf.age".publicKeys = default;
   "unifi-poller-password.age".publicKeys = default;

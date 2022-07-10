@@ -37,17 +37,33 @@
   services.xserver.desktopManager.gnome.enable = true;
 
   ###############################################################################
+  ## Backups
+  ###############################################################################
+
+  age.secrets."restic-dennis-password".file =
+    ../../secrets/restic-dennis-password.age;
+
+  services.restic.backups = {
+
+    small-files = {
+      repository = "/mnt/nfs/restic/dennis";
+      passwordFile = config.age.secrets."restic-dennis-password".path;
+      # TODO change these to be configured if the service is enabled
+      paths = [ "/var/lib/grafana/data" "/var/lib/prometheus2/data" ];
+      pruneOpts = [
+        "--keep-daily 7"
+        "--keep-weekly 5"
+        "--keep-monthly 12"
+        "--keep-yearly 3"
+      ];
+      timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
+    };
+  };
+
+  ###############################################################################
   ## Modules
   ###############################################################################
 
-  age.secrets."restic-small-files-password".file =
-    ../../secrets/restic-small-files-password.age;
-
-  modules.backupSF = {
-    enable = true;
-    passwordFile = config.age.secrets."restic-small-files-password".path;
-    paths = [ "/var/lib/grafana/data" "/var/lib/prometheus2/data" ];
-  };
   modules.monitoring.enable = true;
 
   modules.prometheusStack.enable = true;

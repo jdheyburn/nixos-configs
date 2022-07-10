@@ -12,9 +12,7 @@ in {
     enable =
       mkEnableOption "Enable backup of defined paths to small-files repo";
 
-    repository = mkOption {
-      type = types.str;
-    };
+    repository = mkOption { type = types.str; };
 
     passwordFile = mkOption { type = types.path; };
 
