@@ -5,12 +5,7 @@ with lib;
 let cfg = config.modules.nfs;
 in {
 
-  options.modules.nfs = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
-  };
+  options.modules.nfs = { enable = mkEnableOption "Deploy NFS server"; };
 
   config = mkIf cfg.enable {
 
@@ -30,9 +25,8 @@ in {
     };
 
     services.nfs.server.enable = true;
-    # couldn't get 1.25 to work on macos, leaving here so i can see what did and didn't work
     services.nfs.server.exports = ''
-      /mnt/nfs *(rw,insecure,all_squash,anonuid=1000,anongid=100)
+      /mnt/nfs *(rw,insecure,no_root_squash,anonuid=1000,anongid=100)
     '';
 
     #services.nfs.server.exports = ''

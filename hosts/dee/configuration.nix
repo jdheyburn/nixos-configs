@@ -1,4 +1,15 @@
-{ config, pkgs, lib, ... }: {
+{ config, pkgs, lib, ... }:
+let
+
+  backupPaths = with lib;
+    (optional config.services.unifi.enable
+      "/var/lib/unifi/data/backup/autobackup")
+    ++ (optionals config.services.adguardhome.enable [
+      "/var/lib/AdGuardHome/"
+      "/var/lib/private/AdGuardHome"
+    ]);
+
+in {
 
   imports = [ ./hardware-configuration.nix ];
 
@@ -16,6 +27,19 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.05";
+
+  systemd.services.reboot = {
+    enable = true;
+    script = ''
+      ${pkgs.systemd}/bin/shutdown -r now
+    '';
+  };
+
+  systemd.timers.reboot = {
+    enable = true;
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = [ "*-*-* 06:00:00" ];
+  };
 
   #############################################################################
   ## Package management
@@ -39,17 +63,11 @@
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
 
-  age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
-
   modules.backupSF = {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
-    paths = [
-      "/var/lib/unifi/data/backup/autobackup"
-      "/var/lib/AdGuardHome/"
-      "/var/lib/private/AdGuardHome"
-    ];
-    backupTime = "*-*-* 02:10:00";
+    paths = backupPaths;
+    prune = true;
   };
 
   modules.backupUSB.enable = true;

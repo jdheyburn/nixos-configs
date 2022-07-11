@@ -5,12 +5,7 @@ with lib;
 let cfg = config.modules.dns;
 in {
 
-  options.modules.dns = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
-  };
+  options.modules.dns = { enable = mkEnableOption "Deploy AdGuardHome"; };
 
   config = mkIf cfg.enable {
 
@@ -24,7 +19,7 @@ in {
       ];
     };
 
-    age.secrets."adguard-password".file = ../secrets/adguard-password.age;
+    age.secrets."adguard-password".file = ../../secrets/adguard-password.age;
 
     services.adguardhome = {
       enable = true;

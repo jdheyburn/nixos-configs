@@ -6,12 +6,7 @@ let cfg = config.modules.plex;
 
 in {
 
-  options.modules.plex = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
-  };
+  options.modules.plex = { enable = mkEnableOption "Deploy plex"; };
 
   config = mkIf cfg.enable {
 

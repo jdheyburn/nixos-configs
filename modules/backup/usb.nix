@@ -9,18 +9,15 @@ let
 in {
 
   options.modules.backupUSB = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
+    enable = mkEnableOption "Enable backup of media and rclone to cloud";
   };
 
   config = mkIf cfg.enable {
 
-    age.secrets."rclone.conf".file = ../secrets/rclone.conf.age;
+    age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
 
     age.secrets."restic-media-password".file =
-      ../secrets/restic-media-password.age;
+      ../../secrets/restic-media-password.age;
 
     #    services.restic.backups = {
     #      media = {
@@ -70,6 +67,8 @@ in {
 
     systemd.services.rclone-small-files = {
       enable = true;
+      wantedBy = [ "restic-backups-small-files-prune.service" ];
+      after = [ "restic-backups-small-files-prune.service" ];
       environment = {
         RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
       };
@@ -78,14 +77,5 @@ in {
         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=$RCLONE_CONF_PATH
       '';
     };
-
-    # Job starts at 3am to allow other hosts to finish their backups,
-    # which starts at 2am
-    systemd.timers.rclone-small-files = {
-      enable = true;
-      wantedBy = [ "timers.target" ];
-      timerConfig.OnCalendar = [ "*-*-* 03:00:00" ];
-    };
-
   };
 }

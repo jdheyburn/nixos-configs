@@ -1,6 +1,11 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
+let
 
-{
+  backupPaths = with lib;
+    (optional config.services.grafana.enable "/var/lib/grafana/data")
+    ++ (optional config.services.prometheus.enable "/var/lib/prometheus2/data");
+
+in {
 
   imports = [ ./hardware-configuration.nix ];
 
@@ -46,8 +51,9 @@
   modules.backupSF = {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
-    paths = [ "/var/lib/grafana/data" "/var/lib/prometheus2/data" ];
+    paths = backupPaths;
   };
+
   modules.monitoring.enable = true;
 
   modules.prometheusStack.enable = true;
@@ -56,5 +62,5 @@
 
   # Keeps crapping out for some reason: https://askubuntu.com/questions/1018576/what-does-networkmanager-wait-online-service-do
   systemd.services."NetworkManager-wait-online".enable = false;
-
 }
+

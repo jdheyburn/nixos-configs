@@ -9,10 +9,7 @@ let
 in {
 
   options.modules.unifi = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
+    enable = mkEnableOption "Deploy unifi controller";
   };
 
   config = mkIf cfg.enable {
@@ -21,7 +18,7 @@ in {
       [ config.services.prometheus.exporters.unifi-poller.port ];
 
     age.secrets."unifi-poller-password".file =
-      ../secrets/unifi-poller-password.age;
+      ../../secrets/unifi-poller-password.age;
     age.secrets."unifi-poller-password".owner =
       config.services.prometheus.exporters.unifi-poller.user;
 

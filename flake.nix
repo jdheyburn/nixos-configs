@@ -3,29 +3,35 @@
 
   inputs = {
     agenix.url = "github:ryantm/agenix";
+
+    flake-utils.url = "github:numtide/flake-utils";
+    flake-utils.inputs.nixpkgs.follows = "nixpkgs";
+
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
     nixpkgs.url = "nixpkgs/nixos-unstable";
     nixpkgs-2205.url = "nixpkgs/nixos-22.05";
-    nixos-hardware.url = github:NixOS/nixos-hardware/master;
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = inputs@{ self, agenix, home-manager, nixpkgs, nixpkgs-2205, nixos-hardware, ... }:
+  outputs = inputs@{ self, agenix, flake-utils, home-manager, nixpkgs
+    , nixpkgs-2205, nixos-hardware, ... }:
     let
+      inherit (flake-utils.lib) eachSystemMap system;
+      catalog = import ./catalog.nix { inherit system; };
       common = [
-        # TODO change my modules to default.nix, then loop over
-        # directories 
-        ./common.nix
+        ./common
         agenix.nixosModule
-        ./modules/prometheus-stack/prometheus-stack.nix
-        ./modules/backup-small-files.nix
-        ./modules/backup-usb.nix
-        ./modules/caddy/caddy.nix
-        ./modules/dns.nix
-        ./modules/monitoring.nix
-        ./modules/nfs.nix
-        ./modules/plex.nix
-        ./modules/unifi.nix
+        # TODO loop over each dir in modules
+        ./modules/prometheus-stack
+        ./modules/backup
+        ./modules/caddy
+        ./modules/dns
+        ./modules/monitoring
+        ./modules/nfs
+        ./modules/plex
+        ./modules/unifi
       ];
       homeFeatures = system: [
         home-manager.nixosModules.home-manager
@@ -34,6 +40,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit system inputs; };
           # TODO loop over root and jdheyburn, to prevent duplicate common.nix declaration
+          # TODO home-manager should be imported via dir like above
           home-manager.users.root = {
             imports = [ ./home-manager/common.nix ./home-manager/root.nix ];
           };
@@ -46,13 +53,13 @@
       mkLinuxSystem = system: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit system inputs; };
+          specialArgs = { inherit catalog system inputs; };
           modules = common ++ homeFeatures system ++ extraModules;
         };
       mkLinuxSystemDee = system: extraModules:
         nixpkgs-2205.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit system inputs; };
+          specialArgs = { inherit catalog system inputs; };
           modules = common ++ homeFeatures system ++ extraModules;
         };
     in {
@@ -61,8 +68,10 @@
         dennis =
           mkLinuxSystem "x86_64-linux" [ ./hosts/dennis/configuration.nix ];
 
-        dee =
-          mkLinuxSystemDee "aarch64-linux" [ ./hosts/dee/configuration.nix nixos-hardware.nixosModules.raspberry-pi-4];
+        dee = mkLinuxSystemDee "aarch64-linux" [
+          ./hosts/dee/configuration.nix
+          nixos-hardware.nixosModules.raspberry-pi-4
+        ];
 
       };
 

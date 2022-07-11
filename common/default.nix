@@ -61,7 +61,7 @@
       description = "Joseph Heyburn";
       isNormalUser = true;
       home = "/home/jdheyburn";
-      extraGroups = [ "wheel" "networkmanager" ];
+      extraGroups = [ "networkmanager" "wheel" ];
       hashedPassword =
         "$6$gFv39xwgs6Trun89$0uSAiTKWURlFUk5w4NoxmZXWlCKRamWYbTFdta7LSW1svzAUeuR3FGH2jX4UIcOaaMlLBJfqWLPUXKx1P1gch0";
 
@@ -75,7 +75,7 @@
     #############################################################################
 
     # Preserve space by gc-ing and optimising store
-    nix.gc.automatic = true;
+    nix.gc.automatic = false;
     nix.gc.options = "--delete-older-than 30d";
     nix.autoOptimiseStore = true;
 
@@ -109,6 +109,8 @@
       tldr
       unzip
       wget
+
+      powertop
     ];
   };
 
