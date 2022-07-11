@@ -28,6 +28,19 @@ in {
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.05";
 
+  systemd.services.reboot = {
+    enable = true;
+    script = ''
+      ${pkgs.systemd}/bin/shutdown -r now
+    '';
+  };
+
+  systemd.timers.reboot = {
+    enable = true;
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = [ "*-*-* 06:00:00" ];
+  };
+
   #############################################################################
   ## Package management
   #############################################################################

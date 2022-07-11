@@ -61,7 +61,7 @@
       description = "Joseph Heyburn";
       isNormalUser = true;
       home = "/home/jdheyburn";
-      extraGroups = [ "backups" "networkmanager" "wheel" ];
+      extraGroups = [ "networkmanager" "wheel" ];
       hashedPassword =
         "$6$gFv39xwgs6Trun89$0uSAiTKWURlFUk5w4NoxmZXWlCKRamWYbTFdta7LSW1svzAUeuR3FGH2jX4UIcOaaMlLBJfqWLPUXKx1P1gch0";
 
