@@ -77,14 +77,5 @@ in {
         ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=$RCLONE_CONF_PATH
       '';
     };
-
-    # Job starts at 3am to allow other hosts to finish their backups,
-    # which starts at 2am
- #   systemd.timers.rclone-small-files = {
- #     enable = true;
- #     wantedBy = [ "timers.target" ];
- #     timerConfig.OnCalendar = [ "*-*-* 03:00:00" ];
- #   };
-
   };
 }

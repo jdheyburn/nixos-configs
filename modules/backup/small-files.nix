@@ -18,7 +18,9 @@ in {
     };
 
     passwordFile = mkOption { type = types.path; };
-
+    
+    # TODO discover what paths to backup depending on what services are running on the box
+    # then change this to allow extraPaths
     paths = mkOption { type = types.listOf types.str; };
 
     backupTime = mkOption {
@@ -41,11 +43,11 @@ in {
   config = mkIf cfg.enable (mkMerge [
     {
       services.restic.backups.small-files = {
-          repository = cfg.repository;
-          passwordFile = cfg.passwordFile;
-          paths = cfg.paths;
-          timerConfig = { OnCalendar = cfg.backupTime; };
-        };
+        repository = cfg.repository;
+        passwordFile = cfg.passwordFile;
+        paths = cfg.paths;
+        timerConfig = { OnCalendar = cfg.backupTime; };
+      };
     }
 
     (mkIf cfg.prune {

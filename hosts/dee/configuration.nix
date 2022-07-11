@@ -1,4 +1,15 @@
-{ config, pkgs, lib, ... }: {
+{ config, pkgs, lib, ... }:
+let
+
+  backupPaths = with lib;
+    (optional config.services.unifi.enable
+      "/var/lib/unifi/data/backup/autobackup")
+    ++ (optionals config.services.adguardhome.enable [
+      "/var/lib/AdGuardHome/"
+      "/var/lib/private/AdGuardHome"
+    ]);
+
+in {
 
   imports = [ ./hardware-configuration.nix ];
 
@@ -42,12 +53,7 @@
   modules.backupSF = {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
-    # TODO should conditionally set these
-    paths = [
-      "/var/lib/unifi/data/backup/autobackup"
-      "/var/lib/AdGuardHome/"
-      "/var/lib/private/AdGuardHome"
-    ];
+    paths = backupPaths;
     prune = true;
   };
 
