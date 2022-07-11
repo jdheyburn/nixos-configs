@@ -67,24 +67,24 @@ in {
 
     systemd.services.rclone-small-files = {
       enable = true;
+      wantedBy = [ "restic-backups-small-files-prune.service" ];
+      after = [ "restic-backups-small-files-prune.service" ];
       environment = {
         RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
       };
       script = ''
-        echo "rclone restic/dee -> b2:restic/dee"
-        ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/dee b2:iifu8noi-backups/restic/dee --config=$RCLONE_CONFIG_PATH
-        echo "rclone restic/dennis -> b2:restic/dennis"
-        ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/dennis b2:iifu8noi-backups/restic/dennis --config=$RCLONE_CONFIG_PATH
+        echo "rclone restic/small-files -> b2:restic/small-files"
+        ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=$RCLONE_CONF_PATH
       '';
     };
 
     # Job starts at 3am to allow other hosts to finish their backups,
     # which starts at 2am
-    systemd.timers.rclone-small-files = {
-      enable = true;
-      wantedBy = [ "timers.target" ];
-      timerConfig.OnCalendar = [ "*-*-* 03:00:00" ];
-    };
+ #   systemd.timers.rclone-small-files = {
+ #     enable = true;
+ #     wantedBy = [ "timers.target" ];
+ #     timerConfig.OnCalendar = [ "*-*-* 03:00:00" ];
+ #   };
 
   };
 }

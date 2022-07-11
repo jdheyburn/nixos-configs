@@ -12,7 +12,10 @@ in {
     enable =
       mkEnableOption "Enable backup of defined paths to small-files repo";
 
-    repository = mkOption { type = types.str; };
+    repository = mkOption {
+      type = types.str;
+      default = "/mnt/nfs/restic/small-files";
+    };
 
     passwordFile = mkOption { type = types.path; };
 
@@ -23,13 +26,30 @@ in {
       default = "*-*-* 02:00:00";
     };
 
+    prune = mkOption {
+      type = types.bool;
+      default = false;
+    };
+
+    pruneTime = mkOption {
+      type = types.str;
+      default = "*-*-* 02:30:00";
+    };
+
   };
 
-  config = mkIf cfg.enable {
+  config = mkIf cfg.enable (mkMerge [
+    {
+      services.restic.backups.small-files = {
+          repository = cfg.repository;
+          passwordFile = cfg.passwordFile;
+          paths = cfg.paths;
+          timerConfig = { OnCalendar = cfg.backupTime; };
+        };
+    }
 
-    services.restic.backups = {
-
-      small-files = {
+    (mkIf cfg.prune {
+      services.restic.backups.small-files-prune = {
         repository = cfg.repository;
         passwordFile = cfg.passwordFile;
         pruneOpts = [
@@ -38,11 +58,9 @@ in {
           "--keep-monthly 12"
           "--keep-yearly 3"
         ];
-        paths = cfg.paths;
-        timerConfig = { OnCalendar = cfg.backupTime; };
+        timerConfig = { OnCalendar = cfg.pruneTime; };
       };
-    };
-
-  };
+    })
+  ]);
 }
 

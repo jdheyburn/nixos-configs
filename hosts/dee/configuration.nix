@@ -36,20 +36,19 @@
   ## Modules
   #############################################################################
 
-  age.secrets."restic-dee-password".file =
-    ../../secrets/restic-dee-password.age;
+  age.secrets."restic-small-files-password".file =
+    ../../secrets/restic-small-files-password.age;
 
   modules.backupSF = {
     enable = true;
-    repository = "/mnt/nfs/restic/dee";
-    passwordFile = config.age.secrets."restic-dee-password".path;
+    passwordFile = config.age.secrets."restic-small-files-password".path;
     # TODO should conditionally set these
     paths = [
       "/var/lib/unifi/data/backup/autobackup"
       "/var/lib/AdGuardHome/"
       "/var/lib/private/AdGuardHome"
     ];
-    backupTime = "*-*-* 02:00:00";
+    prune = true;
   };
 
   modules.backupUSB.enable = true;
