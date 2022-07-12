@@ -18,7 +18,7 @@ in {
     };
 
     passwordFile = mkOption { type = types.path; };
-    
+
     # TODO discover what paths to backup depending on what services are running on the box
     # then change this to allow extraPaths
     paths = mkOption { type = types.listOf types.str; };

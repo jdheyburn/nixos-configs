@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ argononed, config, pkgs, lib, ... }:
 let
 
   backupPaths = with lib;
@@ -11,7 +11,7 @@ let
 
 in {
 
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ ./hardware-configuration.nix "${argononed}/OS/nixos" ];
 
   ###############################################################################
   ## General
@@ -39,6 +39,20 @@ in {
     enable = true;
     wantedBy = [ "timers.target" ];
     timerConfig.OnCalendar = [ "*-*-* 06:00:00" ];
+  };
+
+  services.argonone = {
+    enable = true;
+    logLevel = 4;
+    settings = {
+      fanTemp0 = 36;
+      fanSpeed0 = 10;
+      fanTemp1 = 41;
+      fanSpeed1 = 50;
+      fanTemp2 = 46;
+      fanSpeed2 = 80;
+      hysteresis = 4;
+    };
   };
 
   #############################################################################

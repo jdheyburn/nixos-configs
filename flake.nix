@@ -3,6 +3,10 @@
 
   inputs = {
     agenix.url = "github:ryantm/agenix";
+    argononed = {
+      url = "gitlab:DarkElvenAngel/argononed";
+      flake = false;
+    };
 
     flake-utils.url = "github:numtide/flake-utils";
     flake-utils.inputs.nixpkgs.follows = "nixpkgs";
@@ -15,7 +19,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = inputs@{ self, agenix, flake-utils, home-manager, nixpkgs
+  outputs = inputs@{ self, argononed, agenix, flake-utils, home-manager, nixpkgs
     , nixpkgs-2205, nixos-hardware, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
@@ -59,7 +63,7 @@
       mkLinuxSystemDee = system: extraModules:
         nixpkgs-2205.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit catalog system inputs; };
+          specialArgs = { inherit argononed catalog system inputs; };
           modules = common ++ homeFeatures system ++ extraModules;
         };
     in {
