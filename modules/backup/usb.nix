@@ -19,28 +19,26 @@ in {
     age.secrets."restic-media-password".file =
       ../../secrets/restic-media-password.age;
 
-    #    services.restic.backups = {
-    #      media = {
-    #        repository = "/mnt/nfs/restic/media";
-    #        passwordFile = config.age.secrets."restic-media-password".path;
-    #        pruneOpts = [
-    #          "--keep-daily 30"
-    #          "--keep-weekly 0"
-    #          "--keep-monthly 0"
-    #          "--keep-yearly 0"
-    #        ];
-    #        paths = [
-    #          "/mnt/usb/Backup/media/beets-db"
-    #          "/mnt/usb/Backup/media/lossless"
-    #          "/mnt/usb/Backup/media/music"
-    #          "/mnt/usb/Backup/media/vinyl"
-    #        ];
-    #        timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
-    #      };
-    #    };
+    services.restic.backups.media = {
+      repository = "/mnt/nfs/restic/media";
+      passwordFile = config.age.secrets."restic-media-password".path;
+      pruneOpts = [
+        "--keep-daily 30"
+        "--keep-weekly 0"
+        "--keep-monthly 0"
+        "--keep-yearly 0"
+      ];
+      paths = [
+        "/mnt/usb/Backup/media/beets-db"
+        "/mnt/usb/Backup/media/lossless"
+        "/mnt/usb/Backup/media/music"
+        "/mnt/usb/Backup/media/vinyl"
+      ];
+      timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
+    };
 
     systemd.services.rclone-media = {
-      enable = false;
+      enable = true;
       # TODO can I refer to this from output of services.restic.backups.media ?
       wantedBy = [ "restic-backups-media.service" ];
       after = [ "restic-backups-media.service" ];
