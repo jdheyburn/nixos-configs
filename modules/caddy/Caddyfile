@@ -38,6 +38,12 @@ huginn.svc.joannet.casa {
 	}
 	reverse_proxy frank.joannet.casa:3000
 }
+plex.svc.joannet.casa {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	reverse_proxy dee.joannet.casa:32400
+}
 proxmox.svc.joannet.casa {
 	tls {
 		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
