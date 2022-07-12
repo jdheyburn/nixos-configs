@@ -29,14 +29,14 @@ in {
   system.stateVersion = "22.05";
 
   systemd.services.reboot = {
-    enable = true;
+    enable = false;
     script = ''
       ${pkgs.systemd}/bin/shutdown -r now
     '';
   };
 
   systemd.timers.reboot = {
-    enable = true;
+    enable = false;
     wantedBy = [ "timers.target" ];
     timerConfig.OnCalendar = [ "*-*-* 06:00:00" ];
   };
