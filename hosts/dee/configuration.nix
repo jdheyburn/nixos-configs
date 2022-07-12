@@ -68,6 +68,7 @@ in {
     python39
     restic
     sysstat
+    yt-dlp
   ];
 
   #############################################################################
@@ -88,6 +89,8 @@ in {
   modules.caddy.enable = true;
   modules.dns.enable = true;
   modules.monitoring.enable = true;
+  modules.mopidy.enable = false;
+  modules.navidrome.enable = true;
   modules.nfs.enable = true;
   modules.plex.enable = true;
   modules.unifi.enable = true;

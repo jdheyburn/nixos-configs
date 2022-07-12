@@ -44,6 +44,12 @@ plex.svc.joannet.casa {
 	}
 	reverse_proxy dee.joannet.casa:32400
 }
+navidrome.svc.joannet.casa {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	reverse_proxy dee.joannet.casa:4533
+}
 proxmox.svc.joannet.casa {
 	tls {
 		dns cloudflare {env.CLOUDFLARE_API_TOKEN}

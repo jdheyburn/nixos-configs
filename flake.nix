@@ -33,6 +33,8 @@
         ./modules/caddy
         ./modules/dns
         ./modules/monitoring
+        ./modules/mopidy
+        ./modules/navidrome
         ./modules/nfs
         ./modules/plex
         ./modules/unifi

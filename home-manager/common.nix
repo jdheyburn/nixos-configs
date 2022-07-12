@@ -58,13 +58,14 @@
     '';
 
     plugins = with pkgs; [
-      {
-        plugin = tmuxPlugins.cpu;
-        extraConfig = ''
-          set -g status-right-length 100
-          set -g status-right '#{cpu_bg_color} CPU: #{cpu_icon} #{cpu_percentage} | #{ram_bg_color} RAM: #{ram_icon} #{ram_percentage} | #[bg=green] %a %d %b %H:%M '
-        '';
-      }
+      # Disabled as I think its the cause of high IO on CPU
+      #     {
+      #       plugin = tmuxPlugins.cpu;
+      #       extraConfig = ''
+      #         set -g status-right-length 100
+      #         set -g status-right '#{cpu_bg_color} CPU: #{cpu_icon} #{cpu_percentage} | #{ram_bg_color} RAM: #{ram_icon} #{ram_percentage} | #[bg=green] %a %d %b %H:%M '
+      #       '';
+      #     }
       {
         plugin = tmuxPlugins.resurrect;
         extraConfig = ''
