@@ -6,7 +6,8 @@
 
   boot.kernelPackages = pkgs.linuxPackages_rpi4;
   boot.kernelParams =
-    [ "8250.nr_uarts=1" "console=ttyAMA0,115200" "console=tty1" "cma=128M" ];
+    [ "usb-storage.quirks=174c:1156:u" "8250.nr_uarts=1" "console=ttyAMA0,115200" "console=tty1" "cma=128M" ];
+ 
 
   boot.initrd.availableKernelModules =
     [ "xhci_pci" "usbhid" "uas" "usb_storage" "vc4" ];
