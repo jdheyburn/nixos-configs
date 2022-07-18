@@ -85,7 +85,7 @@
 
       deploy.nodes = {
         dennis = {
-          hostname = "dennis";
+          hostname = "dennis-no-tmux";
           profiles = {
             system = {
               user = "root";

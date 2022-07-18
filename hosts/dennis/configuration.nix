@@ -41,6 +41,8 @@ in {
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
 
+  nix.settings.require-sigs = false;
+
   ###############################################################################
   ## Modules
   ###############################################################################
