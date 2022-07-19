@@ -85,11 +85,21 @@
 
       deploy.nodes = {
         dennis = {
-          hostname = "dennis-no-tmux";
+          hostname = "192.168.1.12";
           profiles = {
             system = {
               user = "root";
               path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.dennis;
+            };
+          };
+        };
+
+        dee = {
+          hostname = "192.168.1.10";
+          profiles = {
+            system = {
+              user = "root";
+              path = deploy-rs.lib.aarch64-linux.activate.nixos self.nixosConfigurations.dee;
             };
           };
         };
