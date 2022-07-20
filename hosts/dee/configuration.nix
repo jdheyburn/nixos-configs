@@ -7,7 +7,15 @@ let
     ++ (optionals config.services.adguardhome.enable [
       "/var/lib/AdGuardHome/"
       "/var/lib/private/AdGuardHome"
-    ]);
+    ]) ++ (optionals config.services.plex.enable
+      [ ''"/var/lib/plex/Plex Media Server"'' ]);
+
+  backupExcludePaths = with lib;
+    concatStrings [
+      "--exclude="
+      (concatStringsSep " " (optionals config.services.plex.enable
+        [ ''"/var/lib/plex/Plex Media Server/Cache"'' ]))
+    ];
 
 in {
 
@@ -82,6 +90,7 @@ in {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     paths = backupPaths;
+    extraBackupArgs = [ backupExcludePaths ];
     prune = true;
   };
 
