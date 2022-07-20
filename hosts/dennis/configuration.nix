@@ -3,7 +3,8 @@ let
 
   backupPaths = with lib;
     (optional config.services.grafana.enable "/var/lib/grafana/data")
-    ++ (optional config.services.prometheus.enable "/var/lib/prometheus2/data");
+    ++ (optional config.services.prometheus.enable "/var/lib/prometheus2/data")
+    ++ (optional config.services.loki.enable "/var/lib/loki");
 
 in {
 
