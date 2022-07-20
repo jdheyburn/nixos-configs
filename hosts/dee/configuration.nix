@@ -99,7 +99,7 @@ in {
   modules.dns.enable = true;
   modules.monitoring.enable = true;
   modules.mopidy.enable = false;
-  modules.navidrome.enable = true;
+  modules.navidrome.enable = false;
   modules.nfs.enable = true;
   modules.plex.enable = true;
   modules.unifi.enable = true;
