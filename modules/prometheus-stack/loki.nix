@@ -1,5 +1,6 @@
 { catalog, pkgs }:
 
+# TODO a lot of references to /var/lib/loki - can they be retrieved from default config or set in variable?
 {
   enable = true;
   configuration = {
@@ -66,6 +67,15 @@
     table_manager = {
       retention_deletes_enabled = false;
       retention_period = "0s";
+    };
+
+    ruler = {
+      storage = {
+        type = "local";
+        local = {
+          directory = "/var/lib/loki/rules";
+        };
+      };
     };
   };
 }
