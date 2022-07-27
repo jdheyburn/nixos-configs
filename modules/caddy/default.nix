@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, ... }:
 
 with lib;
 
@@ -7,6 +7,184 @@ let
   cfg = config.modules.caddy;
 
   caddyMetricsPort = 2019;
+
+  old_routes = [
+
+    {
+      match = [{ host = [ "prometheus.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{
+          handle = [{
+            handler = "reverse_proxy";
+            upstreams = [{ dial = "dennis.joannet.casa:9001"; }];
+          }];
+        }];
+      }];
+    }
+    {
+      match = [{ host = [ "portainer.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{
+          handle = [{
+            handler = "reverse_proxy";
+            upstreams = [{ dial = "frank.joannet.casa:9000"; }];
+          }];
+        }];
+      }];
+    }
+    {
+      match = [{ host = [ "navidrome.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{
+          handle = [{
+            handler = "reverse_proxy";
+            upstreams = [{ dial = "dee.joannet.casa:4533"; }];
+          }];
+        }];
+      }];
+    }
+    {
+      match = [{ host = [ "adguard.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{
+          handle = [{
+            handler = "reverse_proxy";
+            upstreams = [{ dial = "localhost:3000"; }];
+          }];
+        }];
+      }];
+    }
+    {
+      match = [{ host = [ "proxmox.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{
+          handle = [{
+            handler = "reverse_proxy";
+            transport = {
+              protocol = "http";
+              tls.insecure_skip_verify = true;
+            };
+            upstreams = [{ dial = "pve0.joannet.casa:8006"; }];
+          }];
+        }];
+      }];
+    }
+    {
+      match = [{ host = [ "grafana.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{
+          handle = [{
+            handler = "reverse_proxy";
+            upstreams = [{ dial = "dennis.joannet.casa:2342"; }];
+          }];
+        }];
+      }];
+    }
+    {
+      match = [{ host = [ "huginn.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{
+          handle = [{
+            handler = "reverse_proxy";
+            upstreams = [{ dial = "frank.joannet.casa:3000"; }];
+          }];
+        }];
+      }];
+    }
+    {
+      match = [{ host = [ "unifi.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{
+          handle = [{
+            handler = "reverse_proxy";
+            transport = {
+              protocol = "http";
+              tls.insecure_skip_verify = true;
+            };
+            upstreams = [{ dial = "localhost:8443"; }];
+          }];
+        }];
+      }];
+    }
+    {
+      match = [{ host = [ "home.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{
+          handle = [{
+            handler = "reverse_proxy";
+            upstreams = [{ dial = "frank.joannet.casa:49154"; }];
+          }];
+        }];
+      }];
+    }
+    {
+      match = [{ host = [ "loki.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{
+          handle = [{
+            handler = "reverse_proxy";
+            upstreams = [{ dial = "dennis.joannet.casa:3100"; }];
+          }];
+        }];
+      }];
+    }
+#    {
+#    match = [{ host = [ "plex.svc.joannet.casa" ]; }];
+#    terminal = true;
+#    handle = [{
+#      handler = "subroute";
+#      routes = [{
+#        handle = [{
+#          handler = "reverse_proxy";
+#          upstreams = [{ dial = "dee.joannet.casa:32400"; }];
+#        }];
+#      }];
+#    }];
+#    }
+  ];
+
+  route = { service, port } : {
+    
+    match = [{ host = [ "${service}.svc.joannet.casa" ]; }];
+    terminal = true;
+    handle = [{
+      handler = "subroute";
+      routes = [{
+        handle = [{
+          handler = "reverse_proxy";
+          upstreams = [{ dial = "localhost:${toString port}"; }];
+        }];
+      }];
+    }];
+  };
+
+  plex_route = route { service = "plex"; port = catalog.services.plex.port; };
+
+  #catalog_routes = (lib.optional config.services.plex.enable route "plex" 32400);
+  catalog_routes = [ plex_route ];
+
+  combined_routes = old_routes ++ catalog_routes;
+
 in {
 
   options = {
@@ -43,159 +221,7 @@ in {
         apps = {
           http.servers.srv0 = {
             listen = [ ":443" ];
-            routes = [
-              {
-                match = [{ host = [ "prometheus.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      upstreams = [{ dial = "dennis.joannet.casa:9001"; }];
-                    }];
-                  }];
-                }];
-              }
-              {
-                match = [{ host = [ "portainer.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      upstreams = [{ dial = "frank.joannet.casa:9000"; }];
-                    }];
-                  }];
-                }];
-              }
-              {
-                match = [{ host = [ "navidrome.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      upstreams = [{ dial = "dee.joannet.casa:4533"; }];
-                    }];
-                  }];
-                }];
-              }
-              {
-                match = [{ host = [ "adguard.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      upstreams = [{ dial = "localhost:3000"; }];
-                    }];
-                  }];
-                }];
-              }
-              {
-                match = [{ host = [ "proxmox.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      transport = {
-                        protocol = "http";
-                        tls.insecure_skip_verify = true;
-                      };
-                      upstreams = [{ dial = "pve0.joannet.casa:8006"; }];
-                    }];
-                  }];
-                }];
-              }
-              {
-                match = [{ host = [ "grafana.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      upstreams = [{ dial = "dennis.joannet.casa:2342"; }];
-                    }];
-                  }];
-                }];
-              }
-              {
-                match = [{ host = [ "huginn.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      upstreams = [{ dial = "frank.joannet.casa:3000"; }];
-                    }];
-                  }];
-                }];
-              }
-              {
-                match = [{ host = [ "unifi.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      transport = {
-                        protocol = "http";
-                        tls.insecure_skip_verify = true;
-                      };
-                      upstreams = [{ dial = "localhost:8443"; }];
-                    }];
-                  }];
-                }];
-              }
-              {
-                match = [{ host = [ "home.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      upstreams = [{ dial = "frank.joannet.casa:49154"; }];
-                    }];
-                  }];
-                }];
-              }
-              {
-                match = [{ host = [ "plex.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      upstreams = [{ dial = "dee.joannet.casa:32400"; }];
-                    }];
-                  }];
-                }];
-              }
-              {
-                match = [{ host = [ "loki.svc.joannet.casa" ]; }];
-                terminal = true;
-                handle = [{
-                  handler = "subroute";
-                  routes = [{
-                    handle = [{
-                      handler = "reverse_proxy";
-                      upstreams = [{ dial = "dennis.joannet.casa:3100"; }];
-                    }];
-                  }];
-                }];
-              }
-            ];
+            routes = combined_routes;
           };
           tls.automation.policies = [{
             subjects = [

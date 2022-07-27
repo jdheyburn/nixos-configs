@@ -5,13 +5,13 @@
   nodes = {
     dee = {
       ip.private = "192.168.1.10";
-      ip.tailscale = "";
+      ip.tailscale = "100.127.189.33";
       system = system.aarch64-linux;
     };
 
     dennis = {
       ip.private = "192.168.1.12";
-      ip.tailscale = "";
+      ip.tailscale = "100.127.102.123";
       system = system.x86_64-linux;
     };
 
@@ -39,6 +39,11 @@
     prometheus = {
       host = "dennis";
       port = 9001;
+    };
+
+    plex = {
+      host = "dee";
+      port = 32400;
     };
 
   };
