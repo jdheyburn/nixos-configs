@@ -1,400 +1,376 @@
 {
-	"logging": {
-		"logs": {
-			"default": {
-				"level": "ERROR"
-			}
-		}
-	},
-	"apps": {
-		"http": {
-			"servers": {
-				"srv0": {
-					"listen": [
-						":443"
-					],
-					"routes": [
-						{
-							"match": [
-								{
-									"host": [
-										"prometheus.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"upstreams": [
-														{
-															"dial": "dennis.joannet.casa:9001"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						},
-						{
-							"match": [
-								{
-									"host": [
-										"portainer.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"upstreams": [
-														{
-															"dial": "frank.joannet.casa:9000"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						},
-						{
-							"match": [
-								{
-									"host": [
-										"navidrome.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"upstreams": [
-														{
-															"dial": "dee.joannet.casa:4533"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						},
-						{
-							"match": [
-								{
-									"host": [
-										"adguard.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"upstreams": [
-														{
-															"dial": "localhost:3000"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						},
-						{
-							"match": [
-								{
-									"host": [
-										"proxmox.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"transport": {
-														"protocol": "http",
-														"tls": {
-															"insecure_skip_verify": true
-														}
-													},
-													"upstreams": [
-														{
-															"dial": "pve0.joannet.casa:8006"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						},
-						{
-							"match": [
-								{
-									"host": [
-										"grafana.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"upstreams": [
-														{
-															"dial": "dennis.joannet.casa:2342"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						},
-						{
-							"match": [
-								{
-									"host": [
-										"huginn.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"upstreams": [
-														{
-															"dial": "frank.joannet.casa:3000"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						},
-						{
-							"match": [
-								{
-									"host": [
-										"unifi.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"transport": {
-														"protocol": "http",
-														"tls": {
-															"insecure_skip_verify": true
-														}
-													},
-													"upstreams": [
-														{
-															"dial": "localhost:8443"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						},
-						{
-							"match": [
-								{
-									"host": [
-										"home.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"upstreams": [
-														{
-															"dial": "frank.joannet.casa:49154"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						},
-						{
-							"match": [
-								{
-									"host": [
-										"plex.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"upstreams": [
-														{
-															"dial": "dee.joannet.casa:32400"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						},
-						{
-							"match": [
-								{
-									"host": [
-										"loki.svc.joannet.casa"
-									]
-								}
-							],
-							"handle": [
-								{
-									"handler": "subroute",
-									"routes": [
-										{
-											"handle": [
-												{
-													"handler": "reverse_proxy",
-													"upstreams": [
-														{
-															"dial": "dennis.joannet.casa:3100"
-														}
-													]
-												}
-											]
-										}
-									]
-								}
-							],
-							"terminal": true
-						}
-					]
-				}
-			}
-		},
-		"tls": {
-			"automation": {
-				"policies": [
-					{
-						"subjects": [
-							"prometheus.svc.joannet.casa",
-							"portainer.svc.joannet.casa",
-							"navidrome.svc.joannet.casa",
-							"adguard.svc.joannet.casa",
-							"proxmox.svc.joannet.casa",
-							"grafana.svc.joannet.casa",
-							"huginn.svc.joannet.casa",
-							"unifi.svc.joannet.casa",
-							"home.svc.joannet.casa",
-							"plex.svc.joannet.casa",
-							"loki.svc.joannet.casa"
-						],
-						"issuers": [
-							{
-								"ca": "https://acme-v02.api.letsencrypt.org/directory",
-								"challenges": {
-									"dns": {
-										"provider": {
-											"api_token": "{env.CLOUDFLARE_API_TOKEN}",
-											"name": "cloudflare"
-										}
-									}
-								},
-								"module": "acme"
-							},
-							{
-								"ca": "https://acme-v02.api.letsencrypt.org/directory",
-								"challenges": {
-									"dns": {
-										"provider": {
-											"api_token": "{env.CLOUDFLARE_API_TOKEN}",
-											"name": "cloudflare"
-										}
-									}
-								},
-								"module": "zerossl"
-							}
-						]
-					}
-				]
-			}
-		}
-	}
+  "logging": {
+    "logs": {
+      "default": {
+        "level": "ERROR"
+      }
+    }
+  },
+  "apps": {
+    "http": {
+      "servers": {
+        "srv0": {
+          "listen": [":443"],
+          "routes": [
+            {
+              "match": [
+                {
+                  "host": ["prometheus.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [
+                            {
+                              "dial": "dennis.joannet.casa:9001"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            },
+            {
+              "match": [
+                {
+                  "host": ["portainer.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [
+                            {
+                              "dial": "frank.joannet.casa:9000"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            },
+            {
+              "match": [
+                {
+                  "host": ["navidrome.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [
+                            {
+                              "dial": "dee.joannet.casa:4533"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            },
+            {
+              "match": [
+                {
+                  "host": ["adguard.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [
+                            {
+                              "dial": "localhost:3000"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            },
+            {
+              "match": [
+                {
+                  "host": ["proxmox.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "transport": {
+                            "protocol": "http",
+                            "tls": {
+                              "insecure_skip_verify": true
+                            }
+                          },
+                          "upstreams": [
+                            {
+                              "dial": "pve0.joannet.casa:8006"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            },
+            {
+              "match": [
+                {
+                  "host": ["grafana.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [
+                            {
+                              "dial": "dennis.joannet.casa:2342"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            },
+            {
+              "match": [
+                {
+                  "host": ["huginn.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [
+                            {
+                              "dial": "frank.joannet.casa:3000"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            },
+            {
+              "match": [
+                {
+                  "host": ["unifi.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "transport": {
+                            "protocol": "http",
+                            "tls": {
+                              "insecure_skip_verify": true
+                            }
+                          },
+                          "upstreams": [
+                            {
+                              "dial": "localhost:8443"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            },
+            {
+              "match": [
+                {
+                  "host": ["home.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [
+                            {
+                              "dial": "frank.joannet.casa:49154"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            },
+            {
+              "match": [
+                {
+                  "host": ["plex.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [
+                            {
+                              "dial": "dee.joannet.casa:32400"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            },
+            {
+              "match": [
+                {
+                  "host": ["loki.svc.joannet.casa"]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "handle": [
+                        {
+                          "handler": "reverse_proxy",
+                          "upstreams": [
+                            {
+                              "dial": "dennis.joannet.casa:3100"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            }
+          ]
+        }
+      }
+    },
+    "tls": {
+      "automation": {
+        "policies": [
+          {
+            "subjects": [
+              "prometheus.svc.joannet.casa",
+              "portainer.svc.joannet.casa",
+              "navidrome.svc.joannet.casa",
+              "adguard.svc.joannet.casa",
+              "proxmox.svc.joannet.casa",
+              "grafana.svc.joannet.casa",
+              "huginn.svc.joannet.casa",
+              "unifi.svc.joannet.casa",
+              "home.svc.joannet.casa",
+              "plex.svc.joannet.casa",
+              "loki.svc.joannet.casa"
+            ],
+            "issuers": [
+              {
+                "ca": "https://acme-v02.api.letsencrypt.org/directory",
+                "challenges": {
+                  "dns": {
+                    "provider": {
+                      "api_token": "{env.CLOUDFLARE_API_TOKEN}",
+                      "name": "cloudflare"
+                    }
+                  }
+                },
+                "module": "acme"
+              },
+              {
+                "ca": "https://acme-v02.api.letsencrypt.org/directory",
+                "challenges": {
+                  "dns": {
+                    "provider": {
+                      "api_token": "{env.CLOUDFLARE_API_TOKEN}",
+                      "name": "cloudflare"
+                    }
+                  }
+                },
+                "module": "zerossl"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
 }
