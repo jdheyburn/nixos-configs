@@ -144,13 +144,13 @@ in {
                 terminal = true;
                 handle = [{
                   handler = "subroute";
-                  transport = {
-                    protocol = "http";
-                    tls.insecure_skip_verify = true;
-                  };
                   routes = [{
                     handle = [{
                       handler = "reverse_proxy";
+                      transport = {
+                        protocol = "http";
+                        tls.insecure_skip_verify = true;
+                      };
                       upstreams = [{ dial = "localhost:8443"; }];
                     }];
                   }];
