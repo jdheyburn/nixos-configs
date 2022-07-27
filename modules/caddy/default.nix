@@ -36,7 +36,11 @@ in {
         plugins = [ "github.com/caddy-dns/cloudflare" ];
         vendorSha256 = "sha256-HrUARAM0/apr+ijSousglLYgxVNy9SFW6MhWkSeTFU4=";
       });
-      configFile = ./Caddyfile;
+#      configFile = ./Caddyfile;
+      adapter = "''";
+      configFile = pkgs.writeText "Caddyfile" (builtins.toJSON {
+        apps = {};
+      });
     };
 
     systemd.services.caddy = {
