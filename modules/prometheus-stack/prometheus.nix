@@ -30,6 +30,13 @@ in {
       }];
     }
     {
+      job_name = "grafana";
+      scrape_interval = "5s";
+      static_configs = [{
+        targets = [ "localhost:${toString config.services.grafana.port}" ];
+      }];
+    }
+    {
       job_name = "node";
       scrape_interval = "5s";
       static_configs = [{

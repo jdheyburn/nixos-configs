@@ -2,7 +2,7 @@
 
 {
   enable = true;
-  domain = "grafana.svc.joannet.casa";
+  rootUrl = "https://grafana.svc.joannet.casa";
   port = catalog.services.grafana.port;
   addr = "0.0.0.0";
   analytics.reporting.enable = false;
@@ -29,6 +29,22 @@
           }";
       }
     ];
+    # Not sure if this actually works..
+    notifiers = [{
+      name = "email-me";
+      uid = "email-me";
+      type = "email";
+      is_default = true;
+      disable_resolve_message = false;
+      settings = { addresses = "jdheyburn@gmail.com"; };
+    }];
+  };
+
+  smtp = {
+    enable = true;
+    host = "smtp.gmail.com:587";
+    user = "jdheyburn@gmail.com";
+    passwordFile = config.age.secrets."smtp-password".path;
   };
 }
 

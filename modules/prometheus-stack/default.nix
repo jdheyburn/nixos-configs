@@ -17,6 +17,12 @@ in {
       catalog.services.prometheus.port
     ];
 
+    age.secrets."smtp-password" = {
+      file = ../../secrets/smtp-password.age;
+      owner = "grafana";
+      group = "grafana";
+    };
+
     services.grafana = import ./grafana.nix { inherit catalog config pkgs; };
     services.loki = import ./loki.nix { inherit catalog pkgs; };
     services.prometheus =

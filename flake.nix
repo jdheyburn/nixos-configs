@@ -61,22 +61,17 @@
       mkLinuxSystem = system: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit catalog system inputs; };
-          modules = common ++ homeFeatures system ++ extraModules;
-        };
-      mkLinuxSystemDee = system: extraModules:
-        nixpkgs-2205.lib.nixosSystem {
-          inherit system;
           specialArgs = { inherit argononed catalog system inputs; };
           modules = common ++ homeFeatures system ++ extraModules;
         };
     in {
 
       nixosConfigurations = {
+        # TODO should be no need to pass in hosts configuration - can it be discovered?
         dennis =
           mkLinuxSystem "x86_64-linux" [ ./hosts/dennis/configuration.nix ];
 
-        dee = mkLinuxSystemDee "aarch64-linux" [
+        dee = mkLinuxSystem "aarch64-linux" [
           ./hosts/dee/configuration.nix
           nixos-hardware.nixosModules.raspberry-pi-4
         ];

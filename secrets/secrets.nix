@@ -20,6 +20,7 @@ in {
   "restic-small-files-password.age".publicKeys = default;
   "restic-media-password.age".publicKeys = default;
   "rclone.conf.age".publicKeys = default;
+  "smtp-password.age".publicKeys = default;
   "unifi-poller-password.age".publicKeys = default;
 }
 

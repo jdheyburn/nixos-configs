@@ -23,6 +23,11 @@ in {
     # then change this to allow extraPaths
     paths = mkOption { type = types.listOf types.str; };
 
+    extraBackupArgs = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+    };
+
     backupTime = mkOption {
       type = types.str;
       default = "*-*-* 02:00:00";
@@ -46,6 +51,7 @@ in {
         repository = cfg.repository;
         passwordFile = cfg.passwordFile;
         paths = cfg.paths;
+        extraBackupArgs = cfg.extraBackupArgs;
         timerConfig = { OnCalendar = cfg.backupTime; };
       };
     }
