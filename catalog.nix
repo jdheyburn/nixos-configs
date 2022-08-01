@@ -27,11 +27,13 @@
     grafana = {
       host = "dennis";
       port = 2342;
+      caddify.enable = true;
     };
 
     loki = {
       host = "dennis";
       port = 3100;
+      caddify.enable = true;
     };
 
     nodeExporter = { port = 9002; };
@@ -39,11 +41,19 @@
     prometheus = {
       host = "dennis";
       port = 9001;
+      caddify.enable = true;
     };
 
     plex = {
       host = "dee";
       port = 32400;
+      caddify.enable = true;
+    };
+    unifi = {
+      host = "dee";
+      port = 8443;
+      caddify.enable = true;
+      caddify.skip_tls_verify = true;
     };
 
   };
