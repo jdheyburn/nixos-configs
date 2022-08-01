@@ -70,9 +70,25 @@
       ];
     };
 
+    # To allow for deploy-rs  
+    security.sudo.extraRules = [
+    {
+      users = [ "jdheyburn" ];
+      commands = [
+        {
+          command = "ALL";
+      options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
+
     #############################################################################
     ## Package management
     #############################################################################
+
+    # TODO fix to allow myself
+    nix.settings.require-sigs = false;
 
     # Preserve space by gc-ing and optimising store
     nix.gc.automatic = false;

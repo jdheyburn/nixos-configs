@@ -84,7 +84,9 @@
           profiles = {
             system = {
               user = "root";
-              path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.dennis;
+              path = deploy-rs.lib.x86_64-linux.activate.nixos
+                self.nixosConfigurations.dennis;
+              sshOpts = [ "-o" "IdentitiesOnly=yes" ];
             };
           };
         };
@@ -94,14 +96,17 @@
           profiles = {
             system = {
               user = "root";
-              path = deploy-rs.lib.aarch64-linux.activate.nixos self.nixosConfigurations.dee;
+              path = deploy-rs.lib.aarch64-linux.activate.nixos
+                self.nixosConfigurations.dee;
+              sshOpts = [ "-o" "IdentitiesOnly=yes" ];
             };
           };
         };
 
       };
 
-      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+      checks = builtins.mapAttrs
+        (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
     };
 }
