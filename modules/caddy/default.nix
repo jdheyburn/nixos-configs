@@ -186,9 +186,9 @@ let
 
   # Filters out any services destined for this host, where we want it caddified
   # TODO should it also depend whether the module is enabled or not?
-  host_services = (filterAttrs
-    (n: v: v.host == config.networking.hostName && v.caddify.enable)
-    catalog.services);
+  host_services = (filterAttrs (n: v:
+    hasAttr "host" v && v.host == config.networking.hostName
+    && v.caddify.enable) catalog.services);
 
   # Convert host_routes to a list, including the name of the service in it too
   host_services_list = map (service_name:
@@ -205,7 +205,7 @@ let
         && service.caddify.skip_tls_verify;
     }) host_services_list;
 
-  combined_routes = old_routes ++ catalog_routes;
+  combined_routes = catalog_routes;
 
   subject_routes =
     map (service: "${service.name}.svc.joannet.casa") host_services_list;
@@ -222,7 +222,7 @@ let
     "loki.svc.joannet.casa"
   ];
 
-  combined_subjects = old_subjects ++ subject_routes;
+  combined_subjects = subject_routes;
 in {
 
   options = {

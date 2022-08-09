@@ -55,6 +55,8 @@ in {
     paths = backupPaths;
   };
 
+  modules.caddy.enable = true;
+
   modules.monitoring.enable = true;
 
   modules.prometheusStack.enable = true;
