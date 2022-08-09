@@ -36,7 +36,10 @@
       caddify.enable = true;
     };
 
-    nodeExporter = { port = 9002; };
+    nodeExporter = {
+      host = "all";
+      port = 9002;
+    };
 
     prometheus = {
       host = "dennis";

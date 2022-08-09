@@ -131,67 +131,98 @@ let
         }];
       }];
     }
-#    {
-#    match = [{ host = [ "plex.svc.joannet.casa" ]; }];
-#    terminal = true;
-#    handle = [{
-#      handler = "subroute";
-#      routes = [{
-#        handle = [{
-#          handler = "reverse_proxy";
-#          upstreams = [{ dial = "dee.joannet.casa:32400"; }];
-#        }];
-#      }];
-#    }];
-#    }
-#    {
-#      match = [{ host = [ "unifi.svc.joannet.casa" ]; }];
-#      terminal = true;
-#      handle = [{
-#        handler = "subroute";
-#        routes = [{
-#          handle = [{
-#            handler = "reverse_proxy";
-#            transport = {
-#              protocol = "http";
-#              tls.insecure_skip_verify = true;
-#            };
-#            upstreams = [{ dial = "localhost:8443"; }];
-#          }];
-#        }];
-#      }];
-#    }
+    #    {
+    #    match = [{ host = [ "plex.svc.joannet.casa" ]; }];
+    #    terminal = true;
+    #    handle = [{
+    #      handler = "subroute";
+    #      routes = [{
+    #        handle = [{
+    #          handler = "reverse_proxy";
+    #          upstreams = [{ dial = "dee.joannet.casa:32400"; }];
+    #        }];
+    #      }];
+    #    }];
+    #    }
+    #    {
+    #      match = [{ host = [ "unifi.svc.joannet.casa" ]; }];
+    #      terminal = true;
+    #      handle = [{
+    #        handler = "subroute";
+    #        routes = [{
+    #          handle = [{
+    #            handler = "reverse_proxy";
+    #            transport = {
+    #              protocol = "http";
+    #              tls.insecure_skip_verify = true;
+    #            };
+    #            upstreams = [{ dial = "localhost:8443"; }];
+    #          }];
+    #        }];
+    #      }];
+    #    }
   ];
 
-  route = { service, port, skip_tls_verify ? false } : {
-    match = [{ host = [ "${service}.svc.joannet.casa" ]; }];
-    terminal = true;
-    handle = [{
-      handler = "subroute";
-      routes = [{
-        handle = [{
-          handler = "reverse_proxy";
-         # transport = {
-         #   protocol = "http";
-         #   tls.insecure_skip_verify = skip_tls_verify;
-         # };
-          upstreams = [{ dial = "localhost:${toString port}"; }];
-        }];
+  route = { name, port, skip_tls_verify ? false }:
+    let
+      base_handle = {
+        handler = "reverse_proxy";
+        upstreams = [{ dial = "localhost:${toString port}"; }];
+      };
+      handle = base_handle // optionalAttrs (skip_tls_verify) {
+        transport = {
+          protocol = "http";
+          tls.insecure_skip_verify = true;
+        };
+      };
+    in {
+      match = [{ host = [ "${name}.svc.joannet.casa" ]; }];
+      terminal = true;
+      handle = [{
+        handler = "subroute";
+        routes = [{ handle = [ handle ]; }];
       }];
-    }];
-  };
+    };
 
+  # Filters out any services destined for this host, where we want it caddified
+  # TODO should it also depend whether the module is enabled or not?
+  host_services = (filterAttrs
+    (n: v: v.host == config.networking.hostName && v.caddify.enable)
+    catalog.services);
 
-  routes = (filterAttrs (n: v: n.caddify.enable) catalog.services);
+  # Convert host_routes to a list, including the name of the service in it too
+  host_services_list = map (service_name:
+    (getAttr service_name host_services) // {
+      name = service_name;
+    }) (attrNames host_services);
 
-  plex_route = route { service = "plex"; port = catalog.services.plex.port; };
-  unifi_route = route { service = "unifi"; port = catalog.services.unifi.port; skip_tls_verify = true; };
-
-  #catalog_routes = [ plex_route unifi_route ];
-  catalog_routes = [ plex_route unifi_route ];
+  # Now feed them into the route function to construct a route entry
+  catalog_routes = map (service:
+    route {
+      name = service.name;
+      port = service.port;
+      skip_tls_verify = hasAttr "skip_tls_verify" service.caddify
+        && service.caddify.skip_tls_verify;
+    }) host_services_list;
 
   combined_routes = old_routes ++ catalog_routes;
 
+  subject_routes =
+    map (service: "${service.name}.svc.joannet.casa") host_services_list;
+
+  old_subjects = [
+    "prometheus.svc.joannet.casa"
+    "portainer.svc.joannet.casa"
+    "navidrome.svc.joannet.casa"
+    "adguard.svc.joannet.casa"
+    "proxmox.svc.joannet.casa"
+    "grafana.svc.joannet.casa"
+    "huginn.svc.joannet.casa"
+    "home.svc.joannet.casa"
+    "loki.svc.joannet.casa"
+  ];
+
+  combined_subjects = old_subjects ++ subject_routes;
 in {
 
   options = {
@@ -221,51 +252,39 @@ in {
         plugins = [ "github.com/caddy-dns/cloudflare" ];
         vendorSha256 = "sha256-HrUARAM0/apr+ijSousglLYgxVNy9SFW6MhWkSeTFU4=";
       });
-      configFile = ./Caddyfile;
-     # adapter = "''";
+      #configFile = ./Caddyfile;
+      adapter = "''";
       # https://github.com/NixOS/nixpkgs/issues/153142
-   #   configFile = pkgs.writeText "Caddyfile" (builtins.toJSON {
-   #     logging.logs.default.level = "ERROR";
-   #     apps = {
-   #       http.servers.srv0 = {
-   #         listen = [ ":443" ];
-   #         routes = combined_routes;
-   #       };
-   #       tls.automation.policies = [{
-   #         subjects = [
-   #           "prometheus.svc.joannet.casa"
-   #           "portainer.svc.joannet.casa"
-   #           "navidrome.svc.joannet.casa"
-   #           "adguard.svc.joannet.casa"
-   #           "proxmox.svc.joannet.casa"
-   #           "grafana.svc.joannet.casa"
-   #           "huginn.svc.joannet.casa"
-   #           "unifi.svc.joannet.casa"
-   #           "home.svc.joannet.casa"
-   #           "plex.svc.joannet.casa"
-   #           "loki.svc.joannet.casa"
-   #         ];
-   #         issuers = [
-   #           {
-   #             module = "acme";
-   #             ca = "https://acme-v02.api.letsencrypt.org/directory";
-   #             challenges.dns.provider = {
-   #               name = "cloudflare";
-   #               api_token = "{env.CLOUDFLARE_API_TOKEN}";
-   #             };
-   #           }
-   #           {
-   #             module = "zerossl";
-   #             ca = "https://acme-v02.api.letsencrypt.org/directory";
-   #             challenges.dns.provider = {
-   #               name = "cloudflare";
-   #               api_token = "{env.CLOUDFLARE_API_TOKEN}";
-   #             };
-   #           }
-   #         ];
-   #       }];
-   #     };
-   #   });
+      configFile = pkgs.writeText "Caddyfile" (builtins.toJSON {
+        logging.logs.default.level = "ERROR";
+        apps = {
+          http.servers.srv0 = {
+            listen = [ ":443" ];
+            routes = combined_routes;
+          };
+          tls.automation.policies = [{
+            subjects = combined_subjects;
+            issuers = [
+              {
+                module = "acme";
+                ca = "https://acme-v02.api.letsencrypt.org/directory";
+                challenges.dns.provider = {
+                  name = "cloudflare";
+                  api_token = "{env.CLOUDFLARE_API_TOKEN}";
+                };
+              }
+              {
+                module = "zerossl";
+                ca = "https://acme-v02.api.letsencrypt.org/directory";
+                challenges.dns.provider = {
+                  name = "cloudflare";
+                  api_token = "{env.CLOUDFLARE_API_TOKEN}";
+                };
+              }
+            ];
+          }];
+        };
+      });
     };
 
     systemd.services.caddy = {

@@ -72,9 +72,7 @@
     ruler = {
       storage = {
         type = "local";
-        local = {
-          directory = "/var/lib/loki/rules";
-        };
+        local = { directory = "/var/lib/loki/rules"; };
       };
     };
   };
