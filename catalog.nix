@@ -42,15 +42,15 @@
     home = {
       host = "frank";
       port = 49154;
-      caddify.enable = false;
-      caddify.additional = true;
+      caddify.enable = true;
+      caddify.forwardTo = "dee";
     };
 
     huginn = {
       host = "frank";
       port = 3000;
-      caddify.enable = false;
-      caddify.additional = true;
+      caddify.enable = true;
+      caddify.forwardTo = "dee";
     };
 
     grafana = {
@@ -70,8 +70,8 @@
     portainer = {
       host = "frank";
       port = 9000;
-      caddify.enable = false;
-      caddify.additional = true;
+      caddify.enable = true;
+      caddify.forwardTo = "dee";
     };
 
     prometheus = {
@@ -83,9 +83,9 @@
     proxmox = {
       host = "proxmox";
       port = 8006;
-      caddify.enable = false;
+      caddify.enable = true;
       caddify.skip_tls_verify = true;
-      caddify.additional = true;
+      caddify.forwardTo = "dee";
     };
 
     plex = {
@@ -104,4 +104,5 @@
   };
 
 }
+
 

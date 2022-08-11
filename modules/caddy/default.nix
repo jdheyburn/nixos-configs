@@ -8,71 +8,12 @@ let
 
   caddyMetricsPort = 2019;
 
-  # TODO remove these when they are discovered from catalog
-  old_routes = [
-    {
-      match = [{ host = [ "portainer.svc.joannet.casa" ]; }];
-      terminal = true;
-      handle = [{
-        handler = "subroute";
-        routes = [{
-          handle = [{
-            handler = "reverse_proxy";
-            upstreams = [{ dial = "frank.joannet.casa:9000"; }];
-          }];
-        }];
-      }];
-    }
-    {
-      match = [{ host = [ "proxmox.svc.joannet.casa" ]; }];
-      terminal = true;
-      handle = [{
-        handler = "subroute";
-        routes = [{
-          handle = [{
-            handler = "reverse_proxy";
-            transport = {
-              protocol = "http";
-              tls.insecure_skip_verify = true;
-            };
-            upstreams = [{ dial = "pve0.joannet.casa:8006"; }];
-          }];
-        }];
-      }];
-    }
-    {
-      match = [{ host = [ "huginn.svc.joannet.casa" ]; }];
-      terminal = true;
-      handle = [{
-        handler = "subroute";
-        routes = [{
-          handle = [{
-            handler = "reverse_proxy";
-            upstreams = [{ dial = "frank.joannet.casa:3000"; }];
-          }];
-        }];
-      }];
-    }
-    {
-      match = [{ host = [ "home.svc.joannet.casa" ]; }];
-      terminal = true;
-      handle = [{
-        handler = "subroute";
-        routes = [{
-          handle = [{
-            handler = "reverse_proxy";
-            upstreams = [{ dial = "frank.joannet.casa:49154"; }];
-          }];
-        }];
-      }];
-    }
-  ];
-
-  route = { name, port, skip_tls_verify ? false }:
+  # TODO move this to another file
+  route = { name, port, upstream ? "localhost", skip_tls_verify ? false }:
     let
       base_handle = {
         handler = "reverse_proxy";
-        upstreams = [{ dial = "localhost:${toString port}"; }];
+        upstreams = [{ dial = "${upstream}:${toString port}"; }];
       };
       handle = base_handle // optionalAttrs (skip_tls_verify) {
         transport = {
@@ -110,25 +51,37 @@ let
         && service.caddify.skip_tls_verify;
     }) host_services_list;
 
-  combined_routes = old_routes ++ catalog_routes;
+  # These are additional services that this host should forward
+  forward_services = (filterAttrs (n: v:
+    hasAttr "caddify" v && hasAttr "forwardTo" v.caddify && v.caddify.enable && v.caddify.forwardTo == config.networking.hostName) catalog.services);
+
+  # Convert it to a list
+  forward_services_list = map (service_name:
+    (getAttr service_name forward_services) // {
+      name = service_name;
+    }) (attrNames forward_services);
+
+  forward_routes = map (service:
+    route {
+      name = service.name;
+      port = service.port;
+      upstream = (getAttr service.host catalog.nodes).ip.private;
+      skip_tls_verify = hasAttr "skip_tls_verify" service.caddify && service.caddify.skip_tls_verify;
+    }) forward_services_list;
+
+  combined_routes = catalog_routes ++ forward_routes;
 
   subject_routes =
-    map (service: "${service.name}.svc.joannet.casa") host_services_list;
+    map (service: "${service.name}.svc.joannet.casa") (host_services_list ++ forward_services_list);
 
-  # TODO remove once discovered
-  old_subjects = [
-    "portainer.svc.joannet.casa"
-    "proxmox.svc.joannet.casa"
-    "huginn.svc.joannet.casa"
-    "home.svc.joannet.casa"
-  ];
-
-  combined_subjects = subject_routes ++ old_subjects;
 in {
 
   options = {
     modules = {
-      caddy = { enable = mkEnableOption "Deploy reverse proxy Caddy"; };
+      caddy = {
+        enable = mkEnableOption "Deploy reverse proxy Caddy";
+        forward_additional = mkEnableOption "Whether to forward additional services in caddy";
+        };
     };
   };
 
@@ -164,7 +117,7 @@ in {
             routes = combined_routes;
           };
           tls.automation.policies = [{
-            subjects = combined_subjects;
+            subjects = subject_routes;
             issuers = [
               {
                 module = "acme";
@@ -200,3 +153,4 @@ in {
   };
 
 }
+

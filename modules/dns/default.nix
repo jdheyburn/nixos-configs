@@ -7,7 +7,7 @@ let
 
   # Get services which are being served by caddy
   caddy_services = filterAttrs (n: v:
-    hasAttr "caddify" v && hasAttr "enable" v.caddify && v.caddify.enable)
+    hasAttr "caddify" v && hasAttr "enable" v.caddify && v.caddify.enable && (! hasAttr "forwardTo" v.caddify))
     catalog.services;
 
   # Convert it to a list
@@ -27,7 +27,7 @@ let
     answer = service.ip;
   }) caddy_host_services;
 
-  # TODO remove this once caddify.additional is being discovered
+  # TODO remove this in favour of using forwardTo ip address
   default_rewrite = [{
     domain = "*.svc.joannet.casa";
     answer = "192.168.1.10";
