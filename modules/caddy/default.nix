@@ -8,21 +8,8 @@ let
 
   caddyMetricsPort = 2019;
 
+  # TODO remove these when they are discovered from catalog
   old_routes = [
-
-    {
-      match = [{ host = [ "prometheus.svc.joannet.casa" ]; }];
-      terminal = true;
-      handle = [{
-        handler = "subroute";
-        routes = [{
-          handle = [{
-            handler = "reverse_proxy";
-            upstreams = [{ dial = "dennis.joannet.casa:9001"; }];
-          }];
-        }];
-      }];
-    }
     {
       match = [{ host = [ "portainer.svc.joannet.casa" ]; }];
       terminal = true;
@@ -32,32 +19,6 @@ let
           handle = [{
             handler = "reverse_proxy";
             upstreams = [{ dial = "frank.joannet.casa:9000"; }];
-          }];
-        }];
-      }];
-    }
-    {
-      match = [{ host = [ "navidrome.svc.joannet.casa" ]; }];
-      terminal = true;
-      handle = [{
-        handler = "subroute";
-        routes = [{
-          handle = [{
-            handler = "reverse_proxy";
-            upstreams = [{ dial = "dee.joannet.casa:4533"; }];
-          }];
-        }];
-      }];
-    }
-    {
-      match = [{ host = [ "adguard.svc.joannet.casa" ]; }];
-      terminal = true;
-      handle = [{
-        handler = "subroute";
-        routes = [{
-          handle = [{
-            handler = "reverse_proxy";
-            upstreams = [{ dial = "localhost:3000"; }];
           }];
         }];
       }];
@@ -75,19 +36,6 @@ let
               tls.insecure_skip_verify = true;
             };
             upstreams = [{ dial = "pve0.joannet.casa:8006"; }];
-          }];
-        }];
-      }];
-    }
-    {
-      match = [{ host = [ "grafana.svc.joannet.casa" ]; }];
-      terminal = true;
-      handle = [{
-        handler = "subroute";
-        routes = [{
-          handle = [{
-            handler = "reverse_proxy";
-            upstreams = [{ dial = "dennis.joannet.casa:2342"; }];
           }];
         }];
       }];
@@ -118,49 +66,6 @@ let
         }];
       }];
     }
-    {
-      match = [{ host = [ "loki.svc.joannet.casa" ]; }];
-      terminal = true;
-      handle = [{
-        handler = "subroute";
-        routes = [{
-          handle = [{
-            handler = "reverse_proxy";
-            upstreams = [{ dial = "dennis.joannet.casa:3100"; }];
-          }];
-        }];
-      }];
-    }
-    #    {
-    #    match = [{ host = [ "plex.svc.joannet.casa" ]; }];
-    #    terminal = true;
-    #    handle = [{
-    #      handler = "subroute";
-    #      routes = [{
-    #        handle = [{
-    #          handler = "reverse_proxy";
-    #          upstreams = [{ dial = "dee.joannet.casa:32400"; }];
-    #        }];
-    #      }];
-    #    }];
-    #    }
-    #    {
-    #      match = [{ host = [ "unifi.svc.joannet.casa" ]; }];
-    #      terminal = true;
-    #      handle = [{
-    #        handler = "subroute";
-    #        routes = [{
-    #          handle = [{
-    #            handler = "reverse_proxy";
-    #            transport = {
-    #              protocol = "http";
-    #              tls.insecure_skip_verify = true;
-    #            };
-    #            upstreams = [{ dial = "localhost:8443"; }];
-    #          }];
-    #        }];
-    #      }];
-    #    }
   ];
 
   route = { name, port, skip_tls_verify ? false }:
@@ -205,24 +110,20 @@ let
         && service.caddify.skip_tls_verify;
     }) host_services_list;
 
-  combined_routes = catalog_routes;
+  combined_routes = old_routes ++ catalog_routes;
 
   subject_routes =
     map (service: "${service.name}.svc.joannet.casa") host_services_list;
 
+  # TODO remove once discovered
   old_subjects = [
-    "prometheus.svc.joannet.casa"
     "portainer.svc.joannet.casa"
-    "navidrome.svc.joannet.casa"
-    "adguard.svc.joannet.casa"
     "proxmox.svc.joannet.casa"
-    "grafana.svc.joannet.casa"
     "huginn.svc.joannet.casa"
     "home.svc.joannet.casa"
-    "loki.svc.joannet.casa"
   ];
 
-  combined_subjects = subject_routes;
+  combined_subjects = subject_routes ++ old_subjects;
 in {
 
   options = {

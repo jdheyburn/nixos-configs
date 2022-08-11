@@ -27,12 +27,13 @@ let
     answer = service.ip;
   }) caddy_host_services;
 
+  # TODO remove this once caddify.additional is being discovered
   default_rewrite = [{
     domain = "*.svc.joannet.casa";
     answer = "192.168.1.10";
   }];
 
-  rewrites = default_rewrite ++ new_rewrites;
+  rewrites = new_rewrites ++ default_rewrite;
 
 in {
 
