@@ -1,8 +1,37 @@
-{ config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, ... }:
 
 with lib;
 
-let cfg = config.modules.dns;
+let
+  cfg = config.modules.dns;
+
+  # Get services which are being served by caddy
+  caddy_services = filterAttrs
+    (n: v: v ? "caddify" && v.caddify ? "enable" && v.caddify.enable)
+    catalog.services;
+
+  # Convert it to a list
+  caddy_services_list = map
+    (service_name: caddy_services."${service_name}" // { name = service_name; })
+    (attrNames caddy_services);
+
+  get_forward_to_node = service:
+    if service.caddify ? "forwardTo" then
+      catalog.nodes."${service.caddify.forwardTo}"
+    else
+      catalog.nodes."${service.host}";
+
+  # Add the IP address for the host the service is on
+  caddy_host_services =
+    map (service: service // { ip = (get_forward_to_node service).ip.private; })
+    caddy_services_list;
+
+  # For each service create a list of rewrites
+  rewrites = map (service: {
+    domain = "${service.name}.svc.joannet.casa";
+    answer = service.ip;
+  }) caddy_host_services;
+
 in {
 
   options.modules.dns = { enable = mkEnableOption "Deploy AdGuardHome"; };
@@ -50,10 +79,7 @@ in {
           #  "2620:fe::10"
           #  "2620:fe::fe:10"
           #];
-          rewrites = [{
-            domain = "*.svc.joannet.casa";
-            answer = "192.168.1.10";
-          }];
+          rewrites = rewrites;
           resolve_clients = true;
         };
 
