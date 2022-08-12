@@ -6,34 +6,31 @@ let
   cfg = config.modules.dns;
 
   # Get services which are being served by caddy
-  caddy_services = filterAttrs (n: v:
-    hasAttr "caddify" v && hasAttr "enable" v.caddify && v.caddify.enable && (! hasAttr "forwardTo" v.caddify))
+  caddy_services = filterAttrs
+    (n: v: v ? "caddify" && v.caddify ? "enable" && v.caddify.enable)
     catalog.services;
 
   # Convert it to a list
-  caddy_services_list = map (service_name:
-    (getAttr service_name caddy_services) // {
-      name = service_name;
-    }) (attrNames caddy_services);
+  caddy_services_list = map
+    (service_name: caddy_services."${service_name}" // { name = service_name; })
+    (attrNames caddy_services);
+
+  get_forward_to_node = service:
+    if service.caddify ? "forwardTo" then
+      catalog.nodes."${service.caddify.forwardTo}"
+    else
+      catalog.nodes."${service.host}";
 
   # Add the IP address for the host the service is on
-  caddy_host_services = map (service:
-    service // {
-      ip = (getAttr service.host catalog.nodes).ip.private;
-    }) caddy_services_list;
+  caddy_host_services =
+    map (service: service // { ip = (get_forward_to_node service).ip.private; })
+    caddy_services_list;
+
   # For each service create a list of rewrites
-  new_rewrites = map (service: {
+  rewrites = map (service: {
     domain = "${service.name}.svc.joannet.casa";
     answer = service.ip;
   }) caddy_host_services;
-
-  # TODO remove this in favour of using forwardTo ip address
-  default_rewrite = [{
-    domain = "*.svc.joannet.casa";
-    answer = "192.168.1.10";
-  }];
-
-  rewrites = new_rewrites ++ default_rewrite;
 
 in {
 
