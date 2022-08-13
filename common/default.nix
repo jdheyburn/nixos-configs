@@ -70,12 +70,22 @@
       ];
     };
 
+    # To allow for deploy-rs  
+    security.sudo.extraRules = [{
+      users = [ "jdheyburn" ];
+      commands = [{
+        command = "ALL";
+        options = [ "NOPASSWD" ];
+      }];
+    }];
+    nix.trustedUsers = [ "jdheyburn" ];
+
     #############################################################################
     ## Package management
     #############################################################################
 
     # Preserve space by gc-ing and optimising store
-    nix.gc.automatic = false;
+    nix.gc.automatic = true;
     nix.gc.options = "--delete-older-than 30d";
     nix.autoOptimiseStore = true;
 

@@ -8,6 +8,8 @@
       flake = false;
     };
 
+    deploy-rs.url = "github:serokell/deploy-rs";
+
     flake-utils.url = "github:numtide/flake-utils";
     flake-utils.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -20,7 +22,7 @@
   };
 
   outputs = inputs@{ self, argononed, agenix, flake-utils, home-manager, nixpkgs
-    , nixpkgs-2205, nixos-hardware, ... }:
+    , nixpkgs-2205, nixos-hardware, deploy-rs, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
       catalog = import ./catalog.nix { inherit system; };
@@ -75,6 +77,36 @@
         ];
 
       };
+
+      deploy.nodes = {
+        dennis = {
+          hostname = "192.168.1.12";
+          profiles = {
+            system = {
+              user = "root";
+              path = deploy-rs.lib.x86_64-linux.activate.nixos
+                self.nixosConfigurations.dennis;
+              sshOpts = [ "-o" "IdentitiesOnly=yes" ];
+            };
+          };
+        };
+
+        dee = {
+          hostname = "192.168.1.10";
+          profiles = {
+            system = {
+              user = "root";
+              path = deploy-rs.lib.aarch64-linux.activate.nixos
+                self.nixosConfigurations.dee;
+              sshOpts = [ "-o" "IdentitiesOnly=yes" ];
+            };
+          };
+        };
+
+      };
+
+      checks = builtins.mapAttrs
+        (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
     };
 }
