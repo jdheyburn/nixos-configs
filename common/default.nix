@@ -88,7 +88,7 @@
     #############################################################################
 
     # TODO fix to allow myself
-    nix.settings.require-sigs = false;
+    nix.trustedUsers = [ "jdheyburn" ];    
 
     # Preserve space by gc-ing and optimising store
     nix.gc.automatic = false;

@@ -42,21 +42,6 @@ in {
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
 
-  nix.settings.require-sigs = false;
-
-  security.sudo.extraRules = [
-    {
-      users = [ "jdheyburn" ];
-      commands = [
-        {
-          command = "ALL";
-      options = [ "NOPASSWD" ];
-
-        }
-      ];
-    }
-  ];
-
   ###############################################################################
   ## Modules
   ###############################################################################
