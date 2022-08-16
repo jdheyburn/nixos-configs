@@ -1,5 +1,5 @@
-{ stdenv, lib, buildGoModule, plugins ? [ ], fetchFromGitHub, vendorSha256 ? ""
-}:
+{ stdenv, lib, buildGo117Module, plugins ? [ ], fetchFromGitHub
+, vendorSha256 ? "" }:
 
 with lib;
 
@@ -21,7 +21,7 @@ let
     		}
     	'';
 
-in buildGoModule rec {
+in buildGo117Module rec {
   pname = "caddy";
   version = "2.4.6";
 
