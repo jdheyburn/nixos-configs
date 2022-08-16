@@ -78,7 +78,7 @@
         options = [ "NOPASSWD" ];
       }];
     }];
-    nix.trustedUsers = [ "jdheyburn" ];
+    nix.settings.trusted-users = [ "jdheyburn" ];
 
     #############################################################################
     ## Package management
@@ -87,7 +87,7 @@
     # Preserve space by gc-ing and optimising store
     nix.gc.automatic = true;
     nix.gc.options = "--delete-older-than 30d";
-    nix.autoOptimiseStore = true;
+    nix.settings.auto-optimise-store = true;
 
     # Enable flakes
     nix.package = pkgs.nixFlakes;
