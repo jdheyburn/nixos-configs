@@ -1,9 +1,20 @@
-{ stdenv, lib, buildGo117Module, plugins ? [ ], fetchFromGitHub
+# TODO experiment with overlays instead of this file
+
+{ stdenv, lib, buildGo117Module, nixosTests, plugins ? [ ], fetchFromGitHub
 , vendorSha256 ? "" }:
 
 with lib;
 
 let
+  version = "2.5.2";
+
+  dist = fetchFromGitHub {
+    owner = "caddyserver";
+    repo = "dist";
+    rev = "v${version}";
+    sha256 = "sha256-wzW0eb+O7JqQJkWtpMwV4G56uqLd1U2NduNAMPGvD3o=";
+  };
+
   imports = flip concatMapStrings plugins (pkg: "			_ \"${pkg}\"\n");
 
   main = ''
@@ -23,7 +34,7 @@ let
 
 in buildGo117Module rec {
   pname = "caddy";
-  version = "2.4.6";
+  inherit version;
 
   subPackages = [ "cmd/caddy" ];
 
@@ -31,7 +42,7 @@ in buildGo117Module rec {
     owner = "caddyserver";
     repo = "caddy";
     rev = "v${version}";
-    sha256 = "sha256-xNCxzoNpXkj8WF9+kYJfO18ux8/OhxygkGjA49+Q4vY=";
+    sha256 = "sha256-Z9A2DRdX0LWjIKdHAHk2IRxsUzvC90Gf5ohFLXNHcsw=";
   };
 
   inherit vendorSha256;
@@ -55,11 +66,19 @@ in buildGo117Module rec {
     cp vendor/go.mod ./
   '';
 
+  postInstall = ''
+    install -Dm644 ${dist}/init/caddy.service ${dist}/init/caddy-api.service -t $out/lib/systemd/system
+    substituteInPlace $out/lib/systemd/system/caddy.service --replace "/usr/bin/caddy" "$out/bin/caddy"
+    substituteInPlace $out/lib/systemd/system/caddy-api.service --replace "/usr/bin/caddy" "$out/bin/caddy"
+  '';
+
+  passthru.tests = { inherit (nixosTests) caddy; };
+
   meta = with lib; {
     homepage = "https://caddyserver.com";
     description = "Fast, cross-platform HTTP/2 web server with automatic HTTPS";
     license = licenses.asl20;
-    maintainers = with maintainers; [ rushmorem fpletz zimbatm ];
+    maintainers = with maintainers; [ Br1ght0ne techknowlogick ];
   };
 }
 
