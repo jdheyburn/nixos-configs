@@ -12,14 +12,17 @@ in {
     prometheus.url =
       "http://localhost:${toString catalog.services.prometheus.port}";
 
-    grpc-address = "0.0.0.0:${toString catalog.services.thanos-sidecar.port}";
+    http-address = "0.0.0.0:${toString catalog.services.thanos-sidecar.port}";
+    grpc-address =
+      "0.0.0.0:${toString catalog.services.thanos-sidecar.grpcPort}";
 
     objstore.config = objstore_config;
   };
 
   store = {
     enable = true;
-    grpc-address = "0.0.0.0:${toString catalog.services.thanos-store.port}";
+    http-address = "0.0.0.0:${toString catalog.services.thanos-store.port}";
+    grpc-address = "0.0.0.0:${toString catalog.services.thanos-store.grpcPort}";
     objstore.config = objstore_config;
   };
 
@@ -30,6 +33,6 @@ in {
     grpc-address = "0.0.0.0:${toString catalog.services.thanos-query.grpcPort}";
 
     store.addresses =
-      [ "localhost:${toString catalog.services.thanos-store.port}" ];
+      [ "localhost:${toString catalog.services.thanos-store.grpcPort}" ];
   };
 }

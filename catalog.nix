@@ -95,9 +95,15 @@
       caddify.enable = true;
     };
 
-    thanos-sidecar = { port = 10901; };
+    thanos-sidecar = {
+      port = 19191;
+      grpcPort = 10901;
+    };
 
-    thanos-store = { port = 10903; };
+    thanos-store = {
+      port = 19193;
+      grpcPort = 10903;
+    };
 
     unifi = {
       host = "dee";
