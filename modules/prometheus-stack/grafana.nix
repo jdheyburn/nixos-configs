@@ -13,10 +13,18 @@
     enable = true;
     datasources = [
       {
+        name = "Thanos Query";
+        type = "prometheus";
+        url = "http://localhost:${toString catalog.services.thanos-query.port}";
+        isDefault = true;
+        jsonData = {
+          timeInterval = "5s"; # node is scraping at 5s
+        };
+      }
+      {
         name = "Prometheus";
         type = "prometheus";
         url = "http://localhost:${toString config.services.prometheus.port}";
-        isDefault = true;
         jsonData = {
           timeInterval = "5s"; # node is scraping at 5s
         };

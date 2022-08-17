@@ -1,13 +1,13 @@
 { catalog, pkgs }:
 
-# TODO a lot of references to /var/lib/loki - can they be retrieved from default config or set in variable?
-{
+let lokiDir = "/var/lib/loki";
+in {
   enable = true;
   configuration = {
     auth_enabled = false;
     server.http_listen_port = catalog.services.loki.port;
     compactor = {
-      working_directory = "/var/lib/loki";
+      working_directory = lokiDir;
       shared_store = "filesystem";
       compactor_ring.kvstore.store = "inmemory";
     };
@@ -48,13 +48,13 @@
 
     storage_config = {
       boltdb_shipper = {
-        active_index_directory = "/var/lib/loki/boltdb-shipper-active";
-        cache_location = "/var/lib/loki/boltdb-shipper-cache";
+        active_index_directory = "${lokiDir}/boltdb-shipper-active";
+        cache_location = "${lokiDir}/boltdb-shipper-cache";
         # Can be increased for faster performance over longer query periods, uses more disk space
         cache_ttl = "24h";
         shared_store = "filesystem";
       };
-      filesystem.directory = "/var/lib/loki/chunks";
+      filesystem.directory = "${lokiDir}/chunks";
     };
 
     limits_config = {
@@ -72,7 +72,7 @@
     ruler = {
       storage = {
         type = "local";
-        local.directory = "/var/lib/loki/rules";
+        local.directory = "${lokiDir}/rules";
       };
     };
   };

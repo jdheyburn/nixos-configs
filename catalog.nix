@@ -88,6 +88,12 @@
       caddify.enable = true;
     };
 
+    thanos-query = {
+      host = "dennis";
+      port = 19192;
+      caddify.enable = true;
+    };
+
     unifi = {
       host = "dee";
       port = 8443;
