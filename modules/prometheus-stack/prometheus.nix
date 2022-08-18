@@ -1,5 +1,6 @@
 { catalog, config, pkgs }:
 let
+  # TODO should be discovered from catalog
   nodeExporterTargets = [
     "dee.joannet.casa"
     "dennis.joannet.casa"
@@ -10,6 +11,17 @@ let
 in {
   enable = true;
   port = catalog.services.prometheus.port;
+  webExternalUrl = "https://prometheus.svc.joannet.casa";
+
+  extraFlags = [
+    "--storage.tsdb.min-block-duration=2h"
+    "--storage.tsdb.max-block-duration=2h"
+  ];
+
+  globalConfig = {
+    external_labels = { prometheus = "${config.networking.hostName}"; };
+  };
+
   exporters = {
     node = {
       enable = true;
@@ -79,6 +91,7 @@ in {
       metrics_path = "/probe";
       params = { module = [ "http_2xx" "tls_connect" ]; };
       static_configs = [{
+        # TODO internal targets should be discovered from catalog.services
         targets = [
           "https://google.com;google.com;external"
           "https://github.com;github.com;external"

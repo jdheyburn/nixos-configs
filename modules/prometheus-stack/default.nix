@@ -12,6 +12,7 @@ in {
   config = mkIf cfg.enable {
 
     networking.firewall.allowedTCPPorts = [
+      # TODO are all these still required after being fronted by local reverse proxy?
       catalog.services.grafana.port
       catalog.services.loki.port
       catalog.services.prometheus.port
@@ -27,5 +28,6 @@ in {
     services.loki = import ./loki.nix { inherit catalog pkgs; };
     services.prometheus =
       import ./prometheus.nix { inherit catalog config pkgs; };
+    services.thanos = import ./thanos.nix { inherit catalog config pkgs; };
   };
 }

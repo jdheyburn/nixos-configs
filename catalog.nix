@@ -88,6 +88,23 @@
       caddify.enable = true;
     };
 
+    thanos-query = {
+      host = "dennis";
+      port = 19192;
+      grpcPort = 10902;
+      caddify.enable = true;
+    };
+
+    thanos-sidecar = {
+      port = 19191;
+      grpcPort = 10901;
+    };
+
+    thanos-store = {
+      port = 19193;
+      grpcPort = 10903;
+    };
+
     unifi = {
       host = "dee";
       port = 8443;
