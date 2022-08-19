@@ -8,7 +8,8 @@ let
 
   caddyMetricsPort = 2019;
 
-  route = { name, port, upstream ? "localhost", skip_tls_verify ? false }:
+  handler_route =
+    { port, upstream ? "localhost", skip_tls_verify ? false, path ? [ ] }:
     let
       base_handle = {
         handler = "reverse_proxy";
@@ -21,11 +22,24 @@ let
         };
       };
     in {
+      handle = [ handle ];
+    } // optionalAttrs (length path > 0) { match = [{ path = path; }]; };
+
+  route = { name, port, upstream ? "localhost", skip_tls_verify ? false
+    , paths ? [ ] }:
+    let
+      handler_routes = map (service: handler_route service) (paths ++ [{
+        port = port;
+        upstream = upstream;
+        skip_tls_verify = skip_tls_verify;
+      }]);
+
+    in {
       match = [{ host = [ "${name}.svc.joannet.casa" ]; }];
       terminal = true;
       handle = [{
         handler = "subroute";
-        routes = [{ handle = [ handle ]; }];
+        routes = handler_routes;
       }];
     };
 
@@ -47,6 +61,7 @@ let
       port = service.port;
       skip_tls_verify = service.caddify ? "skip_tls_verify"
         && service.caddify.skip_tls_verify;
+      paths = if service.caddify ? "paths" then service.caddify.paths else [ ];
     }) host_services_list;
 
   # These are additional services that this host should forward
@@ -67,6 +82,7 @@ let
       upstream = catalog.nodes."${service.host}".ip.private;
       skip_tls_verify = service.caddify ? "skip_tls_verify"
         && service.caddify.skip_tls_verify;
+      # Not supporting paths yet since I don't have a scenario to test it on
     }) forward_services_list;
 
   combined_routes = catalog_routes ++ forward_routes;

@@ -17,6 +17,7 @@ let
 in {
   "adguard-password.age".publicKeys = default;
   "caddy-environment-file.age".publicKeys = default;
+  "minio-root-credentials.age".publicKeys = default;
   "restic-small-files-password.age".publicKeys = default;
   "restic-media-password.age".publicKeys = default;
   "rclone.conf.age".publicKeys = default;

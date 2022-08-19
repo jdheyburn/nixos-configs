@@ -34,6 +34,7 @@
         ./modules/backup
         ./modules/caddy
         ./modules/dns
+        ./modules/minio
         ./modules/monitoring
         ./modules/mopidy
         ./modules/navidrome
