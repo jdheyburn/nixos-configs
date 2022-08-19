@@ -136,6 +136,12 @@ in {
         }
       ];
     }
+    {
+      job_name = "minio";
+      metrics_path = "/minio/v2/metrics/cluster";
+      scheme = "https";
+      static_configs = [{ targets = [ "minio.svc.joannet.casa" ]; }];
+    }
   ];
 }
 

@@ -61,6 +61,19 @@
 
     nodeExporter = { port = 9002; };
 
+    minio = {
+      host = "dee";
+      port = 9100;
+      consolePort = 9101;
+      caddify.enable = true;
+    };
+
+    "ui.minio" = {
+      host = "dee";
+      port = services.minio.consolePort;
+      caddify.enable = true;
+    };
+
     portainer = {
       host = "frank";
       port = 9000;

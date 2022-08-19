@@ -23,6 +23,13 @@ Services is a mapping of service name to service attributes, it can accept:
 - `caddify.forwardTo`
   - Define a node name here different to host to have that node set up reverse proxy instead
   - Currently I'm using this to reverse proxy for services where nodes do not have Caddy on them (i.e. non-NixOS nodes)
+- `caddify.paths`
+  - A list of paths, additional path forwarding to ports that
+  - Used this for testing path forwarding for minio console, reverted as it didn't play nice
+  - `path`
+    - The URL path to forward (e.g. `/ui/*`)
+  - `port`
+    - The port to forward to
 
 ## Hosts
 

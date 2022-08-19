@@ -1,0 +1,38 @@
+{ catalog, config, pkgs, lib, ... }:
+
+with lib;
+
+let cfg = config.modules.minio;
+in {
+
+  options.modules.minio = {
+    enable = mkEnableOption "Deploy MinIO";
+    dataDir = mkOption {
+      type = types.path;
+      default = "/var/lib/minio/data";
+    };
+  };
+
+  config = mkIf cfg.enable {
+
+    age.secrets."minio-root-credentials".file =
+      ../../secrets/minio-root-credentials.age;
+
+    services.minio = {
+      enable = true;
+      dataDir = [ cfg.dataDir ];
+      listenAddress = ":${toString catalog.services.minio.port}";
+      consoleAddress = ":${toString catalog.services.minio.consolePort}";
+      rootCredentialsFile = config.age.secrets."minio-root-credentials".path;
+    };
+
+    systemd.services.minio.environment.MINIO_BROWSER_REDIRECT_URL =
+      "https://ui.minio.svc.joannet.casa";
+    systemd.services.minio.environment.MINIO_SERVER_URL =
+      "https://minio.svc.joannet.casa";
+    systemd.services.minio.environment.MINIO_PROMETHEUS_AUTH_TYPE = "public";
+    # systemd.services.minio.environment.MINIO_PROMETHEUS_JOB_ID = "minio";
+    # systemd.services.minio.environment.MINIO_PROMETHEUS_URL =
+    #   "https://prometheus.svc.joannet.casa";
+  };
+}
