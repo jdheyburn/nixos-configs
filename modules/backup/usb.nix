@@ -60,6 +60,9 @@ in {
          
          echo "rcloning restic/media -> b2:restic/media"
          ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/media b2:iifu8Noi-backups/restic/media --config=$RCLONE_CONF_PATH
+
+         echo "rcloning minio -> b2:minio"
+         ${pkgs.rclone}/bin/rclone -v sync minio: b2:iifu8Noi-backups/minio --config=$RCLONE_CONF_PATH
       '';
     };
 
