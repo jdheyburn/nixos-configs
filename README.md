@@ -2,6 +2,18 @@
 
 A place for me to dump nix configs
 
+## Deployment
+
+[deploy-rs]() is used to deploy the configurations.
+
+```bash
+# all hosts
+nix run github:serokell/deploy-rs -- -s "."
+
+# per host
+nix run github:serokell/deploy-rs -- -s ".#dennis"
+```
+
 ## Catalog
 
 `catalog.nix` is a global state file of sorts. The idea is that anything that is shared across nodes is defined here so that they can build their respective configs.

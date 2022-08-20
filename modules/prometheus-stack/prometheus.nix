@@ -13,6 +13,9 @@ in {
   port = catalog.services.prometheus.port;
   webExternalUrl = "https://prometheus.svc.joannet.casa";
 
+  # Thanos stores long term metrics
+  retentionTime = "1d";
+
   extraFlags = [
     "--storage.tsdb.min-block-duration=2h"
     "--storage.tsdb.max-block-duration=2h"
@@ -29,6 +32,7 @@ in {
     };
     blackbox = {
       enable = true;
+      # TODO define this via nix
       configFile = ./blackbox.yaml;
     };
   };
