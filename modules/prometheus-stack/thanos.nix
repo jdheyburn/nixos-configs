@@ -1,6 +1,5 @@
 { catalog, config, pkgs }:
-let
-  objstore_config = config.age.secrets."thanos-objstore-config".path;
+let objstore_config = config.age.secrets."thanos-objstore-config".path;
 in {
   sidecar = {
     enable = true;
@@ -27,10 +26,9 @@ in {
     http-address = "0.0.0.0:${toString catalog.services.thanos-query.port}";
     grpc-address = "0.0.0.0:${toString catalog.services.thanos-query.grpcPort}";
 
-    store.addresses =
-      [
-        "localhost:${toString catalog.services.thanos-sidecar.grpcPort}"
-        "localhost:${toString catalog.services.thanos-store.grpcPort}"
-      ];
+    store.addresses = [
+      "localhost:${toString catalog.services.thanos-sidecar.grpcPort}"
+      "localhost:${toString catalog.services.thanos-store.grpcPort}"
+    ];
   };
 }
