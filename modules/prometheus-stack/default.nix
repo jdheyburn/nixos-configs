@@ -24,6 +24,14 @@ in {
       group = "grafana";
     };
 
+    age.secrets."thanos-objstore-config" = {
+      file = ../../secrets/thanos-objstore-config.age;
+      # TODO thanos-store systemd runs as DynamicUser
+      # see if we can set it to a known user, maybe prometheus
+      # and then change the owner of this file to that
+      mode = "0444";
+    };
+
     services.grafana = import ./grafana.nix { inherit catalog config pkgs; };
     services.loki = import ./loki.nix { inherit catalog pkgs; };
     services.prometheus =

@@ -97,12 +97,7 @@ in {
   modules.backupUSB.enable = true;
   modules.caddy.enable = true;
   modules.dns.enable = true;
-
-  modules.minio = {
-    enable = true;
-    dataDir = "/mnt/nfs/minio/data";
-  };
-
+  modules.minio.enable = true;
   modules.monitoring.enable = true;
   modules.mopidy.enable = false;
   modules.navidrome.enable = false;
