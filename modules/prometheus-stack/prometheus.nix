@@ -1,14 +1,4 @@
-{ catalog, config, pkgs }:
-let
-  # TODO should be discovered from catalog
-  nodeExporterTargets = [
-    "dee.joannet.casa"
-    "dennis.joannet.casa"
-    "frank.joannet.casa"
-    "paddys.joannet.casa"
-  ];
-
-in {
+{ catalog, config, pkgs }: {
   enable = true;
   port = catalog.services.prometheus.port;
   webExternalUrl = "https://prometheus.svc.joannet.casa";
@@ -58,7 +48,7 @@ in {
       static_configs = [{
         targets = map (node:
           "${node}:${toString config.services.prometheus.exporters.node.port}")
-          nodeExporterTargets;
+          catalog.nodeExporterTargets;
       }];
       # Convert instance label "<hostname>:<port>" -> "<hostname>"
       # https://stackoverflow.com/questions/49896956/relabel-instance-to-hostname-in-prometheus

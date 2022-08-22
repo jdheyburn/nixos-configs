@@ -1,6 +1,11 @@
 # Catalog defines the systems & services on my network.
 # Inspired from https://github.com/jhillyerd/homelab/blob/main/nixos/catalog.nix
-{ system }: rec {
+{ lib, system }:
+with lib;
+
+rec
+
+{
 
   nodes = {
     dee = {
@@ -20,11 +25,19 @@
       ip.tailscale = "100.71.206.55";
     };
 
-    proxmox = {
+    paddys = {
+      ip.private = "192.168.1.20";
+      ip.tailscale = "100.107.150.109";
+    };
+
+    pve0 = {
       ip.private = "192.168.1.15";
       ip.tailscale = "100.80.112.68";
     };
   };
+
+  nodeExporterTargets =
+    map (node_name: "${node_name}.joannet.casa") (attrNames nodes);
 
   services = {
     adguard = {
@@ -36,6 +49,7 @@
     home = {
       host = "frank";
       port = 49154;
+      blackbox_name = "heimdall";
       caddify.enable = true;
       caddify.forwardTo = "dee";
     };
@@ -88,7 +102,7 @@
     };
 
     proxmox = {
-      host = "proxmox";
+      host = "pve0";
       port = 8006;
       caddify.enable = true;
       caddify.skip_tls_verify = true;
@@ -130,16 +144,9 @@
       port = 8428;
       caddify.enable = true;
     };
-
   };
 
-  nodeExporterTargets = [
-    "dee.joannet.casa"
-    "dennis.joannet.casa"
-    "frank.joannet.casa"
-    "paddys.joannet.casa"
-  ];
-
+  # TODO don't repeat this from prometheus.nix
   prometheusScrapeConfigs = [
     # Scrape self
     {

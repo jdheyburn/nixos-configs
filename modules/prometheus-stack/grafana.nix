@@ -32,7 +32,8 @@
       {
         name = "VictoriaMetrics";
         type = "prometheus";
-        url = "http://localhost:${toString catalog.services.victoriametrics.port}";
+        url =
+          "http://localhost:${toString catalog.services.victoriametrics.port}";
         jsonData = {
           timeInterval = "5s"; # node is scraping at 5s
         };

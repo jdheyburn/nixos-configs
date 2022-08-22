@@ -25,7 +25,10 @@
     , nixpkgs-2205, nixos-hardware, deploy-rs, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
-      catalog = import ./catalog.nix { inherit system; };
+      catalog = import ./catalog.nix {
+        inherit system;
+        lib = nixpkgs.lib;
+      };
       common = [
         ./common
         agenix.nixosModule
