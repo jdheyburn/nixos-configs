@@ -6,7 +6,7 @@ let
   json = pkgs.formats.json { };
   cfg = config.modules.victoriametrics;
 
-  promConfig = { scrape_configs = catalog.prometheusScrapeConfigs; };
+  promConfig = { scrape_configs = import ../prometheus-stack/scrape-configs.nix { inherit catalog config lib; }; };
 
   prometheusYml = json.generate "prometheus.yml" promConfig;
 
