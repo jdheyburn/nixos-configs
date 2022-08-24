@@ -6,6 +6,92 @@ let
   nodeExporterTargets =
     map (node_name: "${node_name}.joannet.casa") (attrNames catalog.nodes);
 
+  caddified_services =
+    (filterAttrs (n: v: v ? "caddify" && v.caddify.enable) catalog.services);
+
+  caddified_services_list = map (service_name:
+    caddified_services."${service_name}" // {
+      name = service_name;
+    }) (attrNames caddified_services);
+
+  internal_https_targets = map (service:
+    "https://${service.name}.svc.joannet.casa${
+      if service ? "blackbox" && service.blackbox ? "path" then
+        service.blackbox.path
+      else
+        ""
+    };${
+      if service ? "blackbox" && service.blackbox ? "name" then
+        service.blackbox.name
+      else
+        service.name
+    };internal") caddified_services_list;
+
+  external_targets = map (url: "https://${url};${url};external") [
+    "bbc.co.uk"
+    "github.com"
+    "google.com"
+    "jdheyburn.co.uk"
+  ];
+
+  blackbox = {
+    https_targets = external_targets ++ internal_https_targets;
+
+    # Tried this for minio and plex, as they were returning 401 and 403
+    # but since these services are behind reverse proxy, the TLS check is
+    # against caddy, so it would not fail if the underlying service goes down
+    # TODO evaluate a blackbox on each node, that can poll for TLS services
+    # tls_targets = map (service:
+    #   "${service.name}.svc.joannet.casa:443;${
+    #     if service ? "blackbox" && service.blackbox ? "name" then
+    #       service.blackbox.name
+    #     else
+    #       service.name
+    #   };internal")
+    #   (filter (service: service.blackbox.module == "tls_connect")
+    #     caddified_services_list);
+
+    relabel_configs = [
+      {
+        source_labels = [ "__address__" ];
+        regex = "(.*);(.*);(.*)"; # first is the url, thus unique for instance
+        target_label = "instance";
+        replacement = "$1";
+      }
+      {
+        source_labels = [ "__address__" ];
+        regex = "(.*);(.*);(.*)"; # second is humanname to use in charts
+        target_label = "humanname";
+        replacement = "$2";
+      }
+      {
+        source_labels = [ "__address__" ];
+        regex =
+          "(.*);(.*);(.*)"; # third state whether this is testing external or internal network
+        target_label = "routing";
+        replacement = "$3";
+      }
+      {
+        source_labels = [ "instance" ];
+        target_label = "__param_target";
+      }
+      {
+        target_label = "__address__";
+        replacement = "127.0.0.1:9115";
+      }
+    ];
+
+  };
+
+  nixOS_nodes = (filterAttrs (n: v: v.isNixOS) catalog.nodes);
+  nixOS_nodes_list =
+    map (node_name: nixOS_nodes."${node_name}" // { name = node_name; })
+    (attrNames nixOS_nodes);
+
+  promtail_targets = map (node:
+    "${node.name}.joannet.casa:${toString catalog.services.promtail.port}")
+    nixOS_nodes_list;
+
 in [
   {
     job_name = "prometheus";
@@ -55,59 +141,24 @@ in [
   #   job_name = "adguard";
   #   static_configs = [{ targets = [ "dee.joannet.casa:9617" ]; }];
   # }
+  # Blackbox monitoring inspiration from:
+  #   https://github.com/prometheus/blackbox_exporter#prometheus-configuration
+  #   https://github.com/maxandersen/internet-monitoring/blob/master/prometheus/prometheus.yml
   {
-    # Inspiration from:
-    #   https://github.com/prometheus/blackbox_exporter#prometheus-configuration
-    #   https://github.com/maxandersen/internet-monitoring/blob/master/prometheus/prometheus.yml
-    job_name = "blackbox";
+    job_name = "blackbox-https";
     metrics_path = "/probe";
-    params = { module = [ "http_2xx" "tls_connect" ]; };
-    static_configs = [{
-      # TODO internal targets should be discovered from catalog.services
-      targets = [
-        "https://google.com;google.com;external"
-        "https://github.com;github.com;external"
-        "https://bbc.co.uk;bbc.co.uk;external"
-        "https://adguard.svc.joannet.casa;adguard;internal"
-        "https://grafana.svc.joannet.casa;grafana;internal"
-        "https://home.svc.joannet.casa;heimdall;internal"
-        "https://huginn.svc.joannet.casa;huginn;internal"
-        "https://portainer.svc.joannet.casa;portainer;internal"
-        "https://prometheus.svc.joannet.casa;prometheus;internal"
-        "https://proxmox.svc.joannet.casa;proxmox;internal"
-        "https://unifi.svc.joannet.casa;unifi;internal"
-      ];
-    }];
-    relabel_configs = [
-      {
-        source_labels = [ "__address__" ];
-        regex = "(.*);(.*);(.*)"; # first is the url, thus unique for instance
-        target_label = "instance";
-        replacement = "$1";
-      }
-      {
-        source_labels = [ "__address__" ];
-        regex = "(.*);(.*);(.*)"; # second is humanname to use in charts
-        target_label = "humanname";
-        replacement = "$2";
-      }
-      {
-        source_labels = [ "__address__" ];
-        regex =
-          "(.*);(.*);(.*)"; # third state whether this is testing external or internal network
-        target_label = "routing";
-        replacement = "$3";
-      }
-      {
-        source_labels = [ "instance" ];
-        target_label = "__param_target";
-      }
-      {
-        target_label = "__address__";
-        replacement = "127.0.0.1:9115";
-      }
-    ];
+    params = { module = [ "http_2xx" ]; };
+    static_configs = [{ targets = blackbox.https_targets; }];
+    relabel_configs = blackbox.relabel_configs;
   }
+  # {
+  #   job_name = "blackbox-tls";
+  #   metrics_path = "/probe";
+  #   params = { module = [ "tls_connect" ]; };
+  #   static_configs = [{ targets = blackbox.tls_targets; }];
+  #   relabel_configs = blackbox.relabel_configs;
+  # }
+  # End blackbox monitoring
   {
     job_name = "minio";
     metrics_path = "/minio/v2/metrics/cluster";
@@ -119,5 +170,19 @@ in [
     metrics_path = "/pve";
     params.module = [ "default" ];
     static_configs = [{ targets = [ "pve0.joannet.casa:9221" ]; }];
+  }
+  {
+    job_name = "loki";
+    static_configs = [{
+      targets = [
+        "localhost:${
+          toString config.services.loki.configuration.server.http_listen_port
+        }"
+      ];
+    }];
+  }
+  {
+    job_name = "promtail";
+    static_configs = [{ targets = promtail_targets; }];
   }
 ]

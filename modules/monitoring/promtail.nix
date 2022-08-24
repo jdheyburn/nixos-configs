@@ -1,13 +1,10 @@
 
 
-{ config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, ... }:
 
 with lib;
 
-let
-  cfg = config.modules.promtail;
-
-  promtailPort = 28183;
+let cfg = config.modules.promtail;
 in {
 
   options.modules.promtail = {
@@ -19,18 +16,17 @@ in {
 
   config = mkIf cfg.enable {
 
-    networking.firewall.allowedTCPPorts = [ promtailPort ];
+    networking.firewall.allowedTCPPorts = [ catalog.services.promtail.port ];
 
     services.promtail = {
       enable = true;
       configuration = {
         server = {
-          http_listen_port = promtailPort;
+          http_listen_port = catalog.services.promtail.port;
           grpc_listen_port = 0;
         };
         positions = { filename = "/tmp/positions.yaml"; };
-        clients =
-          [{ url = "http://dennis.joannet.casa:3100/loki/api/v1/push"; }];
+        clients = [{ url = "https://loki.svc.joannet.casa/loki/api/v1/push"; }];
         scrape_configs = [{
           job_name = "journal";
           journal = {

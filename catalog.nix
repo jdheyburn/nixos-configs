@@ -1,38 +1,38 @@
 # Catalog defines the systems & services on my network.
 # Inspired from https://github.com/jhillyerd/homelab/blob/main/nixos/catalog.nix
-{ lib, system }:
-with lib;
-
-rec
-
-{
+{ system }: rec {
 
   nodes = {
     dee = {
       ip.private = "192.168.1.10";
       ip.tailscale = "100.127.189.33";
       system = system.aarch64-linux;
+      isNixOS = true;
     };
 
     dennis = {
       ip.private = "192.168.1.12";
       ip.tailscale = "100.127.102.123";
       system = system.x86_64-linux;
+      isNixOS = true;
     };
 
     frank = {
       ip.private = "192.168.1.11";
       ip.tailscale = "100.71.206.55";
+      isNixOS = false;
     };
 
     paddys = {
       ip.private = "192.168.1.20";
       ip.tailscale = "100.107.150.109";
+      isNixOS = false;
     };
 
     pve0 = {
       ip.private = "192.168.1.15";
       ip.tailscale = "100.80.112.68";
+      isNixOS = false;
     };
   };
 
@@ -46,7 +46,7 @@ rec
     home = {
       host = "frank";
       port = 49154;
-      blackbox_name = "heimdall";
+      blackbox.name = "heimdall";
       caddify.enable = true;
       caddify.forwardTo = "dee";
     };
@@ -67,6 +67,7 @@ rec
     loki = {
       host = "dennis";
       port = 3100;
+      blackbox.path = "/ready";
       caddify.enable = true;
     };
 
@@ -97,6 +98,8 @@ rec
       port = 9001;
       caddify.enable = true;
     };
+
+    promtail = { port = 28183; };
 
     proxmox = {
       host = "pve0";
