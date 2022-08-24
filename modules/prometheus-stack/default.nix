@@ -35,7 +35,7 @@ in {
     services.grafana = import ./grafana.nix { inherit catalog config pkgs; };
     services.loki = import ./loki.nix { inherit catalog pkgs; };
     services.prometheus =
-      import ./prometheus.nix { inherit catalog config pkgs; };
+      import ./prometheus.nix { inherit catalog config pkgs lib; };
     services.thanos = import ./thanos.nix { inherit catalog config pkgs; };
   };
 }

@@ -30,6 +30,15 @@
         };
       }
       {
+        name = "VictoriaMetrics";
+        type = "prometheus";
+        url =
+          "http://localhost:${toString catalog.services.victoriametrics.port}";
+        jsonData = {
+          timeInterval = "5s"; # node is scraping at 5s
+        };
+      }
+      {
         name = "Loki";
         type = "loki";
         url = "http://localhost:${
@@ -37,7 +46,8 @@
           }";
       }
     ];
-    # Not sure if this actually works..
+    # Not sure if this actually works.. the datasource provision above works for existing deployments
+    # TODO
     notifiers = [{
       name = "email-me";
       uid = "email-me";

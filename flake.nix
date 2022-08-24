@@ -41,6 +41,7 @@
         ./modules/nfs
         ./modules/plex
         ./modules/unifi
+        ./modules/victoriametrics
       ];
       homeFeatures = system: [
         home-manager.nixosModules.home-manager
