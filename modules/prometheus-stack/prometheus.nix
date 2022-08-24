@@ -22,8 +22,18 @@
     };
     blackbox = {
       enable = true;
-      # TODO define this via nix
-      configFile = ./blackbox.yaml;
+      configFile = pkgs.writeText "blackbox.json" (builtins.toJSON {
+        modules.http_2xx = {
+          prober = "http";
+          timeout = "5s";
+          http.preferred_ip_protocol = "ip4";
+        };
+        modules.tls_connect = {
+          prober = "tcp";
+          timeout = "5s";
+          tcp.tls = true;
+        };
+      });
     };
   };
   scrapeConfigs = import ./scrape-configs.nix { inherit catalog config lib; };
