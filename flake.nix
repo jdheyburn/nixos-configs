@@ -25,23 +25,10 @@
     , nixpkgs-2205, nixos-hardware, deploy-rs, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
-      catalog = import ./catalog.nix { inherit system; };
+      catalog = import ./catalog.nix { inherit nixos-hardware system; };
       common = [
         ./common
         agenix.nixosModule
-        # TODO loop over each dir in modules
-        ./modules/prometheus-stack
-        ./modules/backup
-        ./modules/caddy
-        ./modules/dns
-        ./modules/minio
-        ./modules/monitoring
-        ./modules/mopidy
-        ./modules/navidrome
-        ./modules/nfs
-        ./modules/plex
-        ./modules/unifi
-        ./modules/victoriametrics
       ];
       homeFeatures = system: [
         home-manager.nixosModules.home-manager
@@ -60,25 +47,30 @@
           };
         }
       ];
+
+      nixosModules = builtins.listToAttrs (map (module: {
+        name = module;
+        value = import (./modules + "/${module}");
+      }) (builtins.attrNames (builtins.readDir ./modules)));
+
       mkLinuxSystem = system: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit argononed catalog system inputs; };
-          modules = common ++ homeFeatures system ++ extraModules;
+          modules = common ++ [{ imports = builtins.attrValues nixosModules; }]
+            ++ homeFeatures system ++ extraModules;
         };
     in {
 
-      nixosConfigurations = {
-        # TODO should be no need to pass in hosts configuration - can it be discovered?
-        dennis =
-          mkLinuxSystem "x86_64-linux" [ ./hosts/dennis/configuration.nix ];
-
-        dee = mkLinuxSystem "aarch64-linux" [
-          ./hosts/dee/configuration.nix
-          nixos-hardware.nixosModules.raspberry-pi-4
-        ];
-
-      };
+      nixosConfigurations = builtins.listToAttrs (map (host:
+        let
+          node = catalog.nodes.${host};
+          modules = [ (./hosts + "/${host}/configuration.nix") ]
+            ++ (if node ? "nixosHardware" then [ node.nixosHardware ] else [ ]);
+        in {
+          name = host;
+          value = mkLinuxSystem catalog.nodes.${host}.system modules;
+        }) (builtins.attrNames (builtins.readDir ./hosts)));
 
       deploy.nodes = {
         dennis = {

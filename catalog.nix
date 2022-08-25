@@ -1,6 +1,6 @@
 # Catalog defines the systems & services on my network.
 # Inspired from https://github.com/jhillyerd/homelab/blob/main/nixos/catalog.nix
-{ system }: rec {
+{ nixos-hardware, system }: rec {
 
   nodes = {
     dee = {
@@ -8,6 +8,7 @@
       ip.tailscale = "100.127.189.33";
       system = system.aarch64-linux;
       isNixOS = true;
+      nixosHardware = nixos-hardware.nixosModules.raspberry-pi-4;
     };
 
     dennis = {

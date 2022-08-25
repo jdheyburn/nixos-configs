@@ -57,3 +57,4 @@ Resources that I've used to help create the repo, please follow them as they are
 
 - https://github.com/barrucadu/nixfiles
 - https://github.com/jhillyerd/homelab
+- https://github.com/pinpox/nixos
