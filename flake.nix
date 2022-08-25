@@ -69,6 +69,8 @@
         };
     in {
 
+      overlays.default = final: prev: (import ./overlays inputs) final prev;
+
       nixosConfigurations = {
         # TODO should be no need to pass in hosts configuration - can it be discovered?
         dennis =

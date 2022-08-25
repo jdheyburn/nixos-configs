@@ -2,8 +2,7 @@
 
 with lib;
 
-let
-  cfg = config.modules.healthchecks;
+let cfg = config.modules.healthchecks;
 in {
   options.modules.healthchecks = {
     enable = mkEnableOption "enable healthchecks.py";
@@ -17,11 +16,11 @@ in {
       group = "healthchecks";
     };
 
-    # age.secrets."healthchecks-smtp-password" = {
-    #   file = ../../secrets/healthchecks-smtp-password.age;
-    #   owner = "healthchecks";
-    #   group = "healthchecks";
-    # };
+    age.secrets."healthchecks-smtp-password" = {
+      file = ../../secrets/healthchecks-smtp-password.age;
+      owner = "healthchecks";
+      group = "healthchecks";
+    };
 
     services.healthchecks = {
       enable = true;
@@ -33,7 +32,9 @@ in {
         EMAIL_HOST = "smtp.gmail.com";
         EMAIL_PORT = "587";
         EMAIL_HOST_USER = "jdheyburn@gmail.com";
-        EMAIL_HOST_PASSWORD = "REDACTED";
+        # EMAIL_HOST_PASSWORD = "REDACTED";
+        EMAIL_HOST_PASSWORD_FILE =
+          config.age.secrets."healthchecks-smtp-password".path;
         SECRET_KEY_FILE = config.age.secrets."healthchecks-secrets-file".path;
       };
     };

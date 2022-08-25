@@ -2,8 +2,7 @@
 
 with lib;
 
-let
-  cfg = config.modules.monitoring;
+let cfg = config.modules.monitoring;
 in {
 
   imports = [ ./promtail.nix ];
@@ -18,7 +17,8 @@ in {
 
   config = mkIf cfg.enable {
 
-    networking.firewall.allowedTCPPorts = [ config.services.prometheus.exporters.node.port ];
+    networking.firewall.allowedTCPPorts =
+      [ config.services.prometheus.exporters.node.port ];
 
     services.prometheus.exporters.node = {
       enable = true;
