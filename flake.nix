@@ -26,25 +26,24 @@
     let
       inherit (flake-utils.lib) eachSystemMap system;
       catalog = import ./catalog.nix { inherit nixos-hardware system; };
-      common = [
-        ./common
-        agenix.nixosModule
-      ];
+      common = [ ./common agenix.nixosModule ];
       homeFeatures = system: [
         home-manager.nixosModules.home-manager
         {
           # Fixes https://github.com/divnix/digga/issues/30
           home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit system inputs; };
-          # TODO loop over root and jdheyburn, to prevent duplicate common.nix declaration
-          # TODO home-manager should be imported via dir like above
-          home-manager.users.root = {
-            imports = [ ./home-manager/common.nix ./home-manager/root.nix ];
-          };
-          home-manager.users.jdheyburn = {
-            imports =
-              [ ./home-manager/common.nix ./home-manager/jdheyburn.nix ];
-          };
+
+          # Builds user list from directories under /home-manager/users
+          home-manager.users = builtins.listToAttrs (map (user: {
+            name = user;
+            value = {
+              imports = [
+                ./home-manager/common.nix
+                (./home-manager/users + "/${user}")
+              ];
+            };
+          }) (builtins.attrNames (builtins.readDir ./home-manager/users)));
         }
       ];
 
