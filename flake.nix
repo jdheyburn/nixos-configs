@@ -25,90 +25,67 @@
     , nixpkgs-2205, nixos-hardware, deploy-rs, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
-      catalog = import ./catalog.nix { inherit system; };
-      common = [
-        ./common
-        agenix.nixosModule
-        # TODO loop over each dir in modules
-        ./modules/prometheus-stack
-        ./modules/backup
-        ./modules/caddy
-        ./modules/dns
-        ./modules/healthchecks
-        ./modules/minio
-        ./modules/monitoring
-        ./modules/mopidy
-        ./modules/navidrome
-        ./modules/nfs
-        ./modules/plex
-        ./modules/unifi
-        ./modules/victoriametrics
-      ];
+      catalog = import ./catalog.nix { inherit nixos-hardware; };
+      common = [ ./common agenix.nixosModule ];
       homeFeatures = system: [
         home-manager.nixosModules.home-manager
         {
           # Fixes https://github.com/divnix/digga/issues/30
           home-manager.useGlobalPkgs = true;
           home-manager.extraSpecialArgs = { inherit system inputs; };
-          # TODO loop over root and jdheyburn, to prevent duplicate common.nix declaration
-          # TODO home-manager should be imported via dir like above
-          home-manager.users.root = {
-            imports = [ ./home-manager/common.nix ./home-manager/root.nix ];
-          };
-          home-manager.users.jdheyburn = {
-            imports =
-              [ ./home-manager/common.nix ./home-manager/jdheyburn.nix ];
-          };
+
+          # Builds user list from directories under /home-manager/users
+          home-manager.users = builtins.listToAttrs (map (user: {
+            name = user;
+            value = {
+              imports = [
+                ./home-manager/common.nix
+                (./home-manager/users + "/${user}")
+              ];
+            };
+          }) (builtins.attrNames (builtins.readDir ./home-manager/users)));
         }
       ];
+
+      nixosModules = builtins.listToAttrs (map (module: {
+        name = module;
+        value = import (./modules + "/${module}");
+      }) (builtins.attrNames (builtins.readDir ./modules)));
+
       mkLinuxSystem = system: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit argononed catalog system inputs; };
-          modules = common ++ homeFeatures system ++ extraModules;
+          modules = common ++ [{ imports = builtins.attrValues nixosModules; }]
+            ++ homeFeatures system ++ extraModules;
         };
     in {
 
-      overlays.default = final: prev: (import ./overlays inputs) final prev;
+      nixosConfigurations = builtins.listToAttrs (map (host:
+        let
+          node = catalog.nodes.${host};
+          modules = [ (./hosts + "/${host}/configuration.nix") ]
+            ++ (if node ? "nixosHardware" then [ node.nixosHardware ] else [ ]);
+        in {
+          name = host;
+          value = mkLinuxSystem node.system modules;
+        }) (builtins.attrNames (builtins.readDir ./hosts)));
 
-      nixosConfigurations = {
-        # TODO should be no need to pass in hosts configuration - can it be discovered?
-        dennis =
-          mkLinuxSystem "x86_64-linux" [ ./hosts/dennis/configuration.nix ];
-
-        dee = mkLinuxSystem "aarch64-linux" [
-          ./hosts/dee/configuration.nix
-          nixos-hardware.nixosModules.raspberry-pi-4
-        ];
-
-      };
-
-      deploy.nodes = {
-        dennis = {
-          hostname = "192.168.1.12";
-          profiles = {
-            system = {
+      # deploy-rs configs - built off what exists in ./hosts and in catalog.nix
+      deploy.nodes = builtins.listToAttrs (map (host:
+        let node = catalog.nodes.${host};
+        in {
+          name = host;
+          value = {
+            hostname = node.ip.private;
+            profiles.system = {
               user = "root";
-              path = deploy-rs.lib.x86_64-linux.activate.nixos
-                self.nixosConfigurations.dennis;
+              path = deploy-rs.lib.${node.system}.activate.nixos
+                self.nixosConfigurations.${host};
               sshOpts = [ "-o" "IdentitiesOnly=yes" ];
             };
           };
-        };
-
-        dee = {
-          hostname = "192.168.1.10";
-          profiles = {
-            system = {
-              user = "root";
-              path = deploy-rs.lib.aarch64-linux.activate.nixos
-                self.nixosConfigurations.dee;
-              sshOpts = [ "-o" "IdentitiesOnly=yes" ];
-            };
-          };
-        };
-
-      };
+        }) (builtins.attrNames (builtins.readDir ./hosts)));
 
       checks = builtins.mapAttrs
         (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
