@@ -24,7 +24,7 @@
   outputs = inputs@{ self, argononed, agenix, flake-utils, home-manager, nixpkgs
     , nixpkgs-2205, nixos-hardware, deploy-rs, ... }:
     let
-      inherit (flake-utils.lib) eachSystemMap system;
+      inherit (flake-utils.lib) eachSystemMap system ;
       catalog = import ./catalog.nix { inherit nixos-hardware; };
       common = [ ./common agenix.nixosModule ];
       homeFeatures = system: [
@@ -55,11 +55,13 @@
       mkLinuxSystem = system: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit argononed catalog system inputs; };
+          specialArgs = { inherit catalog; flake-self = self; } // inputs;
           modules = common ++ [{ imports = builtins.attrValues nixosModules; }]
             ++ homeFeatures system ++ extraModules;
         };
     in {
+
+      overlays.default = final: prev: (import ./overlays inputs) final prev;
 
       nixosConfigurations = builtins.listToAttrs (map (host:
         let
