@@ -25,7 +25,7 @@
     , nixpkgs-2205, nixos-hardware, deploy-rs, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
-      catalog = import ./catalog.nix { inherit nixos-hardware system; };
+      catalog = import ./catalog.nix { inherit nixos-hardware; };
       common = [ ./common agenix.nixosModule ];
       homeFeatures = system: [
         home-manager.nixosModules.home-manager
@@ -68,35 +68,24 @@
             ++ (if node ? "nixosHardware" then [ node.nixosHardware ] else [ ]);
         in {
           name = host;
-          value = mkLinuxSystem catalog.nodes.${host}.system modules;
+          value = mkLinuxSystem node.system modules;
         }) (builtins.attrNames (builtins.readDir ./hosts)));
 
-      deploy.nodes = {
-        dennis = {
-          hostname = "192.168.1.12";
-          profiles = {
-            system = {
+      # deploy-rs configs - built off what exists in ./hosts and in catalog.nix
+      deploy.nodes = builtins.listToAttrs (map (host:
+        let node = catalog.nodes.${host};
+        in {
+          name = host;
+          value = {
+            hostname = node.ip.private;
+            profiles.system = {
               user = "root";
-              path = deploy-rs.lib.x86_64-linux.activate.nixos
-                self.nixosConfigurations.dennis;
+              path = deploy-rs.lib.${node.system}.activate.nixos
+                self.nixosConfigurations.${host};
               sshOpts = [ "-o" "IdentitiesOnly=yes" ];
             };
           };
-        };
-
-        dee = {
-          hostname = "192.168.1.10";
-          profiles = {
-            system = {
-              user = "root";
-              path = deploy-rs.lib.aarch64-linux.activate.nixos
-                self.nixosConfigurations.dee;
-              sshOpts = [ "-o" "IdentitiesOnly=yes" ];
-            };
-          };
-        };
-
-      };
+        }) (builtins.attrNames (builtins.readDir ./hosts)));
 
       checks = builtins.mapAttrs
         (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
