@@ -26,7 +26,17 @@
     let
       inherit (flake-utils.lib) eachSystemMap system;
       catalog = import ./catalog.nix { inherit nixos-hardware; };
+
+      # Modules to import to hosts
+      ## Common modules to apply to everything
       common = [ ./common agenix.nixosModule ];
+      ## Modules under ./modules
+      nixosModules = builtins.listToAttrs (map (module: {
+        name = module;
+        value = import (./modules + "/${module}");
+      }) (builtins.attrNames (builtins.readDir ./modules)));
+      ## home-manager modules and users
+      ## Need to verify this works as expected for non-nixOS hosts
       homeFeatures = system: [
         home-manager.nixosModules.home-manager
         {
@@ -46,12 +56,9 @@
           }) (builtins.attrNames (builtins.readDir ./home-manager/users)));
         }
       ];
+      # End of modules
 
-      nixosModules = builtins.listToAttrs (map (module: {
-        name = module;
-        value = import (./modules + "/${module}");
-      }) (builtins.attrNames (builtins.readDir ./modules)));
-
+      # Function to create a nixosSystem
       mkLinuxSystem = system: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
@@ -65,7 +72,7 @@
         let
           node = catalog.nodes.${host};
           modules = [ (./hosts + "/${host}/configuration.nix") ]
-            ++ (if node ? "nixosHardware" then [ node.nixosHardware ] else [ ]);
+            ++ nixpkgs.lib.optional (node ? "nixosHardware") node.nixosHardware;
         in {
           name = host;
           value = mkLinuxSystem node.system modules;
