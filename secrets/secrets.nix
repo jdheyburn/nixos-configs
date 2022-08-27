@@ -20,6 +20,7 @@ in {
   "caddy-environment-file.age".publicKeys = default;
   "healthchecks-secrets-file.age".publicKeys = default;
   "healthchecks-smtp-password.age".publicKeys = default;
+  "healthchecks-superuser-password.age".publicKeys = default;
   "minio-root-credentials.age".publicKeys = default;
   "restic-small-files-password.age".publicKeys = default;
   "restic-media-password.age".publicKeys = default;

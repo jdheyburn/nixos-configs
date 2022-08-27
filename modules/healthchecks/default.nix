@@ -22,6 +22,13 @@ in {
       group = "healthchecks";
     };
 
+    age.secrets."healthchecks-superuser-password" = {
+      file = ../../secrets/healthchecks-superuser-password.age;
+      owner = "healthchecks";
+      group = "healthchecks";
+    };
+
+
     services.healthchecks = {
       enable = true;
       port = catalog.services.healthchecks.port;
@@ -29,15 +36,23 @@ in {
       settings = {
         REGISTRATION_OPEN = true;
         SITE_ROOT = "https://healthchecks.svc.joannet.casa";
+        SUPERUSER_EMAIL = "jdheyburn@gmail.com";
+        SUPERUSER_PASSWORD_FILE = config.age.secrets."healthchecks-superuser-password".path;
         EMAIL_HOST = "smtp.gmail.com";
         EMAIL_PORT = "587";
         EMAIL_HOST_USER = "jdheyburn@gmail.com";
-        # EMAIL_HOST_PASSWORD = "REDACTED";
         EMAIL_HOST_PASSWORD_FILE =
           config.age.secrets."healthchecks-smtp-password".path;
         SECRET_KEY_FILE = config.age.secrets."healthchecks-secrets-file".path;
       };
     };
+
+    systemd.services.healthchecks.preStart = ''
+      ${config.services.healthchecks.package}/opt/healthchecks/manage.py collectstatic --no-input
+      ${config.services.healthchecks.package}/opt/healthchecks/manage.py remove_stale_contenttypes --no-input
+      ${config.services.healthchecks.package}/opt/healthchecks/manage.py compress
+      ${config.services.healthchecks.package}/opt/healthchecks/manage.py shell < ${config.services.healthchecks.package}/opt/healthchecks/hc/create_superuser.py
+    '';
   };
 }
 
