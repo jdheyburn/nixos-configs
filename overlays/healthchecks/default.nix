@@ -66,6 +66,7 @@ py.pkgs.buildPythonApplication rec {
             EMAIL_HOST_PASSWORD = file.readline()
   '';
 
+  # From https://github.com/linuxserver/docker-healthchecks/blob/master/root/etc/cont-init.d/30-config#L116
   createSuperuser = writeText "create_superuser.py" ''
     from django.contrib.auth.models import User;
     from hc.accounts.views import _make_user;
