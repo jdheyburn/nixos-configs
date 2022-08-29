@@ -33,7 +33,6 @@ in {
       port = catalog.services.healthchecks.port;
 
       settings = {
-        REGISTRATION_OPEN = true;
         SITE_ROOT = "https://healthchecks.svc.joannet.casa";
         SUPERUSER_EMAIL = "jdheyburn@gmail.com";
         SUPERUSER_PASSWORD_FILE =
