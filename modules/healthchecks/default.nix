@@ -28,7 +28,6 @@ in {
       group = "healthchecks";
     };
 
-
     services.healthchecks = {
       enable = true;
       port = catalog.services.healthchecks.port;
@@ -37,7 +36,8 @@ in {
         REGISTRATION_OPEN = true;
         SITE_ROOT = "https://healthchecks.svc.joannet.casa";
         SUPERUSER_EMAIL = "jdheyburn@gmail.com";
-        SUPERUSER_PASSWORD_FILE = config.age.secrets."healthchecks-superuser-password".path;
+        SUPERUSER_PASSWORD_FILE =
+          config.age.secrets."healthchecks-superuser-password".path;
         EMAIL_HOST = "smtp.gmail.com";
         EMAIL_PORT = "587";
         EMAIL_HOST_USER = "jdheyburn@gmail.com";

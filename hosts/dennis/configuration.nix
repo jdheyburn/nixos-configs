@@ -53,6 +53,8 @@ in {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     paths = backupPaths;
+    healthcheck =
+      "https://healthchecks.svc.joannet.casa/ping/b4f0796c-b0c6-48d3-926e-2f7fdebc4e1b";
   };
 
   modules.caddy.enable = true;

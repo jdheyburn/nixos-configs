@@ -1,12 +1,7 @@
 # Forked from https://github.com/NixOS/nixpkgs/blob/69940c042cb6a0f2db1f3696fb5b78defde28470/pkgs/servers/web-apps/healthchecks/default.nix
 # Made changes to local_settings.py
 
-{ lib
-, writeText
-, fetchFromGitHub
-, nixosTests
-, python3
-}:
+{ lib, writeText, fetchFromGitHub, nixosTests, python3 }:
 let
   py = python3.override {
     packageOverrides = final: prev: {
@@ -21,8 +16,7 @@ let
       });
     };
   };
-in
-py.pkgs.buildPythonApplication rec {
+in py.pkgs.buildPythonApplication rec {
   pname = "healthchecks";
   version = "2.2.1";
   format = "other";
@@ -101,9 +95,7 @@ py.pkgs.buildPythonApplication rec {
     # PYTHONPATH of all dependencies used by the package
     pythonPath = py.pkgs.makePythonPath propagatedBuildInputs;
 
-    tests = {
-      inherit (nixosTests) healthchecks;
-    };
+    tests = { inherit (nixosTests) healthchecks; };
   };
 
   meta = with lib; {

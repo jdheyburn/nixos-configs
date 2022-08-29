@@ -24,7 +24,7 @@
   outputs = inputs@{ self, argononed, agenix, flake-utils, home-manager, nixpkgs
     , nixpkgs-2205, nixos-hardware, deploy-rs, ... }:
     let
-      inherit (flake-utils.lib) eachSystemMap system ;
+      inherit (flake-utils.lib) eachSystemMap system;
       catalog = import ./catalog.nix { inherit nixos-hardware; };
 
       # Modules to import to hosts
@@ -62,7 +62,10 @@
       mkLinuxSystem = system: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit catalog; flake-self = self; } // inputs;
+          specialArgs = {
+            inherit catalog;
+            flake-self = self;
+          } // inputs;
           modules = common ++ [{ imports = builtins.attrValues nixosModules; }]
             ++ homeFeatures system ++ extraModules;
         };
