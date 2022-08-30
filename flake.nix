@@ -62,11 +62,16 @@
       mkLinuxSystem = system: extraModules:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit argononed catalog system inputs; };
+          specialArgs = {
+            inherit catalog;
+            flake-self = self;
+          } // inputs;
           modules = common ++ [{ imports = builtins.attrValues nixosModules; }]
             ++ homeFeatures system ++ extraModules;
         };
     in {
+
+      overlays.default = final: prev: (import ./overlays inputs) final prev;
 
       nixosConfigurations = builtins.listToAttrs (map (host:
         let

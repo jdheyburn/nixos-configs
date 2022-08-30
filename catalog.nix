@@ -44,6 +44,12 @@
       caddify.enable = true;
     };
 
+    healthchecks = {
+      host = "dee";
+      port = 8000;
+      caddify.enable = true;
+    };
+
     home = {
       host = "frank";
       port = 49154;

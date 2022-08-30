@@ -1,11 +1,8 @@
-{ config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, ... }:
 
 with lib;
 
-let
-  cfg = config.modules.monitoring;
-
-  nodeExporterPort = 9002;
+let cfg = config.modules.monitoring;
 in {
 
   imports = [ ./promtail.nix ];
@@ -20,12 +17,13 @@ in {
 
   config = mkIf cfg.enable {
 
-    networking.firewall.allowedTCPPorts = [ nodeExporterPort ];
+    networking.firewall.allowedTCPPorts =
+      [ config.services.prometheus.exporters.node.port ];
 
     services.prometheus.exporters.node = {
       enable = true;
       enabledCollectors = [ "systemd" ];
-      port = nodeExporterPort;
+      port = catalog.services.nodeExporter.port;
     };
 
     modules.promtail.enable = cfg.enablePromtail;

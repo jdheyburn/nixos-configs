@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, flake-self, ... }:
 
 {
   config = {
@@ -97,6 +97,8 @@
 
     # Allow packages with non-free licenses.
     nixpkgs.config.allowUnfree = true;
+
+    nixpkgs.overlays = [ flake-self.overlays.default ];
 
     # System-wide packages
     environment.systemPackages = with pkgs; [
