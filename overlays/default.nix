@@ -4,7 +4,8 @@ in final: prev: {
 
   healthchecks = prev.callPackage ./healthchecks { };
 
-  adguardhome = prev.callPackage ./adguardhome { };
+  # Disabled since AGH has since been updated
+  # adguardhome = prev.callPackage ./adguardhome { };
 
   # adguardhome = prev.adguardhome.overrideAttrs (finalAttrs: previousAttrs: {
   #     version = "0.107.10";
