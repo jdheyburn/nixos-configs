@@ -57,8 +57,7 @@ in {
       settings = {
         notify_interval = 60;
         friendly_name = "dee";
-        media_dir =
-          [ "V,/mnt/nfs/media/tv/" "A,/mnt/nfs/media/music/" ];
+        media_dir = [ "V,/mnt/nfs/media/tv/" "A,/mnt/nfs/media/music/" ];
       };
     };
   };
