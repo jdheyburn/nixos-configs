@@ -3,7 +3,6 @@
 with lib;
 
 let cfg = config.modules.plex;
-
 in {
 
   options.modules.plex = { enable = mkEnableOption "Deploy plex"; };

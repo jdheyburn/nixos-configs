@@ -104,7 +104,7 @@
     environment.systemPackages = with pkgs; [
       bind # Gets dig
       exa # posh ls
-      # busybox # Gets nslookup - but disabled since reboot was clashing with systemd
+      # busybox # Gets nslookup - but disabled since reboot was clashing with systemd, use q instead
       fd # better find commmand - search for files matching a name
       git
       htop
@@ -112,6 +112,7 @@
       ncdu
       nixfmt
       python3
+      q # nice simple DNS client
       ranger
       rclone
       ripgrep # silver-searcher but newer
