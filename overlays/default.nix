@@ -2,7 +2,11 @@ inputs:
 let inherit inputs;
 in final: prev: {
 
+  # to allow for creation of superuser, and use of EMAIL_HOST_PASSWORD_FILE variable
   healthchecks = prev.callPackage ./healthchecks { };
+
+  # to mitigate this issue https://github.com/NixOS/nixpkgs/issues/187904
+  plex = prev.callPackage ./plex { };
 
   # Disabled since AGH has since been updated
   # adguardhome = prev.callPackage ./adguardhome { };
