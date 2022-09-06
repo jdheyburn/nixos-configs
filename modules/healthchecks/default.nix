@@ -46,6 +46,9 @@ in {
       };
     };
 
+    # Default was 90s, and when doing a deploy after a flake update where everything gets stopped and started
+    # caused it to timeout due to CPU strain I guess. Extending it solved the problem.
+    systemd.services.healthchecks.serviceConfig.TimeoutStartSec = "5m";
     systemd.services.healthchecks.preStart = ''
       ${config.services.healthchecks.package}/opt/healthchecks/manage.py collectstatic --no-input
       ${config.services.healthchecks.package}/opt/healthchecks/manage.py remove_stale_contenttypes --no-input
