@@ -50,6 +50,14 @@
       caddify.enable = true;
     };
 
+    # dashy will soon be avaialbe at home.svc.joannet.casa, to replace heimdall
+    dashy = {
+      host = "dennis";
+      port = 4000;
+      blackbox.name = "dashy";
+      caddify.enable = true;
+    };
+
     home = {
       host = "frank";
       port = 49154;
