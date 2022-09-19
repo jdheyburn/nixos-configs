@@ -42,12 +42,16 @@
       host = "dee";
       port = 3000;
       caddify.enable = true;
+      dashy.section = "networks";
+      dashy.description = "DNS resolver";
     };
 
     healthchecks = {
       host = "dee";
       port = 8000;
       caddify.enable = true;
+      dashy.section = "monitoring";
+      dashy.description = "Monitor status of cron jobs";
     };
 
     # dashy will soon be avaialbe at home.svc.joannet.casa, to replace heimdall
@@ -77,6 +81,8 @@
       host = "dennis";
       port = 2342;
       caddify.enable = true;
+      dashy.section = "monitoring";
+      dashy.description = "View logs and metrics";
     };
 
     loki = {
@@ -99,6 +105,8 @@
       host = "dee";
       port = services.minio.consolePort;
       caddify.enable = true;
+      dashy.section = "storage";
+      dashy.description = "S3 compatible object storage";
     };
 
     portainer = {
@@ -106,12 +114,16 @@
       port = 9000;
       caddify.enable = true;
       caddify.forwardTo = "dee";
+      dashy.section = "virtualisation";
+      dashy.description = "Frontend for containers";
     };
 
     prometheus = {
       host = "dennis";
       port = 9001;
       caddify.enable = true;
+      dashy.section = "monitoring";
+      dashy.description = "Polls for metrics before captured by Thanos";
     };
 
     promtail = { port = 28183; };
@@ -122,12 +134,16 @@
       caddify.enable = true;
       caddify.skip_tls_verify = true;
       caddify.forwardTo = "dee";
+      dashy.section = "virtualisation";
+      dashy.description = "Frontend for VMs";
     };
 
     plex = {
       host = "dee";
       port = 32400;
       caddify.enable = true;
+      dashy.section = "media";
+      dashy.description = "Watch TV and movies";
     };
 
     thanos-query = {
@@ -135,6 +151,8 @@
       port = 19192;
       grpcPort = 10902;
       caddify.enable = true;
+      dashy.section = "monitoring";
+      dashy.description = "Long term storage for Prometheus metrics";
     };
 
     thanos-sidecar = {
@@ -152,12 +170,16 @@
       port = 8443;
       caddify.enable = true;
       caddify.skip_tls_verify = true;
+      dashy.section = "networks";
+      dashy.description = "UniFi controller";
     };
 
     victoriametrics = {
       host = "dennis";
       port = 8428;
       caddify.enable = true;
+      dashy.section = "monitoring";
+      dashy.description = "Alternate poller of metrics in PromQL format";
     };
   };
 }
