@@ -44,6 +44,7 @@
       caddify.enable = true;
       dashy.section = "networks";
       dashy.description = "DNS resolver";
+      dashy.icon = "hl-adguardhome";
     };
 
     healthchecks = {
@@ -52,22 +53,14 @@
       caddify.enable = true;
       dashy.section = "monitoring";
       dashy.description = "Monitor status of cron jobs";
+      dashy.icon = "hl-healthchecks";
     };
 
-    # dashy will soon be avaialbe at home.svc.joannet.casa, to replace heimdall
-    dashy = {
+    home = {
       host = "dennis";
       port = 4000;
       blackbox.name = "dashy";
       caddify.enable = true;
-    };
-
-    home = {
-      host = "frank";
-      port = 49154;
-      blackbox.name = "heimdall";
-      caddify.enable = true;
-      caddify.forwardTo = "dee";
     };
 
     huginn = {
@@ -75,6 +68,7 @@
       port = 3000;
       caddify.enable = true;
       caddify.forwardTo = "dee";
+      dashy.icon = "hl-huginn";
     };
 
     grafana = {
@@ -83,6 +77,7 @@
       caddify.enable = true;
       dashy.section = "monitoring";
       dashy.description = "View logs and metrics";
+      dashy.icon = "hl-grafana";
     };
 
     loki = {
@@ -107,6 +102,7 @@
       caddify.enable = true;
       dashy.section = "storage";
       dashy.description = "S3 compatible object storage";
+      dashy.icon = "hl-minio";
     };
 
     portainer = {
@@ -116,6 +112,7 @@
       caddify.forwardTo = "dee";
       dashy.section = "virtualisation";
       dashy.description = "Frontend for containers";
+      dashy.icon = "hl-portainer";
     };
 
     prometheus = {
@@ -124,6 +121,7 @@
       caddify.enable = true;
       dashy.section = "monitoring";
       dashy.description = "Polls for metrics before captured by Thanos";
+      dashy.icon = "hl-prometheus";
     };
 
     promtail = { port = 28183; };
@@ -136,6 +134,7 @@
       caddify.forwardTo = "dee";
       dashy.section = "virtualisation";
       dashy.description = "Frontend for VMs";
+      dashy.icon = "hl-proxmox";
     };
 
     plex = {
@@ -144,6 +143,7 @@
       caddify.enable = true;
       dashy.section = "media";
       dashy.description = "Watch TV and movies";
+      dashy.icon = "hl-plex";
     };
 
     thanos-query = {
@@ -153,6 +153,7 @@
       caddify.enable = true;
       dashy.section = "monitoring";
       dashy.description = "Long term storage for Prometheus metrics";
+      dashy.icon = "hl-thanos";
     };
 
     thanos-sidecar = {
@@ -172,6 +173,7 @@
       caddify.skip_tls_verify = true;
       dashy.section = "networks";
       dashy.description = "UniFi controller";
+      dashy.icon = "hl-unifi-controller";
     };
 
     victoriametrics = {
@@ -180,6 +182,7 @@
       caddify.enable = true;
       dashy.section = "monitoring";
       dashy.description = "Alternate poller of metrics in PromQL format";
+      dashy.icon = "https://avatars.githubusercontent.com/u/43720803";
     };
   };
 }

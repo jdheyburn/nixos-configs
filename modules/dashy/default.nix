@@ -19,44 +19,25 @@ let
   storage_services = get_dashy_services "storage";
   virtualisation_services = get_dashy_services "virtualisation";
 
+  services_as_list = services:
+    map (service_name: services."${service_name}" // { name = service_name; })
+    (attrNames services);
+
   # TODO make this dynamic from whatever is in the catalog
   dashy_services = {
-    media = map (service_name:
-      media_services."${service_name}" // {
-        name = service_name;
-      }) (attrNames media_services);
-    monitoring = map (service_name:
-      monitoring_services."${service_name}" // {
-        name = service_name;
-      }) (attrNames monitoring_services);
-    networks = map (service_name:
-      networks_services."${service_name}" // {
-        name = service_name;
-      }) (attrNames networks_services);
-    storage = map (service_name:
-      storage_services."${service_name}" // {
-        name = service_name;
-      }) (attrNames storage_services);
-    virtualisation = map (service_name:
-      virtualisation_services."${service_name}" // {
-        name = service_name;
-      }) (attrNames virtualisation_services);
+    media = services_as_list media_services;
+    monitoring = services_as_list monitoring_services;
+    networks = services_as_list networks_services;
+    storage = services_as_list storage_services;
+    virtualisation = services_as_list virtualisation_services;
   };
-
-  # sections = map (section: ) (attrNames dashy_services);
-
-  # dashy_services = filterAttrs (n: v: v ? "dashy" && v.dashy ? "section") catalog.services;
-
-  # dashy_services_list = map
-  #   (service_name: dashy_services."${service_name}" // { name = dashy_services; })
-  #   (attrNames dashy_services);
 
   create_section_items = services:
     map (service: {
       title = service.name;
       description = service.dashy.description;
       url = "https://${service.name}.svc.joannet.casa";
-      target = "newtab";
+      icon = service.dashy.icon;
     }) services;
 
   # TODO should generate config
@@ -76,20 +57,20 @@ let
       ];
     };
 
-    appConfig.theme = "colorful";
+    appConfig = {
+      theme = "nord-frost";
+      iconSize = "large";
+      layout = "vertical";
+      preventWriteToDisk = true;
+      preventLocalSave = true;
+      disableConfiguration = true;
+    };
 
     sections = [
       {
         name = "Media";
-        icon = "fas fa-rocket";
+        icon = "mdi-multimedia";
         items = create_section_items dashy_services.media;
-        # items =  [{
-        #   title = "Dashy Live";
-        #   description = "Development a project management links for Dashy";
-        #   icon = "https://i.ibb.co/qWWpD0v/astro-dab-128.png";
-        #   url = "https://live.dashy.to/";
-        #   target = "newtab";
-        # }];
       }
       {
         name = "Monitoring";
@@ -114,6 +95,7 @@ let
     ];
   };
 
+  # Creation of yaml file inspired from https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/home-automation/home-assistant.nix
   # Couldn't get it to build with this
   # filteredConfig = lib.converge (lib.filterAttrsRecursive (_: v: ! elem v [ null ])) dashy-config or {};
   configFile =
@@ -133,7 +115,7 @@ in {
       dashy = {
         image = "lissy93/dashy:${version}";
         volumes = [ "${configFile}:/app/public/conf.yml" ];
-        ports = [ "${catalog.dashy.port}:80" ];
+        ports = [ "${toString catalog.services.home.port}:80" ];
         #    volumes = [
         #      "/root/hackagecompare/packageStatistics.json:/root/hackagecompare/packageStatistics.json"
         #    ];
