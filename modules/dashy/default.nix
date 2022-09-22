@@ -6,6 +6,8 @@ let
   version = "2.1.1";
 
   cfg = config.modules.dashy;
+  
+  # TODO extract to utils.toYAML
   format = pkgs.formats.yaml { };
 
   get_dashy_services = section:
@@ -40,21 +42,13 @@ let
       icon = service.dashy.icon;
     }) services;
 
-  # TODO should generate config
   dashy-config = {
     pageInfo = {
-      title = "Dashy";
-      description = "Welcome to your new dashboard!";
-      navLinks = [
-        {
-          title = "GitHub";
-          path = "https://github.com/Lissy93/dashy";
-        }
-        {
-          title = "Documentation";
-          path = "https://dashy.to/docs";
-        }
-      ];
+      title = "Joannet";
+      navLinks = [{
+        title = "Dashy Documentation";
+        path = "https://dashy.to/docs";
+      }];
     };
 
     appConfig = {
@@ -63,33 +57,37 @@ let
       layout = "vertical";
       preventWriteToDisk = true;
       preventLocalSave = true;
-      disableConfiguration = true;
+      disableConfiguration = false;
+      hideComponents = {
+        hideSettings = true;
+        hideFooter = true;
+      };
     };
 
     sections = [
       {
         name = "Media";
-        icon = "mdi-multimedia";
+        icon = "fas fa-play-circle";
         items = create_section_items dashy_services.media;
       }
       {
         name = "Monitoring";
-        icon = "fas fa-rocket";
+        icon = "fas fa-heartbeat";
         items = create_section_items dashy_services.monitoring;
       }
       {
         name = "Networks";
-        icon = "fas fa-rocket";
+        icon = "fas fa-network-wired";
         items = create_section_items dashy_services.networks;
       }
       {
         name = "Storage";
-        icon = "fas fa-rocket";
+        icon = "fas fa-database";
         items = create_section_items dashy_services.storage;
       }
       {
         name = "Virtualisation";
-        icon = "fas fa-rocket";
+        icon = "fas fa-cloud";
         items = create_section_items dashy_services.virtualisation;
       }
     ];
@@ -107,8 +105,6 @@ let
 in {
   options.modules.dashy = { enable = mkEnableOption "enable dashy"; };
 
-  # TODO generate dashy config from catalog
-
   config = mkIf cfg.enable {
 
     virtualisation.oci-containers.containers = {
@@ -116,12 +112,6 @@ in {
         image = "lissy93/dashy:${version}";
         volumes = [ "${configFile}:/app/public/conf.yml" ];
         ports = [ "${toString catalog.services.home.port}:80" ];
-        #    volumes = [
-        #      "/root/hackagecompare/packageStatistics.json:/root/hackagecompare/packageStatistics.json"
-        #    ];
-        #    cmd = [
-        #      "--name my-dashboard"
-        #    ];
       };
     };
   };
