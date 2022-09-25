@@ -42,6 +42,13 @@ Services is a mapping of service name to service attributes, it can accept:
     - The URL path to forward (e.g. `/ui/*`)
   - `port`
     - The port to forward to
+- `dashy.section`
+  - What section in dashy it should fall under
+- `dashy.description`
+  - The description to use in dashy
+- `dashy.icon`
+  - The icon to display in dashy
+
 
 ## Hosts
 

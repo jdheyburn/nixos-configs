@@ -59,6 +59,8 @@ in {
 
   modules.caddy.enable = true;
 
+  modules.dashy.enable = true;
+
   modules.monitoring.enable = true;
 
   modules.prometheusStack.enable = true;
