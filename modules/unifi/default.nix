@@ -5,7 +5,7 @@ with lib;
 let
   cfg = config.modules.unifi;
 
-  unifiMinJavaHeapSize = 256;
+  unifiMaxJavaHeapSize = 256;
 in {
 
   options.modules.unifi = {
@@ -24,8 +24,8 @@ in {
 
     services.unifi = {
       enable = true;
-      unifiPackage = pkgs.unifi6;
-      maximumJavaHeapSize = unifiMinJavaHeapSize;
+      unifiPackage = pkgs.unifi7;
+      maximumJavaHeapSize = unifiMaxJavaHeapSize;
       jrePackage = pkgs.jre8_headless;
       # TODO explore if this can be closed, if Caddy reverse proxies enough
       # Port 8443 does not need to be open because caddy proxies 443 -> 8443
