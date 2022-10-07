@@ -113,7 +113,7 @@ in {
       enable = true;
       package = (pkgs.callPackage ./custom-caddy.nix {
         plugins = [ "github.com/caddy-dns/cloudflare" ];
-        vendorSha256 = "sha256-UG8YEOAVR5U2JGw66IhCPvQj5QhgnB2b9J1CfWuyjyU=";
+        vendorSha256 = "sha256-xjwB0Nb0MQw1vd43iJGRgXqJEOC7LK26XoZko9OFvJY=";
       });
       adapter = "''";
       # https://github.com/NixOS/nixpkgs/issues/153142

@@ -6,7 +6,7 @@
 with lib;
 
 let
-  version = "2.5.2";
+  version = "2.6.2";
 
   dist = fetchFromGitHub {
     owner = "caddyserver";
