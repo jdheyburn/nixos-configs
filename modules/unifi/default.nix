@@ -5,7 +5,7 @@ with lib;
 let
   cfg = config.modules.unifi;
 
-  unifiMinJavaHeapSize = 256;
+  unifiMaxJavaHeapSize = 256;
 in {
 
   options.modules.unifi = {
@@ -24,7 +24,7 @@ in {
 
     services.unifi = {
       enable = true;
-      unifiPackage = pkgs.unifi6;
+      unifiPackage = pkgs.unifiStable;
       maximumJavaHeapSize = unifiMinJavaHeapSize;
       jrePackage = pkgs.jre8_headless;
       # TODO explore if this can be closed, if Caddy reverse proxies enough
