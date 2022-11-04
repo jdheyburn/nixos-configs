@@ -69,16 +69,8 @@ in {
             "https://dns10.quad9.net/dns-query"
             "[/joannet.casa//]192.168.1.1:53"
           ];
-          bootstrap_dns = "9.9.9.10";
-          # for some reason this gets generated in yaml as bootstrap_dns: '[9.9.9.10 149.112.112.10 ...]'
-          # Is a bug with NixOS and due to be released
-          # https://github.com/NixOS/nixpkgs/pull/176701
-          #bootstrap_dns = [
-          #  "9.9.9.10"
-          #  "149.112.112.10"
-          #  "2620:fe::10"
-          #  "2620:fe::fe:10"
-          #];
+          bootstrap_dns =
+            [ "9.9.9.10" "149.112.112.10" "2620:fe::10" "2620:fe::fe:10" ];
           rewrites = rewrites;
           resolve_clients = true;
         };
