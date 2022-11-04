@@ -2,16 +2,40 @@
 
 {
   enable = true;
-  rootUrl = "https://grafana.svc.joannet.casa";
-  port = catalog.services.grafana.port;
-  addr = "0.0.0.0";
-  analytics.reporting.enable = false;
+
+  settings = {
+    analytics.reporting_enabled = false;
+
+    server = {
+      root_url = "https://grafana.svc.joannet.casa";
+      http_addr = "0.0.0.0";
+      http_port = catalog.services.grafana.port;
+    };
+
+    smtp = {
+      enabled = true;
+      host = "smtp.gmail.com:587";
+      # from_address = "jdheyburn@gmail.com";
+      user = "jdheyburn@gmail.com";
+      password = "$__file{${config.age.secrets."smtp-password".path}}";
+    };
+  };
 
   declarativePlugins = with pkgs.grafanaPlugins; [ grafana-piechart-panel ];
 
   provision = {
     enable = true;
-    datasources = [
+    # TODO Not sure if this actually works.. the datasource provision above works for existing deployments
+    alerting.contactPoints.settings.contactPoints = [{
+      name = "email-me";
+      uid = "email-me";
+      type = "email";
+      is_default = true;
+      disable_resolve_message = false;
+      settings = { addresses = "jdheyburn@gmail.com"; };
+    }];
+
+    datasources.settings.datasources = [
       {
         name = "Thanos Query";
         type = "prometheus";
@@ -46,23 +70,6 @@
           }";
       }
     ];
-    # Not sure if this actually works.. the datasource provision above works for existing deployments
-    # TODO
-    notifiers = [{
-      name = "email-me";
-      uid = "email-me";
-      type = "email";
-      is_default = true;
-      disable_resolve_message = false;
-      settings = { addresses = "jdheyburn@gmail.com"; };
-    }];
-  };
-
-  smtp = {
-    enable = true;
-    host = "smtp.gmail.com:587";
-    user = "jdheyburn@gmail.com";
-    passwordFile = config.age.secrets."smtp-password".path;
   };
 }
 

@@ -49,7 +49,6 @@ Services is a mapping of service name to service attributes, it can accept:
 - `dashy.icon`
   - The icon to display in dashy
 
-
 ## Hosts
 
 - dee
@@ -57,6 +56,23 @@ Services is a mapping of service name to service attributes, it can accept:
   - Replaced dee_rpi3
 - dennis
   - VM on a Proxmox hypervisor
+
+## Runbooks
+
+### Upgrading to latest versions
+
+1. Update nix flake
+
+    ```bash
+    nix flake upgrade
+    ```
+
+2. Update overlays
+    - healthchecks
+    - plex
+
+3. Update container images
+    - dashy
 
 ## Credits / Inspiration
 

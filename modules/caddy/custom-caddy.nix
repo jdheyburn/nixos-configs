@@ -12,7 +12,7 @@ let
     owner = "caddyserver";
     repo = "dist";
     rev = "v${version}";
-    sha256 = "sha256-wzW0eb+O7JqQJkWtpMwV4G56uqLd1U2NduNAMPGvD3o=";
+    sha256 = "sha256-bctRc2klaV2JbB4KRWk5n/ACQ/7KlgaMKHae7SIQs+0=";
   };
 
   imports = flip concatMapStrings plugins (pkg: "			_ \"${pkg}\"\n");

@@ -6,7 +6,7 @@ let
   version = "2.1.1";
 
   cfg = config.modules.dashy;
-  
+
   # TODO extract to utils.toYAML
   format = pkgs.formats.yaml { };
 

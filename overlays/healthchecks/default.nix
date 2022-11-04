@@ -4,44 +4,31 @@
 { lib, writeText, fetchFromGitHub, nixosTests, python3 }:
 let
   py = python3.override {
-    packageOverrides = final: prev: {
-      django = prev.django_4;
-      fido2 = prev.fido2.overridePythonAttrs (old: rec {
-        version = "0.9.3";
-        src = prev.fetchPypi {
-          pname = "fido2";
-          inherit version;
-          sha256 = "sha256-tF6JphCc/Lfxu1E3dqotZAjpXEgi+DolORi5RAg0Zuw=";
-        };
-      });
-    };
+    packageOverrides = final: prev: { django = prev.django_4; };
   };
 in py.pkgs.buildPythonApplication rec {
   pname = "healthchecks";
-  version = "2.2.1";
+  version = "2.4.1";
   format = "other";
 
   src = fetchFromGitHub {
     owner = "healthchecks";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-C+NUvs5ijbj/l8G1sjSXvUJDNSOTVFAStfS5KtYFpUs=";
+    sha256 = "sha256-K2zA0ZkAPMgm+IofNiCf+mVTF/RIoorTupWLOowT29g=";
   };
 
   propagatedBuildInputs = with py.pkgs; [
     apprise
-    cffi
     cron-descriptor
     cronsim
-    cryptography
     django
     django-compressor
     fido2
     minio
     psycopg2
-    py
+    pycurl
     pyotp
-    requests
     segno
     statsd
     whitenoise
@@ -72,7 +59,7 @@ in py.pkgs.buildPythonApplication rec {
         with open(SUPERUSER_PASSWORD_FILE, "r") as file:
             SUPERUSER_PASSWORD = file.readline()
     if SUPERUSER_EMAIL and SUPERUSER_PASSWORD:
-        if User.objects.filter(email=SUPERUSER_EMAIL).count()==0:
+        if User.objects.filter(email=SUPERUSER_EMAIL).count() == 0:
             user = _make_user(SUPERUSER_EMAIL);
             user.set_password(SUPERUSER_PASSWORD);
             user.is_staff = True;
