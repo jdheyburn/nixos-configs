@@ -24,7 +24,7 @@ in {
 
     services.unifi = {
       enable = true;
-      unifiPackage = pkgs.unifiStable;
+      unifiPackage = pkgs.unifi7;
       maximumJavaHeapSize = unifiMaxJavaHeapSize;
       jrePackage = pkgs.jre8_headless;
       # TODO explore if this can be closed, if Caddy reverse proxies enough
