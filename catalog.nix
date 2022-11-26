@@ -4,6 +4,7 @@
 
   nodes = {
     dee = {
+      hostname = "dee";
       ip.private = "192.168.1.10";
       ip.tailscale = "100.127.189.33";
       system = "aarch64-linux";
@@ -12,6 +13,7 @@
     };
 
     dennis = {
+      hostname = "dennis";
       ip.private = "192.168.1.12";
       ip.tailscale = "100.127.102.123";
       system = "x86_64-linux";
@@ -19,18 +21,21 @@
     };
 
     frank = {
+      hostname = "frank";
       ip.private = "192.168.1.11";
       ip.tailscale = "100.71.206.55";
       isNixOS = false;
     };
 
     paddys = {
+      hostname = "paddys";
       ip.private = "192.168.1.20";
       ip.tailscale = "100.107.150.109";
       isNixOS = false;
     };
 
     pve0 = {
+      hostname = "pve0";
       ip.private = "192.168.1.15";
       ip.tailscale = "100.80.112.68";
       isNixOS = false;
@@ -39,7 +44,7 @@
 
   services = {
     adguard = {
-      host = "dee";
+      host = nodes.dee;
       port = 3000;
       caddify.enable = true;
       dashy.section = "networks";
@@ -48,7 +53,7 @@
     };
 
     healthchecks = {
-      host = "dee";
+      host = nodes.dee;
       port = 8000;
       caddify.enable = true;
       dashy.section = "monitoring";
@@ -57,14 +62,14 @@
     };
 
     home = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 4000;
       blackbox.name = "dashy";
       caddify.enable = true;
     };
 
     huginn = {
-      host = "frank";
+      host = nodes.frank;
       port = 3000;
       caddify.enable = true;
       caddify.forwardTo = "dee";
@@ -72,7 +77,7 @@
     };
 
     grafana = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 2342;
       caddify.enable = true;
       dashy.section = "monitoring";
@@ -81,7 +86,7 @@
     };
 
     loki = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 3100;
       blackbox.path = "/ready";
       caddify.enable = true;
@@ -90,14 +95,14 @@
     nodeExporter = { port = 9002; };
 
     minio = {
-      host = "dee";
+      host = nodes.dee;
       port = 9100;
       consolePort = 9101;
       caddify.enable = true;
     };
 
     "ui.minio" = {
-      host = "dee";
+      host = nodes.dee;
       port = services.minio.consolePort;
       caddify.enable = true;
       dashy.section = "storage";
@@ -106,7 +111,7 @@
     };
 
     portainer = {
-      host = "frank";
+      host = nodes.frank;
       port = 9000;
       caddify.enable = true;
       caddify.forwardTo = "dee";
@@ -116,7 +121,7 @@
     };
 
     prometheus = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 9001;
       caddify.enable = true;
       dashy.section = "monitoring";
@@ -127,7 +132,7 @@
     promtail = { port = 28183; };
 
     proxmox = {
-      host = "pve0";
+      host = nodes.pve0;
       port = 8006;
       caddify.enable = true;
       caddify.skip_tls_verify = true;
@@ -138,7 +143,7 @@
     };
 
     plex = {
-      host = "dee";
+      host = nodes.dee;
       port = 32400;
       caddify.enable = true;
       dashy.section = "media";
@@ -147,7 +152,7 @@
     };
 
     thanos-query = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 19192;
       grpcPort = 10902;
       caddify.enable = true;
@@ -167,7 +172,7 @@
     };
 
     unifi = {
-      host = "dee";
+      host = nodes.dee;
       port = 8443;
       caddify.enable = true;
       caddify.skip_tls_verify = true;
@@ -177,7 +182,7 @@
     };
 
     victoriametrics = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 8428;
       caddify.enable = true;
       dashy.section = "monitoring";
