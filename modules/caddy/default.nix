@@ -46,8 +46,8 @@ let
   # Filters out any services destined for this host, where we want it caddified
   # TODO should it also depend whether the module is enabled or not?
   host_services = (filterAttrs (n: v:
-    v ? "host" && v.host == config.networking.hostName && v.caddify.enable)
-    catalog.services);
+    v ? "host" && v.host.hostName == config.networking.hostName
+    && v.caddify.enable) catalog.services);
 
   # Convert host_routes to a list, including the name of the service in it too
   host_services_list = map
@@ -67,7 +67,8 @@ let
   # These are additional services that this host should forward
   forward_services = (filterAttrs (n: v:
     v ? "caddify" && v.caddify ? "forwardTo" && v.caddify.enable
-    && v.caddify.forwardTo == config.networking.hostName) catalog.services);
+    && v.caddify.forwardTo.hostName == config.networking.hostName)
+    catalog.services);
 
   # Convert it to a list
   forward_services_list = map (service_name:
@@ -79,7 +80,7 @@ let
     route {
       name = service.name;
       port = service.port;
-      upstream = catalog.nodes."${service.host}".ip.private;
+      upstream = service.host.ip.private;
       skip_tls_verify = service.caddify ? "skip_tls_verify"
         && service.caddify.skip_tls_verify;
       # Not supporting paths yet since I don't have a scenario to test it on

@@ -2,9 +2,8 @@
 # Inspired from https://github.com/jhillyerd/homelab/blob/main/nixos/catalog.nix
 { nixos-hardware }: rec {
 
-  nodes = {
+  nodesBase = {
     dee = {
-      hostname = "dee";
       ip.private = "192.168.1.10";
       ip.tailscale = "100.127.189.33";
       system = "aarch64-linux";
@@ -13,7 +12,6 @@
     };
 
     dennis = {
-      hostname = "dennis";
       ip.private = "192.168.1.12";
       ip.tailscale = "100.127.102.123";
       system = "x86_64-linux";
@@ -21,26 +19,29 @@
     };
 
     frank = {
-      hostname = "frank";
       ip.private = "192.168.1.11";
       ip.tailscale = "100.71.206.55";
       isNixOS = false;
     };
 
     paddys = {
-      hostname = "paddys";
       ip.private = "192.168.1.20";
       ip.tailscale = "100.107.150.109";
       isNixOS = false;
     };
 
     pve0 = {
-      hostname = "pve0";
       ip.private = "192.168.1.15";
       ip.tailscale = "100.80.112.68";
       isNixOS = false;
     };
   };
+
+  # Enrich nodeBase by adding the key as the hostname - DRY
+  nodes = builtins.listToAttrs (map (hostName: {
+    name = hostName;
+    value = (nodesBase."${hostName}" // { hostName = hostName; });
+  }) (builtins.attrNames nodesBase));
 
   services = {
     adguard = {
@@ -72,7 +73,7 @@
       host = nodes.frank;
       port = 3000;
       caddify.enable = true;
-      caddify.forwardTo = "dee";
+      caddify.forwardTo = nodes.dee;
       dashy.icon = "hl-huginn";
     };
 
@@ -114,7 +115,7 @@
       host = nodes.frank;
       port = 9000;
       caddify.enable = true;
-      caddify.forwardTo = "dee";
+      caddify.forwardTo = nodes.dee;
       dashy.section = "virtualisation";
       dashy.description = "Frontend for containers";
       dashy.icon = "hl-portainer";
@@ -136,7 +137,7 @@
       port = 8006;
       caddify.enable = true;
       caddify.skip_tls_verify = true;
-      caddify.forwardTo = "dee";
+      caddify.forwardTo = nodes.dee;
       dashy.section = "virtualisation";
       dashy.description = "Frontend for VMs";
       dashy.icon = "hl-proxmox";
