@@ -190,4 +190,14 @@ in [
     job_name = "promtail";
     static_configs = [{ targets = promtail_targets; }];
   }
+  {
+    job_name = "zfs";
+    static_configs = [{
+      targets = [
+        "dee.joannet.casa:${
+          toString config.services.prometheus.exporters.zfs.port
+        }"
+      ];
+    }];
+  }
 ]
