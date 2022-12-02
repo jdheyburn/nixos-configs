@@ -13,6 +13,8 @@ in {
       enable = true;
       openFirewall = true;
     };
+
+    systemd.services.plex.serviceConfig.TimeoutStartSec = "5m";
   };
 }
 

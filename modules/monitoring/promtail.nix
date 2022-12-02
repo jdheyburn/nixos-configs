@@ -44,5 +44,6 @@ in {
       };
     };
 
+    systemd.services.promtail.serviceConfig.TimeoutStartSec = "5m";
   };
 }
