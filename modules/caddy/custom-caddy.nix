@@ -1,6 +1,6 @@
 # TODO experiment with overlays instead of this file
 
-{ stdenv, lib, buildGo117Module, nixosTests, plugins ? [ ], fetchFromGitHub
+{ stdenv, lib, buildGo118Module, nixosTests, plugins ? [ ], fetchFromGitHub
 , vendorSha256 ? "" }:
 
 with lib;
@@ -32,7 +32,7 @@ let
     		}
     	'';
 
-in buildGo117Module rec {
+in buildGo118Module rec {
   pname = "caddy";
   inherit version;
 

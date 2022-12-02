@@ -13,9 +13,9 @@ in {
 
     networking.firewall.allowedTCPPorts = [
       # TODO are all these still required after being fronted by local reverse proxy?
-      catalog.services.grafana.port
-      catalog.services.loki.port
-      catalog.services.prometheus.port
+      config.services.grafana.settings.server.http_port
+      config.services.loki.configuration.server.http_listen_port
+      config.services.prometheus.port
     ];
 
     age.secrets."smtp-password" = {

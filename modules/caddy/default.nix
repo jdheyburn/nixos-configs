@@ -156,6 +156,7 @@ in {
         AmbientCapabilities = "cap_net_bind_service";
         CapabilityBoundingSet = "cap_net_bind_service";
         EnvironmentFile = config.age.secrets."caddy-environment-file".path;
+        TimeoutStartSec = "5m";
       };
     };
 
