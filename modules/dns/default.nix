@@ -15,22 +15,17 @@ let
     (service_name: caddy_services."${service_name}" // { name = service_name; })
     (attrNames caddy_services);
 
-  get_forward_to_node = service:
+  getCaddyDestination = service:
     if service.caddify ? "forwardTo" then
-      catalog.nodes."${service.caddify.forwardTo}"
+      service.caddify.forwardTo
     else
-      catalog.nodes."${service.host}";
-
-  # Add the IP address for the host the service is on
-  caddy_host_services =
-    map (service: service // { ip = (get_forward_to_node service).ip.private; })
-    caddy_services_list;
+      service.host;
 
   # For each service create a list of rewrites
   rewrites = map (service: {
     domain = "${service.name}.svc.joannet.casa";
-    answer = service.ip;
-  }) caddy_host_services;
+    answer = (getCaddyDestination service).ip.private;
+  }) caddy_services_list;
 
 in {
 
