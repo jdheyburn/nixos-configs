@@ -64,8 +64,7 @@ in {
   modules.monitoring.enable = true;
 
   modules.prometheusStack.enable = true;
-
-  modules.victoriametrics.enable = true;
+  modules.prometheusStack.victoriametrics.enable = true;
 
   services.qemuGuest.enable = true;
 

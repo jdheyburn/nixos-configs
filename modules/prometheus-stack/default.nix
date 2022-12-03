@@ -7,6 +7,9 @@ in {
   options.modules.prometheusStack = {
     # TODO the string passed to these should be something simple as it gets appended to 'Whether to enable '
     enable = mkEnableOption "Deploy Prometheus suite";
+    prometheus.enable = mkEnableOption "Deploy Prometheus";
+    thanos.enable = mkEnableOption "Deploy Thanos long term storage";
+    victoriametrics.enable = mkEnableOption "victoriametrics";
   };
 
   config = mkIf cfg.enable {
@@ -37,5 +40,7 @@ in {
     services.prometheus =
       import ./prometheus.nix { inherit catalog config pkgs lib; };
     services.thanos = import ./thanos.nix { inherit catalog config pkgs; };
+    services.victoriametrics =
+      import ./victoria-metrics.nix { inherit catalog config pkgs lib; };
   };
 }
