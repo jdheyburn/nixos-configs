@@ -124,7 +124,7 @@
     prometheus = {
       host = nodes.dennis;
       port = 9001;
-      caddify.enable = true;
+      caddify.enable = false;
       dashy.section = "monitoring";
       dashy.description = "Polls for metrics before captured by Thanos";
       dashy.icon = "hl-prometheus";
@@ -156,7 +156,7 @@
       host = nodes.dennis;
       port = 19192;
       grpcPort = 10902;
-      caddify.enable = true;
+      caddify.enable = false;
       dashy.section = "monitoring";
       dashy.description = "Long term storage for Prometheus metrics";
       dashy.icon = "hl-thanos";
