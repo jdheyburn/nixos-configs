@@ -8,7 +8,7 @@ let
 
   caddyMetricsPort = 2019;
 
-  handler_route =
+  routeHandler =
     { port, upstream ? "localhost", skip_tls_verify ? false, path ? [ ] }:
     let
       base_handle = {
@@ -28,7 +28,7 @@ let
   route = { name, port, upstream ? "localhost", skip_tls_verify ? false
     , paths ? [ ] }:
     let
-      handler_routes = map (service: handler_route service) (paths ++ [{
+      subroutes = map (service: routeHandler service) (paths ++ [{
         port = port;
         upstream = upstream;
         skip_tls_verify = skip_tls_verify;
@@ -39,17 +39,17 @@ let
       terminal = true;
       handle = [{
         handler = "subroute";
-        routes = handler_routes;
+        routes = subroutes;
       }];
     };
 
   # Filters out any services destined for this host, where we want it caddified
   # TODO should it also depend whether the module is enabled or not?
-  host_services = (filterAttrs (n: v:
-    v ? "host" && v.host.hostName == config.networking.hostName
-    && v.caddify.enable) catalog.services);
+  host_services = (filterAttrs (svc_name: svc_def:
+    svc_def ? "host" && svc_def.host.hostName == config.networking.hostName
+    && svc_def.caddify.enable) catalog.services);
 
-  # Convert host_routes to a list, including the name of the service in it too
+  # Convert host_services to a list, including the name of the service in it too
   host_services_list = map
     (service_name: host_services."${service_name}" // { name = service_name; })
     (attrNames host_services);
@@ -88,7 +88,7 @@ let
 
   combined_routes = catalog_routes ++ forward_routes;
 
-  subject_routes = map (service: "${service.name}.svc.joannet.casa")
+  subject_names = map (service: "${service.name}.svc.joannet.casa")
     (host_services_list ++ forward_services_list);
 
 in {
@@ -126,7 +126,7 @@ in {
             routes = combined_routes;
           };
           tls.automation.policies = [{
-            subjects = subject_routes;
+            subjects = subject_names;
             issuers = [
               {
                 module = "acme";
