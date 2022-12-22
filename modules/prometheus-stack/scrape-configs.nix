@@ -7,7 +7,7 @@ let
     map (node_name: "${node_name}.joannet.casa") (attrNames catalog.nodes);
 
   caddified_services =
-    (filterAttrs (n: v: v ? "caddify" && v.caddify.enable) catalog.services);
+    (filterAttrs (svc_name: svc_def: svc_def ? "caddify" && svc_def.caddify.enable) catalog.services);
 
   caddified_services_list = map (service_name:
     caddified_services."${service_name}" // {
@@ -77,7 +77,7 @@ let
       }
       {
         target_label = "__address__";
-        replacement = "127.0.0.1:9115";
+        replacement = "127.0.0.1:${toString catalog.services.blackboxExporter.port}";
       }
     ];
 
@@ -152,7 +152,7 @@ in [
   {
     job_name = "blackbox-https";
     metrics_path = "/probe";
-    params = { module = [ "http_2xx" ]; };
+    params.module = [ "http_2xx" ];
     static_configs = [{ targets = blackbox.https_targets; }];
     relabel_configs = blackbox.relabel_configs;
   }

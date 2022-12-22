@@ -53,6 +53,8 @@
       dashy.icon = "hl-adguardhome";
     };
 
+    blackboxExporter = { port = 9115; };
+
     healthchecks = {
       host = nodes.dee;
       port = 8000;

@@ -22,6 +22,7 @@
     };
     blackbox = {
       enable = true;
+      port = catalog.services.blackboxExporter.port;
       configFile = pkgs.writeText "blackbox.json" (builtins.toJSON {
         modules.http_2xx = {
           prober = "http";
