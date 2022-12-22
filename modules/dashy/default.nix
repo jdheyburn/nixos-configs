@@ -10,9 +10,43 @@ let
   # TODO extract to utils.toYAML
   format = pkgs.formats.yaml { };
 
+  # Start to build the elements in sections, this is then used to discover in catalog.services
+  sections = [
+      {
+        name = "Media";
+        icon = "fas fa-play-circle";
+      }
+      {
+        name = "Monitoring";
+        icon = "fas fa-heartbeat";
+      }
+      {
+        name = "Networks";
+        icon = "fas fa-network-wired";
+      }
+      {
+        name = "Storage";
+        icon = "fas fa-database";
+      }
+      {
+        name = "Virtualisation";
+        icon = "fas fa-cloud";
+      }
+    ];
+
+  # List of section names to include
+  sectionNames = map(section: toLower section.name) sections;
+
+  # All services that have a valid dashy section
+  dashyServices = map (service_name: catalog.services."${service_name}" // { name = service_name; }) attrNames (filterAttrs (svc_name: svc_def: svc_def ? "dashy" && svc_def.dashy ? "section" && builtins.elem svc_def.dashy.section sectionNames) catalog.services);
+
+  # Attrset of sections and their services
+  # takes in a list of services [{"name": service, dashy.section}]
+  sectionServices =  ;
+
   get_dashy_services = section:
     filterAttrs
-    (n: v: v ? "dashy" && v.dashy ? "section" && v.dashy.section == section)
+    (svc_name: svc_def: svc_def ? "dashy" && svc_def.dashy ? "section" && svc_def.dashy.section == section)
     catalog.services;
 
   media_services = get_dashy_services "media";
