@@ -10,17 +10,18 @@ let
     (svc_name: svc_def: svc_def ? "caddify" && svc_def.caddify.enable)
     catalog.services);
 
-  internal_https_targets = map (service:
-    "https://${service.name}.svc.joannet.casa${
-      if service ? "blackbox" && service.blackbox ? "path" then
-        service.blackbox.path
-      else
-        ""
-    };${
+  internal_https_targets = let
+    getPath = service:
+      optionalString (service ? "blackbox" && service.blackbox ? "path")
+      service.blackbox.path;
+    getHumanName = service:
       if service ? "blackbox" && service.blackbox ? "name" then
         service.blackbox.name
       else
-        service.name
+        service.name;
+  in map (service:
+    "https://${service.name}.svc.joannet.casa${getPath service};${
+      getHumanName service
     };internal") caddified_services;
 
   external_targets = map (url: "https://${url};${url};external") [
