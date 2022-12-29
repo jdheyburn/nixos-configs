@@ -45,14 +45,9 @@ let
 
   # Filters out any services destined for this host, where we want it caddified
   # TODO should it also depend whether the module is enabled or not?
-  host_services = (filterAttrs (svc_name: svc_def:
+  host_services = attrValues (filterAttrs (svc_name: svc_def:
     svc_def ? "host" && svc_def.host.hostName == config.networking.hostName
     && svc_def.caddify.enable) catalog.services);
-
-  # Convert host_services to a list, including the name of the service in it too
-  host_services_list = map
-    (service_name: host_services."${service_name}" // { name = service_name; })
-    (attrNames host_services);
 
   # Now feed them into the route function to construct a route entry
   catalog_routes = map (service:
@@ -62,19 +57,13 @@ let
       skip_tls_verify = service.caddify ? "skip_tls_verify"
         && service.caddify.skip_tls_verify;
       paths = if service.caddify ? "paths" then service.caddify.paths else [ ];
-    }) host_services_list;
+    }) host_services;
 
   # These are additional services that this host should forward
-  forward_services = (filterAttrs (n: v:
+  forward_services = attrValues (filterAttrs (n: v:
     v ? "caddify" && v.caddify ? "forwardTo" && v.caddify.enable
     && v.caddify.forwardTo.hostName == config.networking.hostName)
     catalog.services);
-
-  # Convert it to a list
-  forward_services_list = map (service_name:
-    forward_services."${service_name}" // {
-      name = service_name;
-    }) (attrNames forward_services);
 
   forward_routes = map (service:
     route {
@@ -84,12 +73,12 @@ let
       skip_tls_verify = service.caddify ? "skip_tls_verify"
         && service.caddify.skip_tls_verify;
       # Not supporting paths yet since I don't have a scenario to test it on
-    }) forward_services_list;
+    }) forward_services;
 
   combined_routes = catalog_routes ++ forward_routes;
 
   subject_names = map (service: "${service.name}.svc.joannet.casa")
-    (host_services_list ++ forward_services_list);
+    (host_services ++ forward_services);
 
 in {
 

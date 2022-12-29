@@ -49,7 +49,7 @@ let
         icon = service.dashy.icon;
       }) services;
     sectionItems = sectionName:
-      createSectionItems (lib.attrsets.attrValues (filterAttrs
+      createSectionItems (attrValues (filterAttrs
         (svc_name: svc_def: isDashyService (toLower sectionName) svc_def)
         catalog.services));
   in map (section: section // { items = sectionItems section.name; }) sections;

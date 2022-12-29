@@ -6,27 +6,23 @@ let
   nodeExporterTargets =
     map (node_name: "${node_name}.joannet.casa") (attrNames catalog.nodes);
 
-  caddified_services = (filterAttrs
+  caddified_services = attrValues (filterAttrs
     (svc_name: svc_def: svc_def ? "caddify" && svc_def.caddify.enable)
     catalog.services);
 
-  caddified_services_list = map (service_name:
-    caddified_services."${service_name}" // {
-      name = service_name;
-    }) (attrNames caddified_services);
-
-  internal_https_targets = map (service:
-    "https://${service.name}.svc.joannet.casa${
-      if service ? "blackbox" && service.blackbox ? "path" then
-        service.blackbox.path
-      else
-        ""
-    };${
+  internal_https_targets = let
+    getPath = service:
+      optionalString (service ? "blackbox" && service.blackbox ? "path")
+      service.blackbox.path;
+    getHumanName = service:
       if service ? "blackbox" && service.blackbox ? "name" then
         service.blackbox.name
       else
-        service.name
-    };internal") caddified_services_list;
+        service.name;
+  in map (service:
+    "https://${service.name}.svc.joannet.casa${getPath service};${
+      getHumanName service
+    };internal") caddified_services;
 
   external_targets = map (url: "https://${url};${url};external") [
     "bbc.co.uk"
@@ -50,7 +46,7 @@ let
     #       service.name
     #   };internal")
     #   (filter (service: service.blackbox.module == "tls_connect")
-    #     caddified_services_list);
+    #     caddified_services);
 
     relabel_configs = [
       {
@@ -85,14 +81,12 @@ let
 
   };
 
-  nixOS_nodes = (filterAttrs (n: v: v.isNixOS) catalog.nodes);
-  nixOS_nodes_list =
-    map (node_name: nixOS_nodes."${node_name}" // { name = node_name; })
-    (attrNames nixOS_nodes);
+  nixOSNodes = attrValues
+    (filterAttrs (node_name: node_def: node_def.isNixOS) catalog.nodes);
 
   promtail_targets = map (node:
-    "${node.name}.joannet.casa:${toString catalog.services.promtail.port}")
-    nixOS_nodes_list;
+    "${node.hostName}.joannet.casa:${toString catalog.services.promtail.port}")
+    nixOSNodes;
 
 in [
   {
