@@ -43,7 +43,7 @@
     value = (nodesBase."${hostName}" // { hostName = hostName; });
   }) (builtins.attrNames nodesBase));
 
-  services = {
+  servicesBase = {
     adguard = {
       host = nodes.dee;
       port = 3000;
@@ -193,4 +193,10 @@
       dashy.icon = "https://avatars.githubusercontent.com/u/43720803";
     };
   };
+
+  # Enrich servicesBase by adding the key as the name - DRY
+  services = builtins.listToAttrs (map (serviceName: {
+    name = serviceName;
+    value = (servicesBase."${serviceName}" // { name = serviceName; });
+  }) (builtins.attrNames servicesBase));
 }

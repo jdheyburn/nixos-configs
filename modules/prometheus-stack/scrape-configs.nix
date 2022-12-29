@@ -6,8 +6,9 @@ let
   nodeExporterTargets =
     map (node_name: "${node_name}.joannet.casa") (attrNames catalog.nodes);
 
-  caddified_services =
-    (filterAttrs (svc_name: svc_def: svc_def ? "caddify" && svc_def.caddify.enable) catalog.services);
+  caddified_services = (filterAttrs
+    (svc_name: svc_def: svc_def ? "caddify" && svc_def.caddify.enable)
+    catalog.services);
 
   caddified_services_list = map (service_name:
     caddified_services."${service_name}" // {
@@ -77,7 +78,8 @@ let
       }
       {
         target_label = "__address__";
-        replacement = "127.0.0.1:${toString catalog.services.blackboxExporter.port}";
+        replacement =
+          "127.0.0.1:${toString catalog.services.blackboxExporter.port}";
       }
     ];
 

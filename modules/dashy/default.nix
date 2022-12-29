@@ -12,71 +12,49 @@ let
 
   # Start to build the elements in sections, this is then used to discover in catalog.services
   sections = [
-      {
-        name = "Media";
-        icon = "fas fa-play-circle";
-      }
-      {
-        name = "Monitoring";
-        icon = "fas fa-heartbeat";
-      }
-      {
-        name = "Networks";
-        icon = "fas fa-network-wired";
-      }
-      {
-        name = "Storage";
-        icon = "fas fa-database";
-      }
-      {
-        name = "Virtualisation";
-        icon = "fas fa-cloud";
-      }
-    ];
+    {
+      name = "Media";
+      icon = "fas fa-play-circle";
+    }
+    {
+      name = "Monitoring";
+      icon = "fas fa-heartbeat";
+    }
+    {
+      name = "Networks";
+      icon = "fas fa-network-wired";
+    }
+    {
+      name = "Storage";
+      icon = "fas fa-database";
+    }
+    {
+      name = "Virtualisation";
+      icon = "fas fa-cloud";
+    }
+  ];
 
-  # List of section names to include
-  sectionNames = map(section: toLower section.name) sections;
+  # Determines if a given svc_def belongs to a dashy section
+  isDashyService = section_name: svc_def:
+    svc_def ? "dashy" && svc_def.dashy ? "section" && svc_def.dashy.section
+    == section_name;
 
-  # All services that have a valid dashy section
-  dashyServices = map (service_name: catalog.services."${service_name}" // { name = service_name; }) attrNames (filterAttrs (svc_name: svc_def: svc_def ? "dashy" && svc_def.dashy ? "section" && builtins.elem svc_def.dashy.section sectionNames) catalog.services);
+  # Build the items (services) for each section
+  sectionServices = let
+    createSectionItems = services:
+      map (service: {
+        title = service.name;
+        description = service.dashy.description;
+        url = "https://${service.name}.svc.joannet.casa";
+        icon = service.dashy.icon;
+      }) services;
+    sectionItems = sectionName:
+      createSectionItems (lib.attrsets.attrValues (filterAttrs
+        (svc_name: svc_def: isDashyService (toLower sectionName) svc_def)
+        catalog.services));
+  in map (section: section // { items = sectionItems section.name; }) sections;
 
-  # Attrset of sections and their services
-  # takes in a list of services [{"name": service, dashy.section}]
-  sectionServices =  ;
-
-  get_dashy_services = section:
-    filterAttrs
-    (svc_name: svc_def: svc_def ? "dashy" && svc_def.dashy ? "section" && svc_def.dashy.section == section)
-    catalog.services;
-
-  media_services = get_dashy_services "media";
-  monitoring_services = get_dashy_services "monitoring";
-  networks_services = get_dashy_services "networks";
-  storage_services = get_dashy_services "storage";
-  virtualisation_services = get_dashy_services "virtualisation";
-
-  services_as_list = services:
-    map (service_name: services."${service_name}" // { name = service_name; })
-    (attrNames services);
-
-  # TODO make this dynamic from whatever is in the catalog
-  dashy_services = {
-    media = services_as_list media_services;
-    monitoring = services_as_list monitoring_services;
-    networks = services_as_list networks_services;
-    storage = services_as_list storage_services;
-    virtualisation = services_as_list virtualisation_services;
-  };
-
-  create_section_items = services:
-    map (service: {
-      title = service.name;
-      description = service.dashy.description;
-      url = "https://${service.name}.svc.joannet.casa";
-      icon = service.dashy.icon;
-    }) services;
-
-  dashy-config = {
+  dashyConfig = {
     pageInfo = {
       title = "Joannet";
       navLinks = [{
@@ -98,33 +76,7 @@ let
       };
     };
 
-    sections = [
-      {
-        name = "Media";
-        icon = "fas fa-play-circle";
-        items = create_section_items dashy_services.media;
-      }
-      {
-        name = "Monitoring";
-        icon = "fas fa-heartbeat";
-        items = create_section_items dashy_services.monitoring;
-      }
-      {
-        name = "Networks";
-        icon = "fas fa-network-wired";
-        items = create_section_items dashy_services.networks;
-      }
-      {
-        name = "Storage";
-        icon = "fas fa-database";
-        items = create_section_items dashy_services.storage;
-      }
-      {
-        name = "Virtualisation";
-        icon = "fas fa-cloud";
-        items = create_section_items dashy_services.virtualisation;
-      }
-    ];
+    sections = sectionServices;
   };
 
   # Creation of yaml file inspired from https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/home-automation/home-assistant.nix
@@ -132,7 +84,7 @@ let
   # filteredConfig = lib.converge (lib.filterAttrsRecursive (_: v: ! elem v [ null ])) dashy-config or {};
   configFile =
     pkgs.runCommand "dashy-configuration.yaml" { preferLocalBuild = true; } ''
-      cp ${format.generate "dashy-configuration.yaml" dashy-config} $out
+      cp ${format.generate "dashy-configuration.yaml" dashyConfig} $out
       sed -i -e "s/'\!\([a-z_]\+\) \(.*\)'/\!\1 \2/;s/^\!\!/\!/;" $out
     '';
 
