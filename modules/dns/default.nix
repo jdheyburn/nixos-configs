@@ -6,14 +6,9 @@ let
   cfg = config.modules.dns;
 
   # Get services which are being served by caddy
-  caddy_services = filterAttrs
-    (n: v: v ? "caddify" && v.caddify ? "enable" && v.caddify.enable)
-    catalog.services;
-
-  # Convert it to a list
-  caddy_services_list = map
-    (service_name: caddy_services."${service_name}" // { name = service_name; })
-    (attrNames caddy_services);
+  caddy_services = attrValues (filterAttrs (svc_name: svc_def:
+    svc_def ? "caddify" && svc_def.caddify ? "enable" && svc_def.caddify.enable)
+    catalog.services);
 
   getCaddyDestination = service:
     if service.caddify ? "forwardTo" then
@@ -25,7 +20,7 @@ let
   rewrites = map (service: {
     domain = "${service.name}.svc.joannet.casa";
     answer = (getCaddyDestination service).ip.private;
-  }) caddy_services_list;
+  }) caddy_services;
 
 in {
 
