@@ -34,13 +34,12 @@ let
     }
   ];
 
-  # Determines if a given svc_def belongs to a dashy section
-  isDashyService = section_name: svc_def:
-    svc_def ? "dashy" && svc_def.dashy ? "section" && svc_def.dashy.section
-    == section_name;
-
   # Build the items (services) for each section
   sectionServices = let
+    isDashyService = section_name: svc_def:
+      svc_def ? "dashy" && svc_def.dashy ? "section" && svc_def.dashy.section
+      == section_name;
+
     createSectionItems = services:
       map (service: {
         title = service.name;
@@ -48,10 +47,12 @@ let
         url = "https://${service.name}.svc.joannet.casa";
         icon = service.dashy.icon;
       }) services;
+
     sectionItems = sectionName:
       createSectionItems (attrValues (filterAttrs
         (svc_name: svc_def: isDashyService (toLower sectionName) svc_def)
         catalog.services));
+
   in map (section: section // { items = sectionItems section.name; }) sections;
 
   dashyConfig = {
