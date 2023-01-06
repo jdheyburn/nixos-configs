@@ -56,7 +56,7 @@ let
       port = service.port;
       skip_tls_verify = service.caddify ? "skip_tls_verify"
         && service.caddify.skip_tls_verify;
-      paths = if service.caddify ? "paths" then service.caddify.paths else [ ];
+      paths = optionals (service.caddify ? "paths") service.caddify.paths;
     }) host_services;
 
   # These are additional services that this host should forward
