@@ -71,6 +71,8 @@
           modules = common ++ [{ imports = builtins.attrValues nixosModules; }]
             ++ homeFeatures system ++ extraModules;
         };
+
+      hosts = builtins.attrNames (builtins.readDir ./hosts);
     in {
 
       overlays.default = final: prev: (import ./overlays inputs) final prev;
@@ -83,7 +85,7 @@
         in {
           name = host;
           value = mkLinuxSystem node.system modules;
-        }) (builtins.attrNames (builtins.readDir ./hosts)));
+        }) hosts);
 
       # deploy-rs configs - built off what exists in ./hosts and in catalog.nix
       deploy.nodes = builtins.listToAttrs (map (host:
@@ -99,7 +101,7 @@
               sshOpts = [ "-o" "IdentitiesOnly=yes" ];
             };
           };
-        }) (builtins.attrNames (builtins.readDir ./hosts)));
+        }) hosts);
 
       checks = builtins.mapAttrs
         (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
