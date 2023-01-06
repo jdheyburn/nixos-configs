@@ -94,13 +94,10 @@ in {
 
   config = mkIf cfg.enable {
 
-    virtualisation.oci-containers.containers = {
-      dashy = {
-        image = "lissy93/dashy:${version}";
-        volumes = [ "${configFile}:/app/public/conf.yml" ];
-        ports = [ "${toString catalog.services.home.port}:80" ];
-      };
+    virtualisation.oci-containers.containers.dashy = {
+      image = "lissy93/dashy:${version}";
+      volumes = [ "${configFile}:/app/public/conf.yml" ];
+      ports = [ "${toString catalog.services.home.port}:80" ];
     };
   };
 }
-
