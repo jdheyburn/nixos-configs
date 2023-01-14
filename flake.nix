@@ -4,9 +4,7 @@
   inputs = {
     agenix.url = "github:ryantm/agenix";
     argononed = {
-      # url = "gitlab:DarkElvenAngel/argononed";
-      # Branch has fix for 22.11 nixos
-      url = "gitlab:ykis-0-0/argononed/feature-nixos-patch";
+      url = "gitlab:DarkElvenAngel/argononed";
       flake = false;
     };
 
