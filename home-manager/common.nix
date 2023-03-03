@@ -94,7 +94,7 @@
     history = {
       save = 10000000;
       size = 10000000;
-      ignoreDups = false; # I use ALL_DUPS later on
+      ignoreDups = false; # I use HIST_IGNORE_ALL_DUPS later on
     };
 
     shellAliases = {

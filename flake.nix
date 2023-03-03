@@ -4,11 +4,12 @@
   inputs = {
     agenix.url = "github:ryantm/agenix";
     argononed = {
-      # url = "gitlab:DarkElvenAngel/argononed";
-      # Branch has fix for 22.11 nixos
-      url = "gitlab:ykis-0-0/argononed/feature-nixos-patch";
+      url = "gitlab:DarkElvenAngel/argononed";
       flake = false;
     };
+
+    darwin.url = "github:lnl7/nix-darwin";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     deploy-rs.url = "github:serokell/deploy-rs";
 
@@ -23,7 +24,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = inputs@{ self, argononed, agenix, flake-utils, home-manager, nixpkgs
+  outputs = inputs@{ self, argononed, agenix, darwin, flake-utils, home-manager, nixpkgs
     , nixpkgs-2205, nixos-hardware, deploy-rs, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
@@ -76,6 +77,22 @@
     in {
 
       overlays.default = final: prev: (import ./overlays inputs) final prev;
+
+      # No fancy nixlang stuff here like in nixosConfigurations, there's only one host
+      # and I'm just playing around with it for the time being
+      darwinConfigurations."macbook" = darwin.lib.darwinSystem {
+          system = "x86_64-darwin";
+          modules = [
+            ./hosts/macbook/configuration.nix
+            home-manager.darwinModules.home-manager {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users."joseph.heyburn" = {
+                imports = [ ./home-manager/common.nix ./home-manager/users/jdheyburn ];
+              };
+            }
+          ];
+        };
 
       nixosConfigurations = builtins.listToAttrs (map (host:
         let
