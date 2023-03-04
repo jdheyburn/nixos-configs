@@ -123,6 +123,9 @@
       checks = builtins.mapAttrs
         (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
+      # allows nix fmt
+      # TODO format code in separate PR
+      # formatter.x86_64-darwin = nixpkgs.legacyPackages.x86_64-darwin.nixpkgs-fmt;
     };
 }
 
