@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, lib, ... }: {
 
   home.stateVersion = "22.05";
 
@@ -35,6 +35,21 @@
       " indent, but this time be smart
       set smartindent
     '';
+  };
+
+  # snazzy prompt
+  programs.starship = {
+    enable = true;
+    settings = {
+      aws.disabled = true;
+      format = lib.concatStrings [
+        "$all"
+      ];
+      kubernetes = {
+        disabled = false;
+      };
+      time.disabled = false;
+    };
   };
 
   # inspo from https://gist.github.com/markandrewj/ead05ebc20f3968ec07e
