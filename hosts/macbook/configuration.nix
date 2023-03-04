@@ -1,12 +1,10 @@
 { pkgs, ... }:
 {
-
-  # imports = [ <home-manager/nix-darwin> ];
-  # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
-#   environment.systemPackages =
-#     [ pkgs.vim
-#     ];
+  environment.systemPackages =
+    [
+      # switch - better kubectl context and namespace switching
+      pkgs.kubeswitch
+    ];
 
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
