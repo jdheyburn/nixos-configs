@@ -8,6 +8,9 @@
       flake = false;
     };
 
+    darwin.url = "github:lnl7/nix-darwin";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
+
     deploy-rs.url = "github:serokell/deploy-rs";
 
     flake-utils.url = "github:numtide/flake-utils";
@@ -21,7 +24,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
-  outputs = inputs@{ self, argononed, agenix, flake-utils, home-manager, nixpkgs
+  outputs = inputs@{ self, argononed, agenix, darwin, flake-utils, home-manager, nixpkgs
     , nixpkgs-2205, nixos-hardware, deploy-rs, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
@@ -69,9 +72,27 @@
           modules = common ++ [{ imports = builtins.attrValues nixosModules; }]
             ++ homeFeatures system ++ extraModules;
         };
+
+      hosts = builtins.attrNames (builtins.readDir ./hosts);
     in {
 
       overlays.default = final: prev: (import ./overlays inputs) final prev;
+
+      # No fancy nixlang stuff here like in nixosConfigurations, there's only one host
+      # and I'm just playing around with it for the time being
+      darwinConfigurations."macbook" = darwin.lib.darwinSystem {
+          system = "x86_64-darwin";
+          modules = [
+            ./hosts/macbook/configuration.nix
+            home-manager.darwinModules.home-manager {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users."joseph.heyburn" = {
+                imports = [ ./home-manager/common.nix ./home-manager/users/jdheyburn ];
+              };
+            }
+          ];
+        };
 
       nixosConfigurations = builtins.listToAttrs (map (host:
         let
@@ -81,7 +102,7 @@
         in {
           name = host;
           value = mkLinuxSystem node.system modules;
-        }) (builtins.attrNames (builtins.readDir ./hosts)));
+        }) hosts);
 
       # deploy-rs configs - built off what exists in ./hosts and in catalog.nix
       deploy.nodes = builtins.listToAttrs (map (host:
@@ -97,11 +118,14 @@
               sshOpts = [ "-o" "IdentitiesOnly=yes" ];
             };
           };
-        }) (builtins.attrNames (builtins.readDir ./hosts)));
+        }) hosts);
 
       checks = builtins.mapAttrs
         (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
+      # allows nix fmt
+      # TODO format code in separate PR
+      # formatter.x86_64-darwin = nixpkgs.legacyPackages.x86_64-darwin.nixpkgs-fmt;
     };
 }
 

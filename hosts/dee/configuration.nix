@@ -117,6 +117,8 @@ in {
   modules.plex.enable = true;
   modules.unifi.enable = true;
 
+  services.prometheus.exporters.zfs.enable = true;
+
   # Attempted remote builds (blocked on matching system / platform, I don't have an aarch64-linux machine)
   # nix.buildMachines = [{
   #   hostName = "buildervm";

@@ -1,5 +1,5 @@
 { catalog, config, pkgs, lib }: {
-  enable = true;
+  enable = config.modules.prometheusStack.prometheus.enable;
   port = catalog.services.prometheus.port;
   webExternalUrl = "https://prometheus.svc.joannet.casa";
 
@@ -22,6 +22,7 @@
     };
     blackbox = {
       enable = true;
+      port = catalog.services.blackboxExporter.port;
       configFile = pkgs.writeText "blackbox.json" (builtins.toJSON {
         modules.http_2xx = {
           prober = "http";

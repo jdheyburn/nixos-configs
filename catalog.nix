@@ -43,7 +43,7 @@
     value = (nodesBase."${hostName}" // { hostName = hostName; });
   }) (builtins.attrNames nodesBase));
 
-  services = {
+  servicesBase = {
     adguard = {
       host = nodes.dee;
       port = 3000;
@@ -52,6 +52,8 @@
       dashy.description = "DNS resolver";
       dashy.icon = "hl-adguardhome";
     };
+
+    blackboxExporter = { port = 9115; };
 
     healthchecks = {
       host = nodes.dee;
@@ -124,7 +126,7 @@
     prometheus = {
       host = nodes.dennis;
       port = 9001;
-      caddify.enable = true;
+      caddify.enable = false;
       dashy.section = "monitoring";
       dashy.description = "Polls for metrics before captured by Thanos";
       dashy.icon = "hl-prometheus";
@@ -156,7 +158,7 @@
       host = nodes.dennis;
       port = 19192;
       grpcPort = 10902;
-      caddify.enable = true;
+      caddify.enable = false;
       dashy.section = "monitoring";
       dashy.description = "Long term storage for Prometheus metrics";
       dashy.icon = "hl-thanos";
@@ -191,4 +193,10 @@
       dashy.icon = "https://avatars.githubusercontent.com/u/43720803";
     };
   };
+
+  # Enrich servicesBase by adding the key as the name - DRY
+  services = builtins.listToAttrs (map (serviceName: {
+    name = serviceName;
+    value = (servicesBase."${serviceName}" // { name = serviceName; });
+  }) (builtins.attrNames servicesBase));
 }
