@@ -90,6 +90,10 @@ in {
 
   config = mkIf cfg.enable {
 
+    # Allow network access when building
+    # https://mdleom.com/blog/2021/12/27/caddy-plugins-nixos/#xcaddy
+    nix.settings.sandbox = false;
+
     networking.firewall.allowedTCPPorts = [
       80 # Caddy
       443 # Caddy
@@ -103,7 +107,7 @@ in {
       enable = true;
       package = (pkgs.callPackage ./custom-caddy.nix {
         plugins = [ "github.com/caddy-dns/cloudflare" ];
-        vendorSha256 = "sha256-xjwB0Nb0MQw1vd43iJGRgXqJEOC7LK26XoZko9OFvJY=";
+        # vendorSha256 = "sha256-xjwB0Nb0MQw1vd43iJGRgXqJEOC7LK26XoZko9OFvJY=";
       });
       adapter = "''";
       # https://github.com/NixOS/nixpkgs/issues/153142

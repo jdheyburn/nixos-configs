@@ -32,7 +32,7 @@
 
       # Modules to import to hosts
       ## Common modules to apply to everything
-      common = [ ./common agenix.nixosModule ];
+      common = [ ./common agenix.nixosModules.default ];
       ## Modules under ./modules
       nixosModules = builtins.listToAttrs (map (module: {
         name = module;
