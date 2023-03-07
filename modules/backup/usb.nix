@@ -31,7 +31,8 @@ let
       ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneSmallFiles}
     '';
 
-in {
+in
+{
 
   options.modules.backupUSB = {
     enable = mkEnableOption "Enable backup of media and rclone to cloud";

@@ -17,7 +17,8 @@ let
         [ ''"/var/lib/plex/Plex Media Server/Cache"'' ]))
     ];
 
-in {
+in
+{
 
   imports = [ ./hardware-configuration.nix "${argononed}/OS/nixos" ];
 

@@ -15,14 +15,16 @@ stdenv.mkDerivation rec {
     export GOPATH="$TMPDIR/go"
   '';
 
-  buildPhase = let
-    pluginArgs =
-      lib.concatMapStringsSep " " (plugin: "--with ${plugin}") plugins;
-  in ''
-    runHook preBuild
-    ${pkgs.xcaddy}/bin/xcaddy build "v${version}" ${pluginArgs}
-    runHook postBuild
-  '';
+  buildPhase =
+    let
+      pluginArgs =
+        lib.concatMapStringsSep " " (plugin: "--with ${plugin}") plugins;
+    in
+    ''
+      runHook preBuild
+      ${pkgs.xcaddy}/bin/xcaddy build "v${version}" ${pluginArgs}
+      runHook postBuild
+    '';
 
   installPhase = ''
     runHook preInstall

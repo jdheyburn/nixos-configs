@@ -38,10 +38,12 @@
   };
 
   # Enrich nodeBase by adding the key as the hostname - DRY
-  nodes = builtins.listToAttrs (map (hostName: {
-    name = hostName;
-    value = (nodesBase."${hostName}" // { hostName = hostName; });
-  }) (builtins.attrNames nodesBase));
+  nodes = builtins.listToAttrs (map
+    (hostName: {
+      name = hostName;
+      value = (nodesBase."${hostName}" // { hostName = hostName; });
+    })
+    (builtins.attrNames nodesBase));
 
   servicesBase = {
     adguard = {
@@ -195,8 +197,10 @@
   };
 
   # Enrich servicesBase by adding the key as the name - DRY
-  services = builtins.listToAttrs (map (serviceName: {
-    name = serviceName;
-    value = (servicesBase."${serviceName}" // { name = serviceName; });
-  }) (builtins.attrNames servicesBase));
+  services = builtins.listToAttrs (map
+    (serviceName: {
+      name = serviceName;
+      value = (servicesBase."${serviceName}" // { name = serviceName; });
+    })
+    (builtins.attrNames servicesBase));
 }

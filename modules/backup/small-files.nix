@@ -6,12 +6,14 @@ let
 
   cfg = config.modules.backupSF;
 
-  healthcheckAfter = if cfg.prune then
-    "restic-backups-small-files-prune.service"
-  else
-    "restic-backups-small-files.service";
+  healthcheckAfter =
+    if cfg.prune then
+      "restic-backups-small-files-prune.service"
+    else
+      "restic-backups-small-files.service";
 
-in {
+in
+{
 
   options.modules.backupSF = {
     enable =
