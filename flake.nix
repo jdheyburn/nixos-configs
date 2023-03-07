@@ -19,13 +19,20 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixpkgs.url = "nixpkgs/nixos-unstable";
-    nixpkgs-2205.url = "nixpkgs/nixos-22.05";
+    # nixpkgs.url = "nixpkgs/nixos-unstable";
+    # nixpkgs-2205.url = "nixpkgs/nixos-22.05";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+    nixpkgs.url = "github:numtide/nixpkgs-unfree/nixos-unstable";
+    # nixpkgs.inputs.nixpkgs.follows = "nixos-unstable";
   };
 
+    nixConfig.extra-substituters = [ "https://numtide.cachix.org" ];
+    nixConfig.extra-trusted-public-keys = [ "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE=" ];
+
+
   outputs = inputs@{ self, argononed, agenix, darwin, flake-utils, home-manager, nixpkgs
-    , nixpkgs-2205, nixos-hardware, deploy-rs, ... }:
+    , nixos-hardware, deploy-rs, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
       catalog = import ./catalog.nix { inherit nixos-hardware; };
