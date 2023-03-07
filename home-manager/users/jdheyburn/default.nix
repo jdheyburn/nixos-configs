@@ -7,7 +7,8 @@
     userName = "Joseph Heyburn";
     userEmail = "jdheyburn@gmail.com";
     extraConfig = {
-      core.pager = "${pkgs.diff-so-fancy}/bin/diff-so-fancy | less --tabs=4 -RFX";
+      core.pager =
+        "${pkgs.diff-so-fancy}/bin/diff-so-fancy | less --tabs=4 -RFX";
       init.defaultBranch = "main";
       push.autoSetupRemote = "true";
       "url \"git@github.com:\"".insteadOf = "https://github.com/";
@@ -18,9 +19,7 @@
     enable = true;
     settings = {
       # Aliases allow you to create nicknames for gh commands
-      aliases = {
-        co = "pr checkout";
-      };
+      aliases = { co = "pr checkout"; };
 
       # What editor gh should run when creating issues, pull requests, etc. If blank, will refer to environment.
       editor = "!!null nvim";

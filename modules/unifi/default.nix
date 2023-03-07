@@ -2,8 +2,7 @@
 
 with lib;
 
-let
-  cfg = config.modules.unifi;
+let cfg = config.modules.unifi;
 in {
 
   options.modules.unifi = {

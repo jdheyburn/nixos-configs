@@ -1,10 +1,8 @@
-{ pkgs, ... }:
-{
-  environment.systemPackages =
-    [
-      # switch - better kubectl context and namespace switching
-      pkgs.kubeswitch
-    ];
+{ pkgs, ... }: {
+  environment.systemPackages = [
+    # switch - better kubectl context and namespace switching
+    pkgs.kubeswitch
+  ];
 
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
@@ -18,11 +16,10 @@
   homebrew.brews = [
 
   ];
-  homebrew.casks = [];
-  homebrew.taps = [];
+  homebrew.casks = [ ];
+  homebrew.taps = [ ];
 
-
-  system.defaults = { 
+  system.defaults = {
     dock = {
       autohide = true;
       # autohide-delay = 1.0;

@@ -5,7 +5,8 @@
   # It's probably required here for when I build on a non-NixOS machine
   nixConfig = {
     extra-substituters = [ "https://numtide.cachix.org" ];
-    extra-trusted-public-keys = [ "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE=" ];
+    extra-trusted-public-keys =
+      [ "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE=" ];
   };
 
   inputs = {
@@ -31,8 +32,8 @@
     nixpkgs.url = "github:numtide/nixpkgs-unfree/nixos-unstable";
   };
 
-  outputs = inputs@{ self, argononed, agenix, darwin, flake-utils, home-manager, nixpkgs
-    , nixos-hardware, deploy-rs, ... }:
+  outputs = inputs@{ self, argononed, agenix, darwin, flake-utils, home-manager
+    , nixpkgs, nixos-hardware, deploy-rs, ... }:
     let
       inherit (flake-utils.lib) eachSystemMap system;
       catalog = import ./catalog.nix { inherit nixos-hardware; };
@@ -88,18 +89,20 @@
       # No fancy nixlang stuff here like in nixosConfigurations, there's only one host
       # and I'm just playing around with it for the time being
       darwinConfigurations."macbook" = darwin.lib.darwinSystem {
-          system = "x86_64-darwin";
-          modules = [
-            ./hosts/macbook/configuration.nix
-            home-manager.darwinModules.home-manager {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users."joseph.heyburn" = {
-                imports = [ ./home-manager/common.nix ./home-manager/users/jdheyburn ];
-              };
-            }
-          ];
-        };
+        system = "x86_64-darwin";
+        modules = [
+          ./hosts/macbook/configuration.nix
+          home-manager.darwinModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users."joseph.heyburn" = {
+              imports =
+                [ ./home-manager/common.nix ./home-manager/users/jdheyburn ];
+            };
+          }
+        ];
+      };
 
       nixosConfigurations = builtins.listToAttrs (map (host:
         let

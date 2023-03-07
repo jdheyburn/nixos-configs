@@ -16,13 +16,13 @@ stdenv.mkDerivation rec {
   '';
 
   buildPhase = let
-    pluginArgs = lib.concatMapStringsSep " " (plugin: "--with ${plugin}") plugins;
+    pluginArgs =
+      lib.concatMapStringsSep " " (plugin: "--with ${plugin}") plugins;
   in ''
     runHook preBuild
     ${pkgs.xcaddy}/bin/xcaddy build "v${version}" ${pluginArgs}
     runHook postBuild
   '';
-
 
   installPhase = ''
     runHook preInstall
