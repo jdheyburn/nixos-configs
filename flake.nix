@@ -73,12 +73,12 @@
               name = user;
               value = {
                 imports = [
-                  ./home-manager/common.nix
-                  (./home-manager/users + "/${user}")
+                  ./home/common.nix
+                  (./home/users + "/${user}")
                 ];
               };
             })
-            (builtins.attrNames (builtins.readDir ./home-manager/users)));
+            (builtins.attrNames (builtins.readDir ./home/users)));
         }
       ];
       # End of modules
@@ -105,9 +105,8 @@
       homeConfigurations.jdheyburn = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages."x86_64-linux";
         modules = [
-          ./home-manager/common.nix
-          ./home-manager/users/jdheyburn
-          ./home-manager/users/jdheyburn-proper
+          ./home/common.nix
+          ./home/users/jdheyburn
         ];
       };
 
@@ -123,7 +122,7 @@
             home-manager.useUserPackages = true;
             home-manager.users."joseph.heyburn" = {
               imports =
-                [ ./home-manager/common.nix ./home-manager/users/jdheyburn ];
+                [ ./home/common.nix ./home/users/joseph.heyburn ];
             };
           }
         ];
