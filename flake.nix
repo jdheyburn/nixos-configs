@@ -1,6 +1,13 @@
 {
   description = "A very basic flake";
 
+  # Unsure where exactly this needs to live, as I am probably duplicating it in modules/common/default.nix too
+  # It's probably required here for when I build on a non-NixOS machine
+  nixConfig = {
+    extra-substituters = [ "https://numtide.cachix.org" ];
+    extra-trusted-public-keys = [ "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE=" ];
+  };
+
   inputs = {
     agenix.url = "github:ryantm/agenix";
     argononed = {
@@ -19,17 +26,10 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # nixpkgs.url = "nixpkgs/nixos-unstable";
-    # nixpkgs-2205.url = "nixpkgs/nixos-22.05";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     nixpkgs.url = "github:numtide/nixpkgs-unfree/nixos-unstable";
-    # nixpkgs.inputs.nixpkgs.follows = "nixos-unstable";
   };
-
-    nixConfig.extra-substituters = [ "https://numtide.cachix.org" ];
-    nixConfig.extra-trusted-public-keys = [ "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE=" ];
-
 
   outputs = inputs@{ self, argononed, agenix, darwin, flake-utils, home-manager, nixpkgs
     , nixos-hardware, deploy-rs, ... }:
