@@ -97,6 +97,10 @@
 
     # Allow packages with non-free licenses.
     nixpkgs.config.allowUnfree = true;
+    # Given we're using unfree, let's use numtide's cachix which should have cached binaries of some unfree packages
+    # Nix Hydra doesn't build unfree packages
+    nix.settings.substituters = [ "https://numtide.cachix.org" ];
+    nix.settings.trusted-public-keys = [ "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE=" ];
 
     nixpkgs.overlays = [ flake-self.overlays.default ];
 

@@ -21,11 +21,6 @@ in {
 
   imports = [ ./hardware-configuration.nix "${argononed}/OS/nixos" ];
 
-    nix.settings.substituters = [ "https://numtide.cachix.org" ];
-    nix.settings.trusted-public-keys = [ "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE=" ];
-
-
-
   ###############################################################################
   ## General
   ###############################################################################
