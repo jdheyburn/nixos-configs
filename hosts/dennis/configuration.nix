@@ -6,7 +6,8 @@ let
     ++ (optional config.services.prometheus.enable "/var/lib/prometheus2/data")
     ++ (optional config.services.loki.enable "/var/lib/loki");
 
-in {
+in
+{
 
   imports = [ ./hardware-configuration.nix ];
 

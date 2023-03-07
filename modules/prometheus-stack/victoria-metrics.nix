@@ -12,7 +12,8 @@ let
 
   prometheusYml = json.generate "prometheus.yml" promConfig;
 
-in {
+in
+{
   enable = config.modules.prometheusStack.victoriametrics.enable;
   extraOptions = [ "-promscrape.config=${prometheusYml}" ];
 }

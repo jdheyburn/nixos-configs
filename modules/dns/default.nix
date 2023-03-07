@@ -6,8 +6,9 @@ let
   cfg = config.modules.dns;
 
   # Get services which are being served by caddy
-  caddy_services = attrValues (filterAttrs (svc_name: svc_def:
-    svc_def ? "caddify" && svc_def.caddify ? "enable" && svc_def.caddify.enable)
+  caddy_services = attrValues (filterAttrs
+    (svc_name: svc_def:
+      svc_def ? "caddify" && svc_def.caddify ? "enable" && svc_def.caddify.enable)
     catalog.services);
 
   getCaddyDestination = service:
@@ -17,12 +18,15 @@ let
       service.host;
 
   # For each service create a list of rewrites
-  rewrites = map (service: {
-    domain = "${service.name}.svc.joannet.casa";
-    answer = (getCaddyDestination service).ip.private;
-  }) caddy_services;
+  rewrites = map
+    (service: {
+      domain = "${service.name}.svc.joannet.casa";
+      answer = (getCaddyDestination service).ip.private;
+    })
+    caddy_services;
 
-in {
+in
+{
 
   options.modules.dns = { enable = mkEnableOption "Deploy AdGuardHome"; };
 

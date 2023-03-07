@@ -35,25 +35,29 @@ let
   ];
 
   # Build the items (services) for each section
-  sectionServices = let
-    isDashyService = section_name: svc_def:
-      svc_def ? "dashy" && svc_def.dashy ? "section" && svc_def.dashy.section
-      == section_name;
+  sectionServices =
+    let
+      isDashyService = section_name: svc_def:
+        svc_def ? "dashy" && svc_def.dashy ? "section" && svc_def.dashy.section
+        == section_name;
 
-    createSectionItems = services:
-      map (service: {
-        title = service.name;
-        description = service.dashy.description;
-        url = "https://${service.name}.svc.joannet.casa";
-        icon = service.dashy.icon;
-      }) services;
+      createSectionItems = services:
+        map
+          (service: {
+            title = service.name;
+            description = service.dashy.description;
+            url = "https://${service.name}.svc.joannet.casa";
+            icon = service.dashy.icon;
+          })
+          services;
 
-    sectionItems = sectionName:
-      createSectionItems (attrValues (filterAttrs
-        (svc_name: svc_def: isDashyService (toLower sectionName) svc_def)
-        catalog.services));
+      sectionItems = sectionName:
+        createSectionItems (attrValues (filterAttrs
+          (svc_name: svc_def: isDashyService (toLower sectionName) svc_def)
+          catalog.services));
 
-  in map (section: section // { items = sectionItems section.name; }) sections;
+    in
+    map (section: section // { items = sectionItems section.name; }) sections;
 
   dashyConfig = {
     pageInfo = {
@@ -89,7 +93,8 @@ let
       sed -i -e "s/'\!\([a-z_]\+\) \(.*\)'/\!\1 \2/;s/^\!\!/\!/;" $out
     '';
 
-in {
+in
+{
   options.modules.dashy = { enable = mkEnableOption "enable dashy"; };
 
   config = mkIf cfg.enable {
