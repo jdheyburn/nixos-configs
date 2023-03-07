@@ -2,6 +2,8 @@
 
 {
 
+  # TODO these are generic settings across joseph.heyburn and jdheyburn, move them to a better place
+
   programs.git = {
     enable = true;
     userName = "Joseph Heyburn";

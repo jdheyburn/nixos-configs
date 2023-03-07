@@ -101,6 +101,16 @@
 
       overlays.default = final: prev: (import ./overlays inputs) final prev;
 
+      # home-manager standalone installations
+      homeConfigurations.jdheyburn = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages."x86_64-linux";
+        modules = [
+          ./home-manager/common.nix
+          ./home-manager/users/jdheyburn
+          ./home-manager/users/jdheyburn-proper
+        ];
+      };
+
       # No fancy nixlang stuff here like in nixosConfigurations, there's only one host
       # and I'm just playing around with it for the time being
       darwinConfigurations."macbook" = darwin.lib.darwinSystem {
