@@ -115,7 +115,6 @@ in {
   modules.navidrome.enable = false;
   modules.nfs.enable = true;
   modules.plex.enable = true;
-  modules.unifi.enable = true;
 
   services.prometheus.exporters.zfs.enable = true;
 

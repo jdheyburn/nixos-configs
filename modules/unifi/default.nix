@@ -4,8 +4,6 @@ with lib;
 
 let
   cfg = config.modules.unifi;
-
-  unifiMaxJavaHeapSize = 256;
 in {
 
   options.modules.unifi = {
@@ -14,26 +12,24 @@ in {
 
   config = mkIf cfg.enable {
 
+    # If doing a fresh install then you may need to open 8443
+    # temporarily before you can close it out again
     networking.firewall.allowedTCPPorts =
-      [ config.services.prometheus.exporters.unifi-poller.port ];
+      [ config.services.prometheus.exporters.unpoller.port ];
 
     age.secrets."unifi-poller-password".file =
       ../../secrets/unifi-poller-password.age;
     age.secrets."unifi-poller-password".owner =
-      config.services.prometheus.exporters.unifi-poller.user;
+      config.services.prometheus.exporters.unpoller.user;
 
     services.unifi = {
       enable = true;
       unifiPackage = pkgs.unifi7;
-      maximumJavaHeapSize = unifiMaxJavaHeapSize;
-      jrePackage = pkgs.jre8_headless;
-      # TODO explore if this can be closed, if Caddy reverse proxies enough
-      # Port 8443 does not need to be open because caddy proxies 443 -> 8443
-      # But other ports may need to be open for unifi operations
+      maximumJavaHeapSize = 256;
       openFirewall = true;
     };
 
-    services.prometheus.exporters.unifi-poller = {
+    services.prometheus.exporters.unpoller = {
       enable = true;
       controllers = [{
         url = "https://unifi.svc.joannet.casa";

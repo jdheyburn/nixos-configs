@@ -175,7 +175,7 @@
     };
 
     unifi = {
-      host = nodes.dee;
+      host = nodes.dennis;
       port = 8443;
       caddify.enable = true;
       caddify.skip_tls_verify = true;
