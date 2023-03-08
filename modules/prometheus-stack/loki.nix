@@ -34,16 +34,28 @@ in {
     };
 
     schema_config = {
-      configs = [{
-        from = "2020-10-24";
-        store = "boltdb-shipper";
-        object_store = "filesystem";
-        schema = "v11";
-        index = {
-          prefix = "index_";
-          period = "24h";
-        };
-      }];
+      configs = [
+        {
+          from = "2020-10-24";
+          store = "boltdb-shipper";
+          object_store = "filesystem";
+          schema = "v11";
+          index = {
+            prefix = "index_";
+            period = "24h";
+          };
+        }
+        {
+          from = "2023-03-08";
+          store = "tsdb";
+          object_store = "filesystem";
+          schema = "v12";
+          index = {
+            prefix = "tsdb_index_";
+            period = "24h";
+          };
+        }
+      ];
     };
 
     storage_config = {
