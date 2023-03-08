@@ -46,12 +46,12 @@ in {
           };
         }
         {
-          from = "2023-03-08";
+          from = "2023-03-09";
           store = "tsdb";
           object_store = "filesystem";
           schema = "v12";
           index = {
-            prefix = "tsdb_index_";
+            prefix = "index_";
             period = "24h";
           };
         }
@@ -62,6 +62,13 @@ in {
       boltdb_shipper = {
         active_index_directory = "${lokiDir}/boltdb-shipper-active";
         cache_location = "${lokiDir}/boltdb-shipper-cache";
+        # Can be increased for faster performance over longer query periods, uses more disk space
+        cache_ttl = "24h";
+        shared_store = "filesystem";
+      };
+      tsdb_shipper = {
+        active_index_directory = "${lokiDir}/tsdb-index";
+        cache_location = "${lokiDir}/tsdb-cache";
         # Can be increased for faster performance over longer query periods, uses more disk space
         cache_ttl = "24h";
         shared_store = "filesystem";
