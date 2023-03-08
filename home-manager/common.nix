@@ -42,8 +42,13 @@
     enable = true;
     settings = {
       aws.disabled = true;
-      format = lib.concatStrings [ "$all" ];
-      kubernetes = { disabled = false; };
+      format = lib.concatStrings [
+        "$all"
+      ];
+      kubernetes = {
+        disabled = false;
+      };
+      ruby.disabled = true;
       time.disabled = false;
     };
   };
