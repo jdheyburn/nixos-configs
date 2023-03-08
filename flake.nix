@@ -78,8 +78,8 @@
                 ];
               };
             })
-            (["root" "jdheyburn" ]);
-            # (builtins.attrNames (builtins.readDir ./home/users)));
+            [ "root" "jdheyburn" ]);
+          # (builtins.attrNames (builtins.readDir ./home/users)));
         }
       ];
       # End of modules
