@@ -7,6 +7,7 @@ in final: prev: {
 
   # to mitigate this issue https://github.com/NixOS/nixpkgs/issues/187904
   plex = prev.callPackage ./plex { };
+  plexRaw = prev.callPackage ./plex/raw.nix { };
 
   # Disabled since AGH has since been updated
   # adguardhome = prev.callPackage ./adguardhome { };
