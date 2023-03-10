@@ -1,11 +1,19 @@
-{ lib, stdenv, fetchurl, dpkg, writeScript, curl, jq, common-updater-scripts }:
+{ lib
+, stdenv
+, fetchurl
+, dpkg
+, writeScript
+, curl
+, jq
+, common-updater-scripts
+}:
 
 # The raw package that fetches and extracts the Plex RPM. Override the source
 # and version of this derivation if you want to use a Plex Pass version of the
 # server, and the FHS userenv and corresponding NixOS module should
 # automatically pick up the changes.
 stdenv.mkDerivation rec {
-  version = "1.29.1.6316-f4cdfea9c";
+  version = "1.31.2.6783-9209b39b4";
   pname = "plexmediaserver";
 
   # Fetch the source
@@ -13,15 +21,12 @@ stdenv.mkDerivation rec {
     if stdenv.hostPlatform.system == "aarch64-linux" then
       fetchurl
         {
-          url =
-            "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_arm64.deb";
-          sha256 = "sha256-FiUeZFIeXk27VQY99d2a98iBQgy7ESKd0HvYRclQHq8=";
-        }
-    else
+          url = "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_arm64.deb";
+          sha256 = "07hhmf5j1yrcz7k1d6jaqdv8mpxbibhawwy4ip8dm1nkq5a9lzr4";
+        } else
       fetchurl {
-        url =
-          "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";
-        sha256 = "sha256-6VSYQO6KmbAC4vlU3McF4QmuJIopBVB7aV5bpNqOSv0=";
+        url = "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";
+        sha256 = "0a5h151gh1ja3frqzaqw3pj1kyh5p0wgnfmmxiz0q3zx1drjs611";
       };
 
   outputs = [ "out" "basedb" ];
@@ -59,7 +64,7 @@ stdenv.mkDerivation rec {
   passthru.updateScript = writeScript "${pname}-updater" ''
     #!${stdenv.shell}
     set -eu -o pipefail
-    PATH=${lib.makeBinPath [ curl jq common-updater-scripts ]}:$PATH
+    PATH=${lib.makeBinPath [curl jq common-updater-scripts]}:$PATH
 
     plexApiJson=$(curl -sS https://plex.tv/api/downloads/5.json)
     latestVersion="$(echo $plexApiJson | jq .computer.Linux.version | tr -d '"\n')"
@@ -98,3 +103,4 @@ stdenv.mkDerivation rec {
     '';
   };
 }
+
