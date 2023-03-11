@@ -7,6 +7,7 @@ in final: prev: {
 
   # to mitigate this issue https://github.com/NixOS/nixpkgs/issues/187904
   plex = prev.callPackage ./plex { };
+  plexRaw = prev.callPackage ./plex/raw.nix { };
 
   # terraform_0_14_jdh = prev.callPackage ./terraform { };
   inherit (prev.callPackage ./terraform { }) terraform_0_14_jdh;
