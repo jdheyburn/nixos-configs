@@ -1,7 +1,7 @@
-# { stdenv, lib, buildGoModule, fetchFromGitHub, makeWrapper, coreutils
-# , runCommand, runtimeShell, writeText, terraform-providers, fetchpatch }:
+{ stdenv, lib, buildGoModule, fetchFromGitHub, makeWrapper, coreutils
+, runCommand, runtimeShell, writeText, terraform-providers, fetchpatch }:
 
-with import <nixpkgs> { };
+# with import <nixpkgs> { };
 let
   generic = { version, sha256, vendorSha256 ? null, ... }@attrs:
     let attrs' = builtins.removeAttrs attrs [ "version" "sha256" "vendorSha256" ];
