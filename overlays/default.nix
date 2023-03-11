@@ -8,6 +8,11 @@ in final: prev: {
   # to mitigate this issue https://github.com/NixOS/nixpkgs/issues/187904
   plex = prev.callPackage ./plex { };
 
+  # terraform_0_14_jdh = prev.callPackage ./terraform { };
+  inherit (prev.callPackage ./terraform { }) terraform_0_14_jdh;
+  # inherit (prev.callPackage ./terraform-test { }) terraform_0_14_10;
+  # terraform_0_14_jdh = prev.callPackage ./terraform { };
+
   # Disabled since AGH has since been updated
   # adguardhome = prev.callPackage ./adguardhome { };
 

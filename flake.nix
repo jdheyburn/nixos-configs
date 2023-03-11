@@ -91,7 +91,35 @@
               ++ homeFeatures system ++ extraModules;
           };
 
+        mkDarwinSystem = system: darwin.lib.darwinSystem {
+          inherit system ;
+          specialArgs = {
+            inherit catalog;
+            flake-self = self;
+          } // inputs;
+          modules = [
+            ./hosts/macbook/configuration.nix
+            home-manager.darwinModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users."joseph.heyburn" = {
+                imports =
+                  [ ./home/common.nix ./home/users/joseph.heyburn ];
+              };
+            }
+          ];
+        };
+
+        # mkSystemConfig = { system, extraModules, isDarwin ? nixpkgs.lib.hasSuffix "-darwin" system, ... }:
+        #   (if isDarwin then nix-darwin.lib.darwinSystem else nixpkgs.lib.nixosSystem) {
+        #     inherit system;
+        #     specialArgs = { inherit nixpkgs overlays inputs isDarwin catalog; flake-self = self};
+
+        #   }
+
         hosts = builtins.attrNames (builtins.readDir ./hosts);
+
       in
       {
 
@@ -108,21 +136,23 @@
 
         # No fancy nixlang stuff here like in nixosConfigurations, there's only one host
         # and I'm just playing around with it for the time being
-        darwinConfigurations."macbook" = darwin.lib.darwinSystem {
-          system = "x86_64-darwin";
-          modules = [
-            ./hosts/macbook/configuration.nix
-            home-manager.darwinModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users."joseph.heyburn" = {
-                imports =
-                  [ ./home/common.nix ./home/users/joseph.heyburn ];
-              };
-            }
-          ];
-        };
+        darwinConfigurations."macbook" = mkDarwinSystem "x86_64-darwin";
+        # darwinConfigurations."macbook" = darwin.lib.darwinSystem {
+        #   specialArgs = { inherit overlays; };
+        #   system = "x86_64-darwin";
+        #   modules = [
+        #     ./hosts/macbook/configuration.nix
+        #     home-manager.darwinModules.home-manager
+        #     {
+        #       home-manager.useGlobalPkgs = true;
+        #       home-manager.useUserPackages = true;
+        #       home-manager.users."joseph.heyburn" = {
+        #         imports =
+        #           [ ./home/common.nix ./home/users/joseph.heyburn ];
+        #       };
+        #     }
+        #   ];
+        # };
 
         nixosConfigurations = builtins.listToAttrs (map
           (host:

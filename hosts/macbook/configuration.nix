@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, flake-self, ... }: {
   environment.systemPackages = [
     # switch - better kubectl context and namespace switching
     pkgs.kubeswitch
@@ -7,6 +7,7 @@
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
   nix.package = pkgs.nix;
+  nixpkgs.overlays = [ flake-self.overlays.default ];
 
   # Needs to be duplicated here, even though it is defined in home-manager too
   programs.zsh.enable = true;

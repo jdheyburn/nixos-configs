@@ -1,0 +1,15 @@
+--- command/init.go
++++ command/init.go
+@@ -61,6 +61,11 @@
+ 
+ 	var diags tfdiags.Diagnostics
+ 
++	val, ok := os.LookupEnv("NIX_TERRAFORM_PLUGIN_DIR")
++	if ok {
++		flagPluginPath = append(flagPluginPath, val)
++	}
++
+ 	if len(flagPluginPath) > 0 {
+ 		c.pluginPath = flagPluginPath
+ 	}
+
