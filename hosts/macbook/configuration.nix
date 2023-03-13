@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ config, pkgs, inputs, ... }: {
   environment.systemPackages = [
     # switch - better kubectl context and namespace switching
     pkgs.kubeswitch
@@ -6,7 +6,11 @@
 
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
-  nix.package = pkgs.nix;
+  nix = {
+    nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+    registry.nixpkgs.flake = inputs.nixpkgs;
+  };
+  nixpkgs.config.allowUnfree = true;
 
   # Needs to be duplicated here, even though it is defined in home-manager too
   programs.zsh.enable = true;
@@ -29,4 +33,9 @@
   };
 
   time.timeZone = "Europe/London";
+
+  users.users."joseph.heyburn" = {
+    name = "joseph.heyburn";
+    home = "/Users/joseph.heyburn";
+  };
 }
