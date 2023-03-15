@@ -117,7 +117,6 @@
       htop
       jq
       ncdu
-      nixfmt
       python3
       q # nice simple DNS client
       ranger

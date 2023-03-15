@@ -4,7 +4,7 @@ A place for me to dump nix configs
 
 ## Deployment
 
-[deploy-rs]() is used to deploy the configurations.
+[deploy-rs](https://github.com/serokell/deploy-rs) is used to deploy the configurations.
 
 ```bash
 # all hosts
@@ -56,6 +56,8 @@ Services is a mapping of service name to service attributes, it can accept:
   - Replaced dee_rpi3
 - dennis
   - VM on a Proxmox hypervisor
+- macbook
+  - MBP with nix-darwin
 
 ## Runbooks
 
@@ -73,6 +75,18 @@ Services is a mapping of service name to service attributes, it can accept:
 
 3. Update container images
     - dashy
+
+## TODO
+
+- Better file structure, look to flake-parts for this
+  - i.e.:
+    - generic Nix settings across all systems
+    - generic NixOS
+    - generic nix-darwin
+    - host-level configs
+    - generic home-manager
+    - generic Linux home-manager
+    - generic macOS home-manager
 
 ## Credits / Inspiration
 
