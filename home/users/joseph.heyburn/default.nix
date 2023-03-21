@@ -11,6 +11,7 @@ in
 {
   home.packages = with pkgs; [
     awscli2
+    bat # cat alternative, consider moving to higher up
     kubernetes-helm
     python3
     sops
@@ -21,6 +22,10 @@ in
 
   programs.vscode = {
     enable = true;
+
+    # Means I cannot install extensions in vscode GUI, they have to be done via Nix
+    # Might not strictly need it, as `"extensions.autoUpdate" = false;` might be all I need
+    mutableExtensionsDir = false;
 
     # This is a list of extensions I had manually installed
     # I'm not sure what's really needed for what, they're commented out
@@ -85,12 +90,16 @@ in
 
       "diffEditor.ignoreTrimWhitespace" = false;
 
-      "editor.accessibilitySupport" = false;
+      "editor.accessibilitySupport" = "off";
       "editor.formatOnSave" = true;
       "editor.stickyScroll.enabled" = true;
 
       "explorer.confirmDelete" = false;
       "explorer.confirmDragAndDrop" = false;
+
+      # Prevent vscode from automatically updating extensions
+      # We manage extensions and their versioning in Nix
+      "extensions.autoUpdate" = false;
 
       "files.autoSave" = "afterDelay";
       "files.autoSaveDelay" = 1000;
@@ -101,7 +110,7 @@ in
 
       "terminal.integrated.copyOnSeletion" = true;
       "terminal.integrated.enableMultiLinePasteWarning" = false;
-      "terminal.integrated.fontFamily" = "'Meslo LG M DZ for Powerline', monospace",
+      "terminal.integrated.fontFamily" = "'Meslo LG M DZ for Powerline', monospace";
       "terminal.integrated.fontSize" = 12;
 
       "workbench.colorTheme" = "Material Theme";
