@@ -12,6 +12,7 @@ if type rbenv &>/dev/null; then
 fi
 
 # kube-ps1 - if installed
+# probably not needed if using starship
 kube_ps1="/usr/local/opt/kube-ps1/share/kube-ps1.sh"
 if [ -f $kube_ps1 ]; then
   source $kube_ps1

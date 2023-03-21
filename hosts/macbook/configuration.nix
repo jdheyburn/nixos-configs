@@ -7,6 +7,8 @@
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
   nix.package = pkgs.nix;
+  nix.settings.trusted-users = [ "root" "joseph.heyburn" ];
+  nixpkgs.config.allowUnfree = true;
 
   # Needs to be duplicated here, even though it is defined in home-manager too
   programs.zsh.enable = true;

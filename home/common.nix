@@ -157,6 +157,7 @@
 
     shellAliases = {
       awscf = "vi ~/.aws/config";
+      cat = "bat";
       cl = "clear";
       cp = "cp -Rv";
       gpm = "git pull origin $(git_main_branch)";
