@@ -162,7 +162,7 @@
       cp = "cp -Rv";
       gpm = "git pull origin $(git_main_branch)";
       h = "history";
-      kc = "kubectx";
+      kc = "switch";
       kn = "kubens";
       mv = "mv -v";
       nrs = "sudo nixos-rebuild switch";
