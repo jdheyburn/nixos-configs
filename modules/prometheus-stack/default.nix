@@ -56,5 +56,7 @@ in {
         StartLimitBurst = "5";
       };
     };
+
+    systemd.services.victoriametrics.serviceConfig.TimeoutStartSec = "5m";
   };
 }
