@@ -13,12 +13,9 @@
   # Needs to be duplicated here, even though it is defined in home-manager too
   programs.zsh.enable = true;
 
-  # TODO add brews as and when they come
-  homebrew.enable = false;
-  homebrew.brews = [
-
-  ];
-  homebrew.casks = [ ];
+  homebrew.enable = true;
+  homebrew.brews = [ ];
+  homebrew.casks = [ "wireshark" ];
   homebrew.taps = [ ];
 
   system.defaults = {

@@ -79,12 +79,12 @@ in
     ]
     # Install other extension from the marketplace that aren't in nixpkgs
     ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-        {
-          name = "vsc-material-theme";
-          publisher = "Equinusocio";
-          version = "33.7.0";
-          sha256 = "sha256-qwnu48dPjJN/wlaiwHS4SU3Yn4Y3GuOB1W+QoSjcgKw=";
-        }
+      {
+        name = "vsc-material-theme";
+        publisher = "Equinusocio";
+        version = "33.7.0";
+        sha256 = "sha256-qwnu48dPjJN/wlaiwHS4SU3Yn4Y3GuOB1W+QoSjcgKw=";
+      }
     ];
 
     globalSnippets = {
