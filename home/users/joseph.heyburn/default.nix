@@ -13,6 +13,7 @@ in
     awscli2
     bat # cat alternative, consider moving to higher up
     kubernetes-helm
+    miller # data parsing, in testing
     python3
     sops
     terraform_0_14_10
@@ -42,7 +43,7 @@ in
       # donjayamanne.githistory
 
       # Supercharge Git within VS Code — Visualize code authorship at a glance via Git blame annotations and CodeLens, seamlessly navigate and explore Git repositories, gain valuable insights via rich visualizations and powerful comparison commands, and so much more
-      # eamodio.gitlens
+      eamodio.gitlens
 
       # Code formatter using prettier
       esbenp.prettier-vscode
@@ -94,6 +95,17 @@ in
         prefix = [ "todo" ];
       };
     };
+
+    keybindings = [
+      {
+        key = "shift+ctrl+m";
+        command = "workbench.action.toggleMaximizedPanel";
+      }
+      {
+        key = "shift+ctrl+t";
+        command = "workbench.action.terminal.focus";
+      }
+    ];
 
     userSettings = {
       "[python]"."editor.formatOnType" = true;
