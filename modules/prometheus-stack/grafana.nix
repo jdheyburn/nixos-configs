@@ -10,6 +10,7 @@
       root_url = "https://grafana.svc.joannet.casa";
       http_addr = "0.0.0.0";
       http_port = catalog.services.grafana.port;
+      enable_gzip = true;
     };
 
     smtp = {
@@ -35,23 +36,34 @@
       settings = { addresses = "jdheyburn@gmail.com"; };
     }];
 
-    datasources.settings.datasources = [
-      {
-        name = "Thanos Query";
-        type = "prometheus";
-        url = "http://localhost:${toString catalog.services.thanos-query.port}";
-        jsonData = {
-          timeInterval = "5s"; # node is scraping at 5s
-        };
-      }
-      {
-        name = "Prometheus";
-        type = "prometheus";
-        url = "http://localhost:${toString config.services.prometheus.port}";
-        jsonData = {
-          timeInterval = "5s"; # node is scraping at 5s
-        };
-      }
+    datasources.settings = {
+
+      deleteDatasources = [
+        {
+          name = "Thanos Query";
+        }
+        {
+          name = "Prometheus";
+        }
+      ];
+
+      datasources = [
+      # {
+      #   name = "Thanos Query";
+      #   type = "prometheus";
+      #   url = "http://localhost:${toString catalog.services.thanos-query.port}";
+      #   jsonData = {
+      #     timeInterval = "5s"; # node is scraping at 5s
+      #   };
+      # }
+      # {
+      #   name = "Prometheus";
+      #   type = "prometheus";
+      #   url = "http://localhost:${toString config.services.prometheus.port}";
+      #   jsonData = {
+      #     timeInterval = "5s"; # node is scraping at 5s
+      #   };
+      # }
       {
         name = "VictoriaMetrics";
         type = "prometheus";
