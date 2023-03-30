@@ -7,6 +7,8 @@ let
     vendorHash = "sha256-tWrSr6JCS9s+I0T1o3jgZ395u8IBmh73XGrnJidWI7U=";
   };
 
+  # TODO should be pulled from overlays but it's not, so redeclaring here
+  velero_1_9_5 = pkgs.callPackage ./velero { };
 in
 {
   home.packages = with pkgs; [
@@ -17,6 +19,7 @@ in
     python3
     sops
     terraform_0_14_10
+    velero_1_9_5
   ];
 
   programs.direnv.enable = true;

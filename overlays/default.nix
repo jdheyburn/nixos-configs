@@ -9,6 +9,9 @@ in final: prev: {
   plex = prev.callPackage ./plex { };
   plexRaw = prev.callPackage ./plex/raw.nix { };
 
+  # Fix to previous velero version
+  velero_1_9_5 = prev.callPackage ./velero { };
+
   # Disabled since AGH has since been updated
   # adguardhome = prev.callPackage ./adguardhome { };
 
