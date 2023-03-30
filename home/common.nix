@@ -25,6 +25,7 @@
       core.pager =
         "${pkgs.diff-so-fancy}/bin/diff-so-fancy | less --tabs=4 -RFX";
       init.defaultBranch = "main";
+      pull.rebase = "false";
       push.autoSetupRemote = "true";
       "url \"git@github.com:\"".insteadOf = "https://github.com/";
     };
