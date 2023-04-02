@@ -13,7 +13,6 @@ in
 {
   home.packages = with pkgs; [
     awscli2
-    bat # cat alternative, consider moving to higher up
     kubernetes-helm
     miller # data parsing, in testing
     python3
