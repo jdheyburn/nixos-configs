@@ -5,6 +5,10 @@
   # changes in each release.
   home.stateVersion = "22.05";
 
+  home.packages = with pkgs; [
+    bat # cat alternative
+  ];
+
   # Permit non-free software
   nixpkgs.config.allowUnfree = true;
 
