@@ -3,6 +3,12 @@
 { nixos-hardware }: rec {
 
   nodesBase = {
+    charlie = {
+      ip.private = "128.140.63.95";
+      system = "x86_64-linux";
+      isNixOS = true;
+    };
+
     dee = {
       ip.private = "192.168.1.10";
       ip.tailscale = "100.127.189.33";
