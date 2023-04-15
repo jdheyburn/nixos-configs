@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 {
 
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ ./hardware-configuration.nix ./networking.nix ];
 
   ###############################################################################
   ## General
@@ -14,6 +14,7 @@
   zramSwap.enable = true;
 
   networking.hostName = "charlie";
+  networking.firewall.allowedTCPPorts = [ 22 ];
   #   networking.domain = "";
 
   services.openssh.enable = true;
@@ -25,6 +26,14 @@
   ###############################################################################
   ## Modules
   ###############################################################################
+
+  environment.packages = [
+    pkgs.ffmpeg
+  ];
+
+  environment.sessionVariables = {
+    LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib/";
+  };
 
 }
 
