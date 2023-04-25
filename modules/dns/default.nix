@@ -60,6 +60,7 @@ in
         dns = {
           # bind_hosts = [ "0.0.0.0" ];
           bind_host = "0.0.0.0";
+          edns_client_subnet.enabled = false;
           upstream_dns = [
             "https://dns10.quad9.net/dns-query"
             "[/joannet.casa//]192.168.1.1:53"
