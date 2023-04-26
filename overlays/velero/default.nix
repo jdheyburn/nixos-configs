@@ -13,7 +13,8 @@ buildGoModule rec {
   };
 
   ldflags = [
-    "-s" "-w"
+    "-s"
+    "-w"
     "-X github.com/vmware-tanzu/velero/pkg/buildinfo.Version=v${version}"
     "-X github.com/vmware-tanzu/velero/pkg/buildinfo.ImageRegistry=velero"
     "-X github.com/vmware-tanzu/velero/pkg/buildinfo.GitTreeState=clean"
