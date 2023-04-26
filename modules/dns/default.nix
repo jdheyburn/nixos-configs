@@ -71,6 +71,8 @@ in
           resolve_clients = true;
         };
 
+        statistics.interval = "24h";
+
         user_rules = [
           "@@||skyads.ott.skymedia.co.uk^$client='192.168.1.112'"
           #          "||www.bbc.com^$client='192.168.1.25'"

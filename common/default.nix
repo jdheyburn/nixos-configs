@@ -10,7 +10,7 @@
     # Pi uses 21.05
     # system.stateVersion = "21.11";
 
-    boot.cleanTmpDir = true;
+    boot.tmp.cleanOnBoot = true;
 
     networking.domain = "joannet.casa";
 
@@ -57,6 +57,7 @@
     #############################################################################
 
     users.defaultUserShell = pkgs.zsh;
+    programs.zsh.enable = true;
     users.mutableUsers = false;
     users.users.jdheyburn = {
       uid = 1000;
