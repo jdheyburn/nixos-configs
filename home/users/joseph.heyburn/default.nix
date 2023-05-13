@@ -137,6 +137,9 @@ in
       "terminal.integrated.fontFamily" = "'Meslo LG M DZ for Powerline', monospace";
       "terminal.integrated.fontSize" = 12;
 
+      # Disable automatic updates
+      "update.mode" = "none";
+
       # Material theme seems to want to remove this config and to use its own instead
       "workbench.colorTheme" = "Material Theme Darker";
       "workbench.iconTheme" = "material-icon-theme";
