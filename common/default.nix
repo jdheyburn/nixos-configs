@@ -56,8 +56,12 @@
     ## User accounts
     #############################################################################
 
-    users.defaultUserShell = pkgs.zsh;
+    # Set zsh as the default shell
+    environment.shells = with pkgs; [ zsh ];
     programs.zsh.enable = true;
+    users.defaultUserShell = pkgs.zsh;
+
+    # Now for user stuff
     users.mutableUsers = false;
     users.users.jdheyburn = {
       uid = 1000;
