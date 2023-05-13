@@ -10,7 +10,7 @@
     # Pi uses 21.05
     # system.stateVersion = "21.11";
 
-    boot.cleanTmpDir = true;
+    boot.tmp.cleanOnBoot = true;
 
     networking.domain = "joannet.casa";
 
@@ -56,7 +56,12 @@
     ## User accounts
     #############################################################################
 
+    # Set zsh as the default shell
+    environment.shells = with pkgs; [ zsh ];
+    programs.zsh.enable = true;
     users.defaultUserShell = pkgs.zsh;
+
+    # Now for user stuff
     users.mutableUsers = false;
     users.users.jdheyburn = {
       uid = 1000;
