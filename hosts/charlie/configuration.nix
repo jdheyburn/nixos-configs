@@ -9,12 +9,10 @@
 
   system.stateVersion = "22.11";
 
-  boot.cleanTmpDir = true;
-
   zramSwap.enable = true;
 
   networking.hostName = "charlie";
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  networking.firewall.allowedTCPPorts = [ 22 3000 ];
   #   networking.domain = "";
 
   services.openssh.enable = true;
@@ -27,7 +25,7 @@
   ## Modules
   ###############################################################################
 
-  environment.packages = [
+  environment.systemPackages = [
     pkgs.ffmpeg
   ];
 
@@ -35,5 +33,6 @@
     LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib/";
   };
 
+  programs.nix-ld.enable = true;
 }
 
