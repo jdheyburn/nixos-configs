@@ -25,6 +25,8 @@
   ## Modules
   ###############################################################################
 
+  modules.monitoring.enable = true;
+
   environment.systemPackages = [
     pkgs.ffmpeg
   ];
