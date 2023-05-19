@@ -14,6 +14,7 @@ in
   home.packages = with pkgs; [
     awscli2
     kubernetes-helm
+    k9s   # TUI for k8s
     miller # data parsing, in testing
     python3
     sops
