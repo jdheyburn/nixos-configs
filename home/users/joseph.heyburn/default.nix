@@ -9,16 +9,34 @@ let
 
   # TODO should be pulled from overlays but it's not, so redeclaring here
   velero_1_9_5 = pkgs.callPackage ./velero { };
+
+  # Declare Python packages that should be available in the global python
+  # https://nixos.wiki/wiki/Python
+  python-packages = ps: with ps; [
+    requests
+  ];
 in
 {
   home.packages = with pkgs; [
     awscli2
+    
     kubernetes-helm
-    k9s   # TUI for k8s
-    miller # data parsing, in testing
-    python3
+    
+    # TUI for k8s
+    k9s
+
+    # data parsing, in testing
+    miller
+    
+    # Installs Python, and the defined packages
+    (python3.withPackages python-packages)
+    
+    # Secrets management
     sops
+    
     terraform_0_14_10
+    
+    # Interfacing with Velero on K8s
     velero_1_9_5
   ];
 
@@ -111,6 +129,8 @@ in
     ];
 
     userSettings = {
+      "[json]"."editor.defaultFormatter" = "esbenp.prettier-vscode";
+
       "[python]"."editor.formatOnType" = true;
 
       "diffEditor.ignoreTrimWhitespace" = false;
