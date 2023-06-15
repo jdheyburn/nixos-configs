@@ -10,6 +10,17 @@ let
   # TODO should be pulled from overlays but it's not, so redeclaring here
   velero_1_9_5 = pkgs.callPackage ./velero { };
 
+  # TODO should be pulled from overlays but it's not, so redeclaring here
+  # kubectl_1_25_4 = pkgs.callPackage ./kubectl/kubectl.nix { };
+
+       kubectl_1_25_4 = (import (builtins.fetchGit {
+         # Descriptive name to make the store path easier to identify                
+         name = "nixpkgs-kubectl-1.25.4";                                                 
+         url = "https://github.com/NixOS/nixpkgs/";                       
+         ref = "refs/heads/nixpkgs-unstable";                     
+         rev = "b3a285628a6928f62cdf4d09f4e656f7ecbbcafb";                                           
+     }) {}).kubectl;                                                                           
+
   # Declare Python packages that should be available in the global python
   # https://nixos.wiki/wiki/Python
   python-packages = ps: with ps; [
@@ -17,6 +28,8 @@ let
   ];
 in
 {
+  imports = [ ./aliasApplications.nix ];
+
   home.packages = with pkgs; [
     awscli2
     
@@ -25,8 +38,14 @@ in
     # TUI for k8s
     k9s
 
+    # kubectl_1_25_4
+
+    lens
+
     # data parsing, in testing
     miller
+
+    obsidian
     
     # Installs Python, and the defined packages
     (python3.withPackages python-packages)

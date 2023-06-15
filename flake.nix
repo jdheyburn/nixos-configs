@@ -32,6 +32,11 @@
 
     nixpkgs.url = "github:numtide/nixpkgs-unfree";
     nixpkgs.inputs.nixpkgs.follows = "nixpkgs-unstable";
+
+    mkAlias = {
+			url = "github:cdmistman/mkAlias";
+			inputs.nixpkgs.follows = "nixpkgs";
+		};
   };
 
   outputs =
@@ -109,6 +114,26 @@
         # No fancy nixlang stuff here like in nixosConfigurations, there's only one host
         # and I'm just playing around with it for the time being
         darwinConfigurations."macbook" = darwin.lib.darwinSystem {
+          system = "aarch64-darwin";
+          # specialArgs = {
+          #   inherit inputs;
+          # };
+          modules = [
+            ./hosts/macbook/configuration.nix
+            home-manager.darwinModules.home-manager
+            {
+              home-manager.extraSpecialArgs = { inherit system inputs; };
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users."joseph.heyburn" = {
+                imports =
+                  [ ./home/common.nix ./home/users/joseph.heyburn ];
+              };
+            }
+          ];
+        };
+
+        darwinConfigurations."macbook-old" = darwin.lib.darwinSystem {
           system = "x86_64-darwin";
           modules = [
             ./hosts/macbook/configuration.nix
@@ -163,5 +188,6 @@
         formatter.x86_64-darwin = nixpkgs.legacyPackages.x86_64-darwin.nixpkgs-fmt;
         formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
         formatter.aarch64-linux = nixpkgs.legacyPackages.aarch64-linux.nixpkgs-fmt;
+        formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.nixpkgs-fmt;
       };
 }
