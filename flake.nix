@@ -32,11 +32,6 @@
 
     nixpkgs.url = "github:numtide/nixpkgs-unfree";
     nixpkgs.inputs.nixpkgs.follows = "nixpkgs-unstable";
-
-    mkAlias = {
-			url = "github:cdmistman/mkAlias";
-			inputs.nixpkgs.follows = "nixpkgs";
-		};
   };
 
   outputs =
@@ -120,6 +115,11 @@
           # };
           modules = [
             ./hosts/macbook/configuration.nix
+            {
+              users.users."joseph.heyburn" = {
+                home = "/Users/joseph.heyburn";
+              };
+            }
             home-manager.darwinModules.home-manager
             {
               home-manager.extraSpecialArgs = { inherit system inputs; };

@@ -4,25 +4,38 @@
     pkgs.kubeswitch
   ];
 
-  # Auto upgrade nix package and the daemon service.
+# Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
   nix.package = pkgs.nix;
   nix.settings.trusted-users = [ "root" "joseph.heyburn" ];
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
   # Needs to be duplicated here, even though it is defined in home-manager too
   programs.zsh.enable = true;
+  # Dumb hack because something changed causing zsh not to load
+  environment.etc.profile.text = ''
+if [[ $0 == "/bin/sh" ]]; then
+  zsh
+fi
+'';
 
   # Does not install homebrew, follow the install instructions for this: https://brew.sh
   homebrew.enable = true;
-  homebrew.brews = [ ];
+  homebrew.brews = [
+    "blueutil"
+  ];
   homebrew.casks = [
     "1password"
-    "alfred"
     "alt-tab"
+    "audacity"
     "todoist"
     "firefox"
+    "focusrite-control"
     "hyper"
+    # Spotlight replacement
+    # It does a good job of finding Apps installed by Nix
+    "raycast"
     # Tiling tool
     "rectangle"
     "sdm"
@@ -31,6 +44,8 @@
     "whatsapp"
   ];
   homebrew.taps = [ ];
+
+  security.pam.enableSudoTouchIdAuth = true;
 
   system.defaults = {
     dock = {
@@ -53,6 +68,8 @@
       # Set the speed of the cursor on the trackpad
       "com.apple.trackpad.scaling" = 2.0;
     };
+
+    ".GlobalPreferences"."com.apple.mouse.scaling" = "7.0";
 
     trackpad = {
       # Enable tap to click
