@@ -113,6 +113,8 @@
     nixpkgs.overlays = [ flake-self.overlays.default ];
 
     # System-wide packages
+    ## TODO there are packages here which should be shared with home-manager
+    ## to allow macbook to get them too
     environment.systemPackages = with pkgs; [
       bind # Gets dig
       exa # posh ls

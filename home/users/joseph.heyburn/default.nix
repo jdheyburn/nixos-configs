@@ -21,6 +21,11 @@ in
 {
   home.packages = with pkgs; [
     awscli2
+
+    # better find commmand - search for files matching a name
+    fd
+
+    jq
     
     kubernetes-helm
     
@@ -28,6 +33,14 @@ in
     k9s
 
     kubectl_1_25_4
+
+    # Additional kube switchers in testing
+    kubectx
+    kubie
+
+    # switch - better kubectl context and namespace switching
+    # Seems to be broken though
+    kubeswitch
 
     # data parsing, in testing
     miller
@@ -38,11 +51,19 @@ in
     
     # Installs Python, and the defined packages
     (python3.withPackages python-packages)
+
+    # Simple DNS client
+    q
+
+    # rg - Search for strings in files
+    ripgrep
     
     # Secrets management
     sops
     
     terraform_0_14_10
+
+    tldr
     
     # Interfacing with Velero on K8s
     velero_1_9_5
@@ -163,7 +184,7 @@ in
 
       "terminal.integrated.copyOnSelection" = true;
       "terminal.integrated.enableMultiLinePasteWarning" = false;
-      "terminal.integrated.fontFamily" = "'Meslo LG M DZ for Powerline', monospace";
+      "terminal.integrated.fontFamily" = "'MesloLGS NF', 'Meslo LG M DZ for Powerline', monospace";
       "terminal.integrated.fontSize" = 12;
 
       # Disable automatic updates

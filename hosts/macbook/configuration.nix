@@ -1,10 +1,10 @@
 { pkgs, ... }: {
-  environment.systemPackages = [
-    # switch - better kubectl context and namespace switching
-    pkgs.kubeswitch
+
+  imports = [
+    ./work.nix
   ];
 
-# Auto upgrade nix package and the daemon service.
+  # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
   nix.package = pkgs.nix;
   nix.settings.trusted-users = [ "root" "joseph.heyburn" ];
@@ -38,9 +38,7 @@ fi
     "raycast"
     # Tiling tool
     "rectangle"
-    "sdm"
     "spotify"
-    "viscosity"
     "whatsapp"
   ];
   homebrew.taps = [ ];
@@ -80,4 +78,11 @@ fi
   };
 
   time.timeZone = "Europe/London";
+
+  fonts = {
+    fontDir.enable = true;
+    fonts = [
+      pkgs.meslo-lgs-nf
+    ];
+  };
 }
