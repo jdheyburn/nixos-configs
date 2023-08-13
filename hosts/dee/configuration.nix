@@ -51,7 +51,7 @@ in
   };
 
   services.argonone = {
-    enable = true;
+    enable = false;
     logLevel = 4;
     settings = {
       fanTemp0 = 36;
@@ -74,7 +74,7 @@ in
     iotop
     smartmontools
     kid3
-    python39
+    python3
     restic
     sysstat
     yt-dlp
@@ -119,17 +119,16 @@ in
 
   services.prometheus.exporters.zfs.enable = true;
 
-  # Attempted remote builds (blocked on matching system / platform, I don't have an aarch64-linux machine)
-  # nix.buildMachines = [{
-  #   hostName = "buildervm";
-  #   systems = [ "aarch64-linux" ];
-  #   maxJobs = 1;
-  #   speedFactor = 2;
-  #   mandatoryFeatures = [];
-  # }];
-  # nix.distributedBuilds = true;
-  # nix.extraOptions = ''
-  #   builders-use-substitutes = true
-  # '';
+  nix.buildMachines = [{
+    hostName = "charlie";
+    systems = [ "aarch64-linux" ];
+    maxJobs = 1;
+    speedFactor = 2;
+    mandatoryFeatures = [];
+  }];
+  nix.distributedBuilds = true;
+  nix.extraOptions = ''
+    builders-use-substitutes = true
+  '';
 }
 
