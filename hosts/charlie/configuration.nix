@@ -12,7 +12,7 @@
   zramSwap.enable = true;
 
   networking.hostName = "charlie";
-  networking.firewall.allowedTCPPorts = [ 22 3000 ];
+  networking.firewall.allowedTCPPorts = [ 22 3000 8096 ];
   #   networking.domain = "";
 
   services.openssh.enable = true;
@@ -36,5 +36,12 @@
   };
 
   programs.nix-ld.enable = true;
-}
 
+  services.jellyfin.enable = true;
+  services.jellyfin.user = "jdheyburn";
+  services.jellyfin.group = "users";
+
+  # For remote builds
+  nix.settings.sandbox = true;
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+}
