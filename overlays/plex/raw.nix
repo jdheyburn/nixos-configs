@@ -1,5 +1,4 @@
-{ lib
-, stdenv
+{ lib, stdenv
 , fetchurl
 , dpkg
 , writeScript
@@ -13,21 +12,17 @@
 # server, and the FHS userenv and corresponding NixOS module should
 # automatically pick up the changes.
 stdenv.mkDerivation rec {
-  version = "1.31.2.6783-9209b39b4";
+  version = "1.32.5.7349-8f4248874";
   pname = "plexmediaserver";
 
   # Fetch the source
-  src =
-    if stdenv.hostPlatform.system == "aarch64-linux" then
-      fetchurl
-        {
-          url = "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_arm64.deb";
-          sha256 = "07hhmf5j1yrcz7k1d6jaqdv8mpxbibhawwy4ip8dm1nkq5a9lzr4";
-        } else
-      fetchurl {
-        url = "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";
-        sha256 = "0a5h151gh1ja3frqzaqw3pj1kyh5p0wgnfmmxiz0q3zx1drjs611";
-      };
+  src = if stdenv.hostPlatform.system == "aarch64-linux" then fetchurl {
+    url = "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_arm64.deb";
+    sha256 = "18j98za5498v02asyyz2sakbl4inyxd6jsa4bjz8zm2jb1knk236";
+  } else fetchurl {
+    url = "https://downloads.plex.tv/plex-media-server-new/${version}/debian/plexmediaserver_${version}_amd64.deb";
+    sha256 = "0gm9i752fbplw1l0xlrhzpif5fjiwx471hv55bwbs3ywz3hp0jnb";
+  };
 
   outputs = [ "out" "basedb" ];
 
@@ -103,4 +98,3 @@ stdenv.mkDerivation rec {
     '';
   };
 }
-
