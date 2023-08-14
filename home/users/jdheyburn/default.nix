@@ -38,13 +38,9 @@ in {
         };
         "gitlab.com" = {
           user = "git";
-          # TODO change for generic
-          identityFile = "~/.ssh/gitlab-personal-paddys";
         };
         "github.com" = {
           user = "git";
-          # TODO change for generic
-          identityFile = "~/.ssh/id_ed25519_github";
         };
       };
     };
