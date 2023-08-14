@@ -7,6 +7,7 @@
 
   home.packages = with pkgs; [
     bat # cat alternative
+    diff-so-fancy
   ];
 
   # Permit non-free software

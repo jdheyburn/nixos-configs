@@ -131,6 +131,7 @@ in
           http.servers.srv0 = {
             listen = [ ":443" ];
             routes = combined_routes;
+            metrics = {};
           };
           tls.automation.policies = [{
             subjects = subject_names;

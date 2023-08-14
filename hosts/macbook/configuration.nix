@@ -29,16 +29,17 @@ fi
     "1password"
     "alt-tab"
     "audacity"
-    "todoist"
     "firefox"
     "focusrite-control"
     "hyper"
+    "logi-options-plus"
     # Spotlight replacement
     # It does a good job of finding Apps installed by Nix
     "raycast"
     # Tiling tool
     "rectangle"
     "spotify"
+    "todoist"
     "whatsapp"
   ];
   homebrew.taps = [ ];

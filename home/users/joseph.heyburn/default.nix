@@ -7,6 +7,12 @@ let
     vendorHash = "sha256-tWrSr6JCS9s+I0T1o3jgZ395u8IBmh73XGrnJidWI7U=";
   };
 
+  terraform_1_5_2 = pkgs.mkTerraform {
+    version = "1.5.2";
+    hash = "sha256-Ri2nWLjPPBINXyPIQSbnd1L+t7QLgXiTOgqX8Dk/rXg=";
+    vendorHash = "sha256-tfCfJj39VP+P4qhJTpEIAi4XB+6VYtVKkV/bTrtnFA0=";
+  };
+
   # TODO should be pulled from overlays but it's not, so redeclaring here
   velero_1_9_5 = pkgs.callPackage ./velero { };
   kubectl_1_25_4 = pkgs.callPackage ./kubectl/kubectl.nix { };
@@ -16,6 +22,7 @@ let
   # https://nixos.wiki/wiki/Python
   python-packages = ps: with ps; [
     requests
+    virtualenv
   ];
 in
 {
@@ -50,7 +57,7 @@ in
     openlens
     
     # Installs Python, and the defined packages
-    (python3.withPackages python-packages)
+    (python311.withPackages python-packages)
 
     # Simple DNS client
     q
@@ -61,7 +68,7 @@ in
     # Secrets management
     sops
     
-    terraform_0_14_10
+    terraform_1_5_2
 
     tldr
     
@@ -70,6 +77,8 @@ in
   ];
 
   programs.direnv.enable = true;
+
+  programs.go.enable = true;
 
   programs.vscode = {
     enable = true;
