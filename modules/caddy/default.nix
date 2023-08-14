@@ -127,11 +127,16 @@ in
       # https://github.com/NixOS/nixpkgs/issues/153142
       configFile = pkgs.writeText "Caddyfile" (builtins.toJSON {
         logging.logs.default.level = "ERROR";
+        # tried to get admin (and therefore metrics) exported externally but couldn't do so
+        #admin = {
+        #  listen = ":2019";
+        #  enforce_origin = false;
+        #};
         apps = {
           http.servers.srv0 = {
             listen = [ ":443" ];
             routes = combined_routes;
-            metrics = {};
+            #metrics = {};
           };
           tls.automation.policies = [{
             subjects = subject_names;
