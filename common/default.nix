@@ -73,7 +73,9 @@
         "$6$gFv39xwgs6Trun89$0uSAiTKWURlFUk5w4NoxmZXWlCKRamWYbTFdta7LSW1svzAUeuR3FGH2jX4UIcOaaMlLBJfqWLPUXKx1P1gch0";
 
       openssh.authorizedKeys.keys = [
+        # Not sure what below is for
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIj0aUriXCgY/wNnYMvGoXajOqAr3EXdu7AeGA23s8ZG"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMmocucDbkSd6A2xCE4JTQXDZSuOQH3p3c9khu1/0LIe jdheyburn@paddys.joannet.casa"
       ];
     };
 
