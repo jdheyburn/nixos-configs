@@ -7,21 +7,78 @@ let
     vendorHash = "sha256-tWrSr6JCS9s+I0T1o3jgZ395u8IBmh73XGrnJidWI7U=";
   };
 
+  terraform_1_5_2 = pkgs.mkTerraform {
+    version = "1.5.2";
+    hash = "sha256-Ri2nWLjPPBINXyPIQSbnd1L+t7QLgXiTOgqX8Dk/rXg=";
+    vendorHash = "sha256-tfCfJj39VP+P4qhJTpEIAi4XB+6VYtVKkV/bTrtnFA0=";
+  };
+
   # TODO should be pulled from overlays but it's not, so redeclaring here
   velero_1_9_5 = pkgs.callPackage ./velero { };
+  kubectl_1_25_4 = pkgs.callPackage ./kubectl/kubectl.nix { };
+  openlens = pkgs.callPackage ./openlens { };
+
+  # Declare Python packages that should be available in the global python
+  # https://nixos.wiki/wiki/Python
+  python-packages = ps: with ps; [
+    requests
+    virtualenv
+  ];
 in
 {
   home.packages = with pkgs; [
     awscli2
+
+    # better find commmand - search for files matching a name
+    fd
+
+    jq
+    
     kubernetes-helm
-    miller # data parsing, in testing
-    python3
+    
+    # TUI for k8s
+    k9s
+
+    kubectl_1_25_4
+
+    # Additional kube switchers in testing
+    kubectx
+    kubie
+
+    # switch - better kubectl context and namespace switching
+    # Seems to be broken though
+    kubeswitch
+
+    # data parsing, in testing
+    miller
+
+    obsidian
+
+    openlens
+    
+    # Installs Python, and the defined packages
+    (python311.withPackages python-packages)
+
+    # Simple DNS client
+    q
+
+    # rg - Search for strings in files
+    ripgrep
+    
+    # Secrets management
     sops
-    terraform_0_14_10
+    
+    terraform_1_5_2
+
+    tldr
+    
+    # Interfacing with Velero on K8s
     velero_1_9_5
   ];
 
   programs.direnv.enable = true;
+
+  programs.go.enable = true;
 
   programs.vscode = {
     enable = true;
@@ -110,6 +167,8 @@ in
     ];
 
     userSettings = {
+      "[json]"."editor.defaultFormatter" = "esbenp.prettier-vscode";
+
       "[python]"."editor.formatOnType" = true;
 
       "diffEditor.ignoreTrimWhitespace" = false;
@@ -134,7 +193,7 @@ in
 
       "terminal.integrated.copyOnSelection" = true;
       "terminal.integrated.enableMultiLinePasteWarning" = false;
-      "terminal.integrated.fontFamily" = "'Meslo LG M DZ for Powerline', monospace";
+      "terminal.integrated.fontFamily" = "'MesloLGS NF', 'Meslo LG M DZ for Powerline', monospace";
       "terminal.integrated.fontSize" = 12;
 
       # Disable automatic updates

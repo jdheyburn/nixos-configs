@@ -56,8 +56,12 @@
     ## User accounts
     #############################################################################
 
-    users.defaultUserShell = pkgs.zsh;
+    # Set zsh as the default shell
+    environment.shells = with pkgs; [ zsh ];
     programs.zsh.enable = true;
+    users.defaultUserShell = pkgs.zsh;
+
+    # Now for user stuff
     users.mutableUsers = false;
     users.users.jdheyburn = {
       uid = 1000;
@@ -109,6 +113,8 @@
     nixpkgs.overlays = [ flake-self.overlays.default ];
 
     # System-wide packages
+    ## TODO there are packages here which should be shared with home-manager
+    ## to allow macbook to get them too
     environment.systemPackages = with pkgs; [
       bind # Gets dig
       exa # posh ls

@@ -76,6 +76,10 @@ Services is a mapping of service name to service attributes, it can accept:
 3. Update container images
     - dashy
 
+## Tips
+
+- [Go here](https://discourse.nixos.org/t/what-is-the-latest-best-practice-to-prefetch-the-hash/22103/4) for how blank hashes are structured
+
 ## TODO
 
 - Better file structure, look to flake-parts for this

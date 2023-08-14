@@ -7,6 +7,7 @@
 
   home.packages = with pkgs; [
     bat # cat alternative
+    diff-so-fancy
   ];
 
   # Permit non-free software
@@ -159,7 +160,7 @@
     enable = true;
     enableAutosuggestions = true;
     enableCompletion = true;
-    enableSyntaxHighlighting = true;
+    syntaxHighlighting.enable = true;
 
     history = {
       save = 10000000;
@@ -174,7 +175,7 @@
       cp = "cp -Rv";
       gpm = "git pull origin $(git_main_branch)";
       h = "history";
-      kc = "switch";
+      kc = "kubectx";
       kn = "kubens";
       mv = "mv -v";
       nrs = "sudo nixos-rebuild switch";

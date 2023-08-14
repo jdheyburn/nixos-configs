@@ -141,10 +141,13 @@ in
       ];
     }];
   }
-  # {
-  #   job_name = "caddy";
-  #   static_configs = [{ targets = [ "dee.joannet.casa:2019" ]; }];
-  # }
+  {
+    job_name = "caddy";
+    static_configs = [{ targets = [ 
+      "dennis.joannet.casa:2019"
+      "dee.joannet.casa:2019"
+    ]; }];
+  }
   # {
   #   job_name = "adguard";
   #   static_configs = [{ targets = [ "dee.joannet.casa:9617" ]; }];

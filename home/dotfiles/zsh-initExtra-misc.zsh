@@ -18,3 +18,9 @@ if [ -f $kube_ps1 ]; then
   source $kube_ps1
   PS1='$(kube_ps1)'$PS1
 fi
+
+# brew and binaries not appearing on PATH for Applie Silicon
+# https://discourse.nixos.org/t/brew-not-on-path-on-m1-mac/26770/3
+if [[ $(uname) == "Darwin" ]] && [[ $(uname -m) == "arm64" ]]; then
+     eval "$(/opt/homebrew/bin/brew shellenv)"
+ fi
