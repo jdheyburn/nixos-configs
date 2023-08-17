@@ -29,6 +29,8 @@ in
   home.packages = with pkgs; [
     awscli2
 
+    discord
+
     # better find commmand - search for files matching a name
     fd
 
