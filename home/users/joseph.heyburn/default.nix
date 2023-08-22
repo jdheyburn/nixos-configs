@@ -194,6 +194,8 @@ in
       "python.showStartPage" = false;
 
       "terminal.integrated.copyOnSelection" = true;
+      # Auto-open zsh in the terminal
+      "terminal.integrated.defaultProfile.osx" = "zsh";
       "terminal.integrated.enableMultiLinePasteWarning" = false;
       "terminal.integrated.fontFamily" = "'MesloLGS NF', 'Meslo LG M DZ for Powerline', monospace";
       "terminal.integrated.fontSize" = 12;
@@ -203,6 +205,8 @@ in
 
       # Material theme seems to want to remove this config and to use its own instead
       "workbench.colorTheme" = "Material Theme Darker";
+      # Do not close tabs if you didn't edit them
+      "workbench.editor.enablePreview" = false;
       "workbench.iconTheme" = "material-icon-theme";
       "workbench.startupEditor" = "none";
     };
