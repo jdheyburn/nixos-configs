@@ -103,6 +103,8 @@
           modules = [
             ./home/common.nix
             ./home/users/jdheyburn
+            # This is just for paddys
+            ./home/roles/desktop
           ];
         };
 
