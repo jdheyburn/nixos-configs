@@ -26,6 +26,12 @@ let
   ];
 in
 {
+
+  home.file.".hyper.js" = {
+    enable = true;
+    source = ./hyper/hyper.js;
+  };
+
   home.packages = with pkgs; [
     awscli2
 
