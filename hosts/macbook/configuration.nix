@@ -41,7 +41,9 @@
     # Tiling tool
     "rectangle"
     "spotify"
+    "steam"
     "todoist"
+    "vlc"
     "whatsapp"
   ];
   homebrew.taps = [ ];
