@@ -61,8 +61,12 @@
     viAlias = true;
     vimAlias = true;
     plugins = with pkgs.vimPlugins; [
+      # catppuccin theme
+      catppuccin-nvim
       # gui for undo tree
-      gundo-vim
+      gundo
+      # Integration with tmux for ctrl+hjkl keybindings
+      tmux-navigator
       # Syntax highlighting for nix files
       vim-nix
       # Save vim sessions, used with tmux-resurrect to bring back unsaved session
@@ -83,6 +87,26 @@
       " indent, but this time be smart
       set smartindent
     '';
+
+    extraLuaConfig = ''
+      local M = {}
+
+      -- integrate with vim keybindings in tmux for moving across windows
+      M.general = {
+        n = {
+          ["<C-h>"] = { "<cmd> TmuxNavigateLeft<CR>", "window left" },
+          ["<C-l>"] = { "<cmd> TmuxNavigateRight<CR>", "window right" },
+          ["<C-j>"] = { "<cmd> TmuxNavigateDown<CR>", "window down" },
+          ["<C-k>"] = { "<cmd> TmuxNavigateUp<CR>", "window up" },
+        }
+      }
+
+      -- set theme
+      require("catppuccin").setup({
+        flavour = "macchiato",
+      })
+      vim.cmd.colorscheme "catppuccin"
+    '';
   };
 
   # snazzy prompt
@@ -101,24 +125,52 @@
     };
   };
 
-  # inspo from https://gist.github.com/markandrewj/ead05ebc20f3968ec07e
+  # inspo from:
+  #  https://gist.github.com/markandrewj/ead05ebc20f3968ec07e
+  #  https://www.youtube.com/watch?v=DzNmUNvnB04
   programs.tmux = {
     enable = true;
+    baseIndex = 1;
     clock24 = true;
     keyMode = "vi";
+    mouse = true;
+    prefix = "C-Space";
     terminal = "screen-256color";
 
     extraConfig = ''
-      set -g status-left-length 85
-      set -g status-left " #h | #(curl icanhazip.com) | #(ifconfig eth0 | grep 'inet ' | awk '{print \"eth0 \" $2}') | "
+      # Set true colour
+      set-option -sa terminal-overrides ",xterm*:Tc"
 
-      set -g mouse on
+      # Status line
+      ## Disabled while I see about catputtcin theme
+      # set -g status-left-length 85
+      # set -g status-left " #h | #(curl icanhazip.com) | #(ifconfig eth0 | grep 'inet ' | awk '{print \"eth0 \" $2}') | "
+
+      # Mouse integration
+      ## Should be set via cfg.mouse
+      # set -g mouse on
       bind -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'select-pane -t=; copy-mode -e; send-keys -M'"
       bind -n WheelDownPane select-pane -t= \; send-keys -M
 
       # divider color
       set -g pane-border-style fg=green
       set -g pane-active-border-style bg=default,fg=blue
+
+      # Start windows and panes at 1, not 0
+      ## Disabled in favour of baseIndex
+      # set -g base-index 1
+      # set -g pane-base-index 1
+      # set-window-option -g pane-base-index 1
+      # set-option -g renumber-windows on
+
+      # Open panes in current directory
+      bind '"' split-window -v -c "#{pane_current_path}"
+      bind % split-window -h -c "#{pane_current_path}"
+
+      # Set zsh to the default-shell
+      # set-option -g default-shell zsh # unsure if this is needed for non-macos
+      #d# Needed for macOS
+      set-option -g default-command zsh
     '';
 
     plugins = with pkgs; [
@@ -145,7 +197,30 @@
           set -g @continuum-restore 'on'
         '';
       }
+      # Integration with fzf
       { plugin = tmuxPlugins.tmux-fzf; }
+      # Allow vim key bindings to move between panes (ctrl+hjkl), also integrate with neovim
+      { plugin = tmuxPlugins.vim-tmux-navigator; }
+      # catppuccin theme
+      {
+        plugin = tmuxPlugins.catppuccin;
+        extraConfig = ''
+          # Set the theme flavour, defaults to mocha
+          set -g @catppuccin_flavour 'macchiato'
+        '';
+      }
+      # Better text copy / clipboard support
+      {
+        plugin = tmuxPlugins.yank;
+        extraConfig = ''
+          # set vi-mode (I think this is independent of `set -g mode vi`)
+          set-window-option -g mode-keys vi
+          # keybindings
+          bind-key -T copy-mode-vi v send-keys -X begin-selection
+          bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
+          bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+        '';
+      }
     ];
   };
 

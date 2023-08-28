@@ -103,6 +103,10 @@ in
       # Nix language support for Visual Studio Code.
       bbenoist.nix
 
+      # catppuccin theme
+      catppuccin.catppuccin-vsc
+      catppuccin.catppuccin-vsc-icons
+
       # Markdown linting and style checking for Visual Studio Code
       davidanson.vscode-markdownlint
 
@@ -131,7 +135,7 @@ in
       ms-python.python
 
       # Material Design Icons for Visual Studio Code
-      pkief.material-icon-theme
+      # pkief.material-icon-theme
 
       # Ruby language support and debugging for Visual Studio Code
       # rebornix.ruby
@@ -147,12 +151,13 @@ in
     ]
     # Install other extension from the marketplace that aren't in nixpkgs
     ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-      {
-        name = "vsc-material-theme";
-        publisher = "Equinusocio";
-        version = "33.7.0";
-        sha256 = "sha256-qwnu48dPjJN/wlaiwHS4SU3Yn4Y3GuOB1W+QoSjcgKw=";
-      }
+      # Material theme
+      # {
+      #   name = "vsc-material-theme";
+      #   publisher = "Equinusocio";
+      #   version = "33.7.0";
+      #   sha256 = "sha256-qwnu48dPjJN/wlaiwHS4SU3Yn4Y3GuOB1W+QoSjcgKw=";
+      # }
     ];
 
     globalSnippets = {
@@ -175,6 +180,18 @@ in
     ];
 
     userSettings = {
+      # Theme
+      ## Catppuccin
+      "workbench.colorTheme" = "Catppuccin Macchiato";
+      "workbench.iconTheme" = "catppuccin-macchiato";
+      # "catppuccin.accentColor" = "mauve";
+
+      ## Material theme
+      # Material theme seems to want to remove this config and to use its own instead
+      # "workbench.colorTheme" = "Material Theme Darker";
+      # "materialTheme.accent" = "Teal";
+      # "workbench.iconTheme" = "material-icon-theme";
+
       "[json]"."editor.defaultFormatter" = "esbenp.prettier-vscode";
 
       "[python]"."editor.formatOnType" = true;
@@ -195,8 +212,6 @@ in
       "files.autoSave" = "afterDelay";
       "files.autoSaveDelay" = 1000;
 
-      "materialTheme.accent" = "Teal";
-
       "python.showStartPage" = false;
 
       "terminal.integrated.copyOnSelection" = true;
@@ -209,11 +224,8 @@ in
       # Disable automatic updates
       "update.mode" = "none";
 
-      # Material theme seems to want to remove this config and to use its own instead
-      "workbench.colorTheme" = "Material Theme Darker";
       # Do not close tabs if you didn't edit them
       "workbench.editor.enablePreview" = false;
-      "workbench.iconTheme" = "material-icon-theme";
       "workbench.startupEditor" = "none";
     };
   };
