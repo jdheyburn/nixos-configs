@@ -70,6 +70,7 @@ in
 
   environment.systemPackages = with pkgs; [
     atop
+    ffmpeg
     libraspberrypi
     iotop
     smartmontools
