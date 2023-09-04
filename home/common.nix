@@ -6,7 +6,6 @@
   home.stateVersion = "22.05";
 
   home.packages = with pkgs; [
-    bat # cat alternative
     diff-so-fancy
   ];
 
@@ -245,9 +244,10 @@
 
     shellAliases = {
       awscf = "vi ~/.aws/config";
-      cat = "bat";
+      cat = "${pkgs.bat}/bin/bat";
       cl = "clear";
       cp = "cp -Rv";
+      df = "${pkgs.duf}/bin/duf";
       gpm = "git pull origin $(git_main_branch)";
       h = "history";
       kc = "kubectx";
