@@ -77,6 +77,7 @@ in
     sops
     
     terraform_1_5_2
+    terraform-docs
 
     tldr
     
