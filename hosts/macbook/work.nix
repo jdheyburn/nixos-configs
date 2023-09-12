@@ -1,3 +1,4 @@
+# Configurations that I tend to only use for work
 { pkgs, ... }: {
 
   homebrew.brews = [

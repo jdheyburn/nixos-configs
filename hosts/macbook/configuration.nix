@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ lib, pkgs, ... }: {
 
   imports = [
     ./work.nix
@@ -10,6 +10,20 @@
   nix.settings.trusted-users = [ "root" "joseph.heyburn" ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
+
+  # Cleanup old files
+  nix.gc.automatic = true;
+  nix.gc.options = "--delete-older-than 30d";
+  nix.settings.auto-optimise-store = true;
+
+  # Show diff after switch - https://gist.github.com/luishfonseca/f183952a77e46ccd6ef7c907ca424517
+  system.activationScripts.postUserActivation = {
+    text = ''
+      ${pkgs.nvd}/bin/nvd --nix-bin-dir=${pkgs.nix}/bin diff /run/current-system "$systemConfig"
+    '';
+  } // lib.optionalAttrs pkgs.stdenv.isLinux {
+    supportsDryActivation = true;
+  };
 
   # Needs to be duplicated here, even though it is defined in home-manager too
   programs.zsh.enable = true;
@@ -48,8 +62,10 @@
   ];
   homebrew.taps = [ ];
 
+  # Allow sudo using fingerprint authentication
   security.pam.enableSudoTouchIdAuth = true;
 
+  # macos system settings
   system.defaults = {
     dock = {
       autohide = true;

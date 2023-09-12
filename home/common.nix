@@ -244,7 +244,6 @@
 
     shellAliases = {
       awscf = "vi ~/.aws/config";
-      cat = "${pkgs.bat}/bin/bat";
       cl = "clear";
       cp = "cp -Rv";
       df = "${pkgs.duf}/bin/duf";
@@ -258,7 +257,14 @@
       venv = "source .venv/bin/activate";
     };
 
-    shellGlobalAliases = { G = "| grep -i "; };
+    shellGlobalAliases = {
+      # If cat is a global alias then we can pipe to bat easily enough
+      cat = "${pkgs.bat}/bin/bat";
+      # One character grep
+      G = "| grep -i ";
+      # Output to yaml then cat it, useful on k8s resources
+      YC = "-o yaml | cat";
+    };
 
     localVariables = {
       EDITOR = "nvim";
