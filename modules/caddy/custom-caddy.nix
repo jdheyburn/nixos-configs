@@ -5,7 +5,7 @@
 stdenv.mkDerivation rec {
   pname = "caddy";
   # https://github.com/NixOS/nixpkgs/issues/113520
-  version = "2.6.4";
+  version = "2.7.3";
   dontUnpack = true;
 
   nativeBuildInputs = [ pkgs.git pkgs.go pkgs.xcaddy ];
@@ -15,14 +15,16 @@ stdenv.mkDerivation rec {
     export GOPATH="$TMPDIR/go"
   '';
 
-  buildPhase = let
-    pluginArgs = lib.concatMapStringsSep " " (plugin: "--with ${plugin}") plugins;
-  in ''
-    runHook preBuild
-    ${pkgs.xcaddy}/bin/xcaddy build "v${version}" ${pluginArgs}
-    runHook postBuild
-  '';
-
+  buildPhase =
+    let
+      pluginArgs =
+        lib.concatMapStringsSep " " (plugin: "--with ${plugin}") plugins;
+    in
+    ''
+      runHook preBuild
+      ${pkgs.xcaddy}/bin/xcaddy build "v${version}" ${pluginArgs}
+      runHook postBuild
+    '';
 
   installPhase = ''
     runHook preInstall

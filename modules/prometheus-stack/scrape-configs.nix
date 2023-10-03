@@ -10,19 +10,23 @@ let
     (svc_name: svc_def: svc_def ? "caddify" && svc_def.caddify.enable)
     catalog.services);
 
-  internal_https_targets = let
-    getPath = service:
-      optionalString (service ? "blackbox" && service.blackbox ? "path")
-      service.blackbox.path;
-    getHumanName = service:
-      if service ? "blackbox" && service.blackbox ? "name" then
-        service.blackbox.name
-      else
-        service.name;
-  in map (service:
-    "https://${service.name}.svc.joannet.casa${getPath service};${
+  internal_https_targets =
+    let
+      getPath = service:
+        optionalString (service ? "blackbox" && service.blackbox ? "path")
+          service.blackbox.path;
+      getHumanName = service:
+        if service ? "blackbox" && service.blackbox ? "name" then
+          service.blackbox.name
+        else
+          service.name;
+    in
+    map
+      (service:
+        "https://${service.name}.svc.joannet.casa${getPath service};${
       getHumanName service
-    };internal") caddified_services;
+    };internal")
+      caddified_services;
 
   external_targets = map (url: "https://${url};${url};external") [
     "bbc.co.uk"
@@ -84,11 +88,13 @@ let
   nixOSNodes = attrValues
     (filterAttrs (node_name: node_def: node_def.isNixOS) catalog.nodes);
 
-  promtail_targets = map (node:
-    "${node.hostName}.joannet.casa:${toString catalog.services.promtail.port}")
+  promtail_targets = map
+    (node:
+      "${node.hostName}.joannet.casa:${toString catalog.services.promtail.port}")
     nixOSNodes;
 
-in [
+in
+[
   {
     job_name = "prometheus";
     scrape_interval = "5s";
@@ -111,8 +117,9 @@ in [
     job_name = "node";
     scrape_interval = "5s";
     static_configs = [{
-      targets = map (node:
-        "${node}:${toString config.services.prometheus.exporters.node.port}")
+      targets = map
+        (node:
+          "${node}:${toString config.services.prometheus.exporters.node.port}")
         nodeExporterTargets;
     }];
     # Convert instance label "<hostname>:<port>" -> "<hostname>"
@@ -134,10 +141,14 @@ in [
       ];
     }];
   }
-  # {
-  #   job_name = "caddy";
-  #   static_configs = [{ targets = [ "dee.joannet.casa:2019" ]; }];
-  # }
+  # disabled caddy scrape since couldn't get it to reach from external location
+  #{
+  #  job_name = "caddy";
+  #  static_configs = [{ targets = [ 
+  #    "dennis.joannet.casa:2019"
+  #    "dee.joannet.casa:2019"
+  #  ]; }];
+  #}
   # {
   #   job_name = "adguard";
   #   static_configs = [{ targets = [ "dee.joannet.casa:9617" ]; }];

@@ -42,5 +42,21 @@ in {
     services.thanos = import ./thanos.nix { inherit catalog config pkgs; };
     services.victoriametrics =
       import ./victoria-metrics.nix { inherit catalog config pkgs lib; };
+
+    # Since upgrading Grafana to 9.4 there are panics that occur at 00:11 UTC
+    # Adding some retry logic on failure
+    systemd.services.grafana = {
+      serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = "10s";
+      };
+
+      unitConfig = {
+        StartLimitIntervalSec = "500";
+        StartLimitBurst = "5";
+      };
+    };
+
+    systemd.services.victoriametrics.serviceConfig.TimeoutStartSec = "5m";
   };
 }

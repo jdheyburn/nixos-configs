@@ -6,8 +6,9 @@ let
   cfg = config.modules.dns;
 
   # Get services which are being served by caddy
-  caddy_services = attrValues (filterAttrs (svc_name: svc_def:
-    svc_def ? "caddify" && svc_def.caddify ? "enable" && svc_def.caddify.enable)
+  caddy_services = attrValues (filterAttrs
+    (svc_name: svc_def:
+      svc_def ? "caddify" && svc_def.caddify ? "enable" && svc_def.caddify.enable)
     catalog.services);
 
   getCaddyDestination = service:
@@ -17,12 +18,15 @@ let
       service.host;
 
   # For each service create a list of rewrites
-  rewrites = map (service: {
-    domain = "${service.name}.svc.joannet.casa";
-    answer = (getCaddyDestination service).ip.private;
-  }) caddy_services;
+  rewrites = map
+    (service: {
+      domain = "${service.name}.svc.joannet.casa";
+      answer = (getCaddyDestination service).ip.private;
+    })
+    caddy_services;
 
-in {
+in
+{
 
   options.modules.dns = { enable = mkEnableOption "Deploy AdGuardHome"; };
 
@@ -56,6 +60,7 @@ in {
         dns = {
           # bind_hosts = [ "0.0.0.0" ];
           bind_host = "0.0.0.0";
+          edns_client_subnet.enabled = false;
           upstream_dns = [
             "https://dns10.quad9.net/dns-query"
             "[/joannet.casa//]192.168.1.1:53"
@@ -65,6 +70,8 @@ in {
           rewrites = rewrites;
           resolve_clients = true;
         };
+
+        statistics.interval = "24h";
 
         user_rules = [
           "@@||skyads.ott.skymedia.co.uk^$client='192.168.1.112'"

@@ -242,6 +242,15 @@ function squeezeme() {
     squeezelite -n macos -d all=info -o $headphones_id &
 }
 
+# Better diff
+function diff() {
+
+    local file1=$1
+    local file2=$2
+
+    # cat may be aliased to bat
+    /usr/bin/diff -u $file1 $file2 | diff-so-fancy | cat
+}
 
 # Third-party functions
 

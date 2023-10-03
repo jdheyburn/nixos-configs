@@ -15,7 +15,8 @@ let
   users = jdheyburn;
 
   default = servers ++ users;
-in {
+in
+{
   "adguard-password.age".publicKeys = default;
   "caddy-environment-file.age".publicKeys = default;
   "healthchecks-secrets-file.age".publicKeys = default;

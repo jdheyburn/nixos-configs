@@ -59,8 +59,5 @@
 
   powerManagement.cpuFreqGovernor = lib.mkDefault "ondemand";
   powerManagement.powertop.enable = true;
-
-  # high-resolution display
-  hardware.video.hidpi.enable = lib.mkDefault true;
 }
 

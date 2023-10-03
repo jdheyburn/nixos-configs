@@ -2,8 +2,7 @@
 
 with lib;
 
-let
-  cfg = config.modules.unifi;
+let cfg = config.modules.unifi;
 in {
 
   options.modules.unifi = {
@@ -15,7 +14,7 @@ in {
     # If doing a fresh install then you may need to open 8443
     # temporarily before you can close it out again
     networking.firewall.allowedTCPPorts =
-      [ config.services.prometheus.exporters.unpoller.port ];
+      [ config.services.prometheus.exporters.unpoller.port 8443 ];
 
     age.secrets."unifi-poller-password".file =
       ../../secrets/unifi-poller-password.age;

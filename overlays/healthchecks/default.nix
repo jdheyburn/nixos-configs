@@ -1,21 +1,32 @@
 # Forked from https://github.com/NixOS/nixpkgs/blob/69940c042cb6a0f2db1f3696fb5b78defde28470/pkgs/servers/web-apps/healthchecks/default.nix
 # Made changes to local_settings.py
 
-{ lib, writeText, fetchFromGitHub, nixosTests, python3 }:
+# Forked from https://github.com/NixOS/nixpkgs/blob/69940c042cb6a0f2db1f3696fb5b78defde28470/pkgs/servers/web-apps/healthchecks/default.nix
+# Made changes to local_settings.py
+
+{ lib
+, writeText
+, fetchFromGitHub
+, nixosTests
+, python3
+}:
 let
   py = python3.override {
-    packageOverrides = final: prev: { django = prev.django_4; };
+    packageOverrides = final: prev: {
+      django = prev.django_4;
+    };
   };
-in py.pkgs.buildPythonApplication rec {
+in
+py.pkgs.buildPythonApplication rec {
   pname = "healthchecks";
-  version = "2.4.1";
+  version = "2.10";
   format = "other";
 
   src = fetchFromGitHub {
     owner = "healthchecks";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "sha256-K2zA0ZkAPMgm+IofNiCf+mVTF/RIoorTupWLOowT29g=";
+    rev = "refs/tags/v${version}";
+    sha256 = "sha256-1x+pYMHaKgLFWcL1axOv/ok1ebs0I7Q+Q6htncmgJzU=";
   };
 
   propagatedBuildInputs = with py.pkgs; [
@@ -92,3 +103,4 @@ in py.pkgs.buildPythonApplication rec {
     maintainers = with maintainers; [ phaer ];
   };
 }
+
