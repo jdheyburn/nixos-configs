@@ -70,11 +70,11 @@ Services is a mapping of service name to service attributes, it can accept:
     ```
 
 2. Update overlays
-    - healthchecks
-    - plex
+    - [healthchecks](https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/web-apps/healthchecks/default.nix)
+    - [plex](https://github.com/NixOS/nixpkgs/tree/master/pkgs/servers/plex)
 
 3. Update container images
-    - dashy
+    - [dashy](https://github.com/Lissy93/dashy/releases)
 
 ## Tips
 
