@@ -17,6 +17,7 @@ let
   velero_1_9_5 = pkgs.callPackage ./velero { };
   kubectl_1_25_4 = pkgs.callPackage ./kubectl/kubectl.nix { };
   openlens = pkgs.callPackage ./openlens { };
+  sops_3_7_3 = pkgs.callPackage ./sops { };
 
   # Declare Python packages that should be available in the global python
   # https://nixos.wiki/wiki/Python
@@ -74,7 +75,7 @@ in
     ripgrep
     
     # Secrets management
-    sops
+    sops_3_7_3
     
     terraform_1_5_2
     terraform-docs
