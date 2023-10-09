@@ -42,6 +42,6 @@
   services.jellyfin.group = "users";
 
   # For remote builds
-  nix.settings.sandbox = true;
+  nix.settings.sandbox = false;
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 }
