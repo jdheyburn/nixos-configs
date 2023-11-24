@@ -5,7 +5,7 @@
 stdenv.mkDerivation rec {
   pname = "caddy";
   # https://github.com/NixOS/nixpkgs/issues/113520
-  version = "2.7.4";
+  version = "2.7.5";
   dontUnpack = true;
 
   nativeBuildInputs = [ pkgs.git pkgs.go pkgs.xcaddy ];
