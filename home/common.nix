@@ -271,6 +271,12 @@
       SUDO_EDITOR = "nvim";
     };
 
+    # This is executed before plugins such as oh-my-zsh are called
+    initExtraBeforeCompInit = ''
+      # Stops escaping URL characters, slow copy-paste, etc.
+      DISABLE_MAGIC_FUNCTIONS=true
+    '';
+
     initExtra = ''
       ${builtins.readFile ./dotfiles/zsh-initExtra-kubectl_aliases.zsh}
       ${builtins.readFile ./dotfiles/zsh-initExtra-functions.zsh}
