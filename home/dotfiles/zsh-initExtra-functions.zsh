@@ -252,6 +252,11 @@ function diff() {
     /usr/bin/diff -u $file1 $file2 | diff-so-fancy | cat
 }
 
+# GitTop: navigate to root of git repo  - https://blog.meain.io/2023/navigating-around-in-shell/#navigating-to-project-root
+function gt() {
+    cd "$(git rev-parse --show-toplevel 2>/dev/null)"
+}
+
 # Third-party functions
 
 ##### fzf #### (https://github.com/junegunn/fzf)

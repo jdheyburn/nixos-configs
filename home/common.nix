@@ -55,6 +55,8 @@
     };
   };
 
+  # TODO explore replacing with nixvim
+  # https://nix-community.github.io/nixvim/
   programs.neovim = {
     enable = true;
     viAlias = true;
@@ -223,7 +225,7 @@
     ];
   };
 
-  # Better cd command
+  # Better cd command that let's you type the name of a dir and cd into it
   programs.zoxide = {
     enable = true;
     enableZshIntegration = config.programs.zsh.enable;
