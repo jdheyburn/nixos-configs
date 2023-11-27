@@ -171,7 +171,7 @@
             in {
               name = host;
               value = {
-                hostname = node.ip.private;
+                hostname = node.ip.tailscale;
                 profiles.system = {
                   user = "root";
                   path = deploy-rs.lib.${node.system}.activate.nixos

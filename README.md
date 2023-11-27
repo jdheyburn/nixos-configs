@@ -79,6 +79,8 @@ Services is a mapping of service name to service attributes, it can accept:
 ## Tips
 
 - [Go here](https://discourse.nixos.org/t/what-is-the-latest-best-practice-to-prefetch-the-hash/22103/4) for how blank hashes are structured
+- If after updating there are complaints about options no longer present, it's likely that they are no longer available, so they need to be removed
+- You can use `nixos-option` to find what options are available, and their specification
 
 ## TODO
 
