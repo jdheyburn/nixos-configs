@@ -42,6 +42,7 @@ in
     fd
 
     jq
+    yq
     
     kubernetes-helm
     
