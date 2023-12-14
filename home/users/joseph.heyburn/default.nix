@@ -62,6 +62,8 @@ in
     # data parsing, in testing
     miller
 
+    minikube
+
     obsidian
 
     openlens
