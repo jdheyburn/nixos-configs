@@ -110,6 +110,7 @@ in
   };
   modules.caddy.enable = true;
   modules.dns.enable = true;
+  modules.downloadManager.enable = true;
   modules.healthchecks.enable = true;
   modules.minio.enable = true;
   modules.monitoring.enable = true;
