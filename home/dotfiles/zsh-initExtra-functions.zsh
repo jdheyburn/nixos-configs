@@ -61,13 +61,13 @@ function uz() {
         return 1
     fi
 
-    local archivePath=$($readlinkCmd -f $archive)
+    local archivePath=$(basename $($readlinkCmd -f $archive))
     if [ ! -f $archivePath ]; then
         echo "uz - Archive not found: $archivePath"
         return 1
     fi
 
-    local extractDir=$(echo $archivePath | sed -e "s/.zip$//")
+    local extractDir=$(echo $archivePath | sed -e "s/.zip$//" | sed -e "s/^.\///")
     if [ -e $extractDir ] && [ ! -d $extractDir ]; then
         echo "uz - ExtractDir exists but not as a directory: $extractDir"
     fi
