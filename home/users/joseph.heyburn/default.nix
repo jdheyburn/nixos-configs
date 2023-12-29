@@ -151,6 +151,9 @@ in
       # Spelling checker for source code
       streetsidesoftware.code-spell-checker
 
+      # Allow remote editing files
+      tailscale.vscode-tailscale
+
       # Syntax highlighing, snippet, and language configuration support for Ruby
       # wingrunr21.vscode-ruby
     ]
