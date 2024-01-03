@@ -7,6 +7,7 @@
 
   home.packages = with pkgs; [
     diff-so-fancy
+    dyff
   ];
 
   # Permit non-free software

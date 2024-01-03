@@ -222,6 +222,8 @@ in
 
       "python.showStartPage" = false;
 
+      "tailscale.ssh.defaultUsername" = "jdheyburn";
+
       "terminal.integrated.copyOnSelection" = true;
       # Auto-open zsh in the terminal
       "terminal.integrated.defaultProfile.osx" = "zsh";
