@@ -29,6 +29,7 @@
 
   environment.systemPackages = [
     pkgs.ffmpeg
+    pkgs.restic
   ];
 
   environment.sessionVariables = {
@@ -44,4 +45,10 @@
   # For remote builds
   nix.settings.sandbox = false;
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
+  # For tailscale exit nodes
+  #boot.kernel.sysctl = {
+  #  "net.ipv4.ip_forward" = 1;
+  #  "net.ipv6.conf.all.forwarding" = 1;
+  #};
 }
