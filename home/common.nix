@@ -6,6 +6,7 @@
   home.stateVersion = "22.05";
 
   home.packages = with pkgs; [
+    delta
     diff-so-fancy
     dyff
   ];
@@ -22,13 +23,37 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
+  # This does take over the whole bat/themes directory, whereas I only
+  # need the *.tmTheme files from it. For now this does the job.
+  home.file.".config/bat/themes".source = pkgs.fetchFromGitHub {
+    owner = "catppuccin";
+    repo = "bat";
+    rev = "ba4d16880d63e656acced2b7d4e034e4a93f74b1";
+    sha256 = "sha256-6WVKQErGdaqb++oaXnY3i6/GuH2FhTgK0v4TN4Y0Wbw=";
+  };
+
   programs.git = {
     enable = true;
     userName = "Joseph Heyburn";
     userEmail = "jdheyburn@gmail.com";
     extraConfig = {
-      core.pager =
-        "${pkgs.diff-so-fancy}/bin/diff-so-fancy | less --tabs=4 -RFX";
+      # Configs related to delta as a differ
+      blame.pager = "${pkgs.delta}/bin/delta";
+      core.pager = "${pkgs.delta}/bin/delta";
+      interative.diffFilter = "${pkgs.delta}/bin/delta --color-only --features=interactive";
+      delta = {
+        # creates links to the git commit in upstream repo
+        hyperlinks = true;
+        # Not sure if this works as intended: https://dandavison.github.io/delta/tips-and-tricks/using-delta-with-vscode.html
+        hyperlinks-file-link-format = "vscode://file/{path}:{line}";
+        light = false;
+        line-numbers = true;
+        # navigate allows skipping to next/previous file with n/N respectively
+        navigate = true;
+      };
+      merge.conflictstyle = "diff3";
+      diff.colorMoved = "default";
+
       init.defaultBranch = "main";
       pull.rebase = "false";
       push.autoSetupRemote = "true";
@@ -269,7 +294,11 @@
       YC = "-o yaml | cat";
     };
 
-    localVariables = {
+    # sessionVariables get prefixed with `export`
+    # localVariables do not
+    sessionVariables = {
+      BAT_THEME = "Catppuccin-macchiato";
+      DELTA_PAGER = "less --tabs=4 --RAW-CONTROL-CHARS --no-init --quit-if-one-screen";
       EDITOR = "nvim";
       SUDO_EDITOR = "nvim";
     };
