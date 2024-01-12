@@ -38,11 +38,19 @@
     userEmail = "jdheyburn@gmail.com";
     extraConfig = {
       # Configs related to delta as a differ
+      blame.pager = "${pkgs.delta}/bin/delta";
       core.pager = "${pkgs.delta}/bin/delta";
       interative.diffFilter = "${pkgs.delta}/bin/delta --color-only --features=interactive";
-      delta.navigate = true;
-      delta.light = false;
-      delta.line-numbers = true;
+      delta = {
+        # creates links to the git commit in upstream repo
+        hyperlinks = true;
+        # Not sure if this works as intended: https://dandavison.github.io/delta/tips-and-tricks/using-delta-with-vscode.html
+        hyperlinks-file-link-format = "vscode://file/{path}:{line}";
+        light = false;
+        line-numbers = true;
+        # navigate allows skipping to next/previous file with n/N respectively
+        navigate = true;
+      };
       merge.conflictstyle = "diff3";
       diff.colorMoved = "default";
 
