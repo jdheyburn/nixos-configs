@@ -227,6 +227,12 @@ in
       "terminal.integrated.copyOnSelection" = true;
       # Auto-open zsh in the terminal
       "terminal.integrated.defaultProfile.osx" = "zsh";
+      # Required so that zshenv (read: programs.zsh.sessionVariables) get loaded
+      # e.g. BAT_THEME, which is used by git differ "delta" for syntax highlighting
+      "terminal.integrated.profiles.osx".zsh = {
+        path = "zsh";
+        args = [ "-l" "-i" ];
+      };
       "terminal.integrated.enableMultiLinePasteWarning" = false;
       "terminal.integrated.fontFamily" = "'MesloLGS NF', 'Meslo LG M DZ for Powerline', monospace";
       "terminal.integrated.fontSize" = 12;
