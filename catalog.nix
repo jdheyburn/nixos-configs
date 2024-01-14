@@ -55,10 +55,10 @@
     adguard = {
       host = nodes.dee;
       port = 3000;
-      caddify.enable = true;
       dashy.section = "networks";
       dashy.description = "DNS resolver";
       dashy.icon = "hl-adguardhome";
+      dns.enable = true;
     };
 
     blackboxExporter = { port = 9115; };
@@ -66,41 +66,41 @@
     healthchecks = {
       host = nodes.dee;
       port = 8000;
-      caddify.enable = true;
       dashy.section = "monitoring";
       dashy.description = "Monitor status of cron jobs";
       dashy.icon = "hl-healthchecks";
+      dns.enable = true;
     };
 
     home = {
       host = nodes.dennis;
       port = 4000;
       blackbox.name = "dashy";
-      caddify.enable = true;
+      dns.enable = true;
     };
 
     huginn = {
       host = nodes.frank;
       port = 3000;
-      caddify.enable = true;
       caddify.forwardTo = nodes.dee;
       dashy.icon = "hl-huginn";
+      dns.enable = false;
     };
 
     grafana = {
       host = nodes.dennis;
       port = 2342;
-      caddify.enable = true;
       dashy.section = "monitoring";
       dashy.description = "View logs and metrics";
       dashy.icon = "hl-grafana";
+      dns.enable = true;
     };
 
     loki = {
       host = nodes.dennis;
       port = 3100;
       blackbox.path = "/ready";
-      caddify.enable = true;
+      dns.enable = true;
     };
 
     nodeExporter = { port = 9002; };
@@ -109,67 +109,65 @@
       host = nodes.dee;
       port = 9100;
       consolePort = 9101;
-      caddify.enable = true;
+      dns.enable = true;
     };
 
     "ui.minio" = {
       host = nodes.dee;
       port = services.minio.consolePort;
-      caddify.enable = true;
       dashy.section = "storage";
       dashy.description = "S3 compatible object storage";
       dashy.icon = "hl-minio";
+      dns.enable = true;
     };
 
     portainer = {
       host = nodes.frank;
       port = 9000;
-      caddify.enable = true;
       caddify.forwardTo = nodes.dee;
       dashy.section = "virtualisation";
       dashy.description = "Frontend for containers";
       dashy.icon = "hl-portainer";
+      dns.enable = false;
     };
 
     prometheus = {
       host = nodes.dennis;
       port = 9001;
-      caddify.enable = false;
       dashy.section = "monitoring";
       dashy.description = "Polls for metrics before captured by Thanos";
       dashy.icon = "hl-prometheus";
+      dns.enable = false;
     };
 
     promtail = { port = 28183; };
 
     proxmox = {
-      host = nodes.pve0;
+      host = nodes.dee;
       port = 8006;
-      caddify.enable = true;
-      caddify.skip_tls_verify = true;
-      caddify.forwardTo = nodes.dee;
       dashy.section = "virtualisation";
       dashy.description = "Frontend for VMs";
       dashy.icon = "hl-proxmox";
+      dns.enable = true;
     };
 
     plex = {
       host = nodes.dee;
       port = 32400;
-      caddify.enable = true;
       dashy.section = "media";
       dashy.description = "Watch TV and movies";
       dashy.icon = "hl-plex";
+      dns.enable = true;
     };
 
     thanos-query = {
       host = nodes.dennis;
       port = 19192;
       grpcPort = 10902;
-      caddify.enable = false;
       dashy.section = "monitoring";
       dashy.description = "Long term storage for Prometheus metrics";
       dashy.icon = "hl-thanos";
+      dns.enable = false;
     };
 
     thanos-sidecar = {
@@ -185,20 +183,20 @@
     unifi = {
       host = nodes.dennis;
       port = 8443;
-      caddify.enable = true;
       caddify.skip_tls_verify = true;
       dashy.section = "networks";
       dashy.description = "UniFi controller";
       dashy.icon = "hl-unifi-controller";
+      dns.enable = true;
     };
 
     victoriametrics = {
       host = nodes.dennis;
       port = 8428;
-      caddify.enable = true;
       dashy.section = "monitoring";
       dashy.description = "Alternate poller of metrics in PromQL format";
       dashy.icon = "https://avatars.githubusercontent.com/u/43720803";
+      dns.enable = true;
     };
   };
 
