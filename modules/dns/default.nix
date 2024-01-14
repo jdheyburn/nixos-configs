@@ -5,14 +5,18 @@ with lib;
 let
   cfg = config.modules.dns;
 
+  # Support both old and new method
+  shouldDNS = service:
+    (service ? "caddify" && service.caddify ? "enable" && service.caddify.enable) ||
+    (service ? "dns" && service.dns ? "enable" && service.dns.enable);
+    
   # Get services which are being served by caddy
   caddy_services = attrValues (filterAttrs
-    (svc_name: svc_def:
-      svc_def ? "caddify" && svc_def.caddify ? "enable" && svc_def.caddify.enable)
+    (svc_name: svc_def: shouldDNS svc_def)
     catalog.services);
 
   getCaddyDestination = service:
-    if service.caddify ? "forwardTo" then
+    if service ? "caddify" && service.caddify ? "forwardTo" then
       service.caddify.forwardTo
     else
       service.host;
@@ -24,13 +28,25 @@ let
       answer = (getCaddyDestination service).ip.private;
     })
     caddy_services;
-
 in
 {
 
   options.modules.dns = { enable = mkEnableOption "Deploy AdGuardHome"; };
 
   config = mkIf cfg.enable {
+
+    services.caddy.virtualHosts."adguard.svc.joannet.casa" = {
+      # Routing config inspired from below:
+      # https://github.com/linuxserver/reverse-proxy-confs/blob/20c5dbdcff92442262ed8907385e477935ea9336/aria2-with-webui.subdomain.conf.sample
+      extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy localhost:${toString catalog.services.adguard.port}
+      '';
+    };
+
+    users.users.jdheyburn.extraGroups = [ "adguardhome" ];
 
     networking.firewall = {
       allowedTCPPorts = [

@@ -28,6 +28,13 @@ in {
       group = "healthchecks";
     };
 
+    services.caddy.virtualHosts."healthchecks.svc.joannet.casa".extraConfig = ''
+      tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+      }
+      reverse_proxy localhost:${toString catalog.services.healthchecks.port}
+    '';
+
     services.healthchecks = {
       enable = true;
       port = catalog.services.healthchecks.port;
