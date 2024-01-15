@@ -6,8 +6,13 @@ let
   nodeExporterTargets =
     map (node_name: "${node_name}.joannet.casa") (attrNames catalog.nodes);
 
+  # Support both old and new method
+  shouldDNS = service:
+    (service ? "caddify" && service.caddify ? "enable" && service.caddify.enable) ||
+    (service ? "dns" && service.dns ? "enable" && service.dns.enable);
+
   caddified_services = attrValues (filterAttrs
-    (svc_name: svc_def: svc_def ? "caddify" && svc_def.caddify.enable)
+    (svc_name: svc_def: shouldDNS svc_def)
     catalog.services);
 
   internal_https_targets =
