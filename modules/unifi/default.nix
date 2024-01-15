@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, catalog, pkgs, lib, ... }:
 
 with lib;
 
@@ -10,6 +10,17 @@ in {
   };
 
   config = mkIf cfg.enable {
+
+    services.caddy.virtualHosts."unifi.svc.joannet.casa".extraConfig = ''
+      tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+      }
+      reverse_proxy localhost:${toString catalog.services.unifi.port} {
+        transport http {
+          tls_insecure_skip_verify
+        }
+      }
+    '';
 
     # If doing a fresh install then you may need to open 8443
     # temporarily before you can close it out again
