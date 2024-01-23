@@ -5,29 +5,30 @@ with lib;
 let
   cfg = config.modules.dns;
 
-  # Support both old and new method
-  shouldDNS = service:
-    (service ? "caddify" && service.caddify ? "enable" && service.caddify.enable) ||
-    (service ? "dns" && service.dns ? "enable" && service.dns.enable);
+  shouldDNS = service: service ? "dns" && service.dns ? "enable" && service.dns.enable;
     
   # Get services which are being served by caddy
   caddy_services = attrValues (filterAttrs
     (svc_name: svc_def: shouldDNS svc_def)
     catalog.services);
 
-  getCaddyDestination = service:
-    if service ? "caddify" && service.caddify ? "forwardTo" then
-      service.caddify.forwardTo
-    else
-      service.host;
-
   # For each service create a list of rewrites
-  rewrites = map
+  service_rewrites = map
     (service: {
       domain = "${service.name}.svc.joannet.casa";
-      answer = (getCaddyDestination service).ip.private;
+      answer = service.host.ip.private;
     })
     caddy_services;
+  # Add rewrites for any node that has a domain
+  # Implies it is external so hook it up with joannet.casa
+  host_rewrites = map
+    (node: {
+      domain = "${node.hostName}.joannet.casa";
+      answer = node.ip.tailscale;
+    })
+    (attrValues (filterAttrs (node_name: node_def: node_def ? "domain") catalog.nodes));
+
+  rewrites = service_rewrites ++ host_rewrites;
 in
 {
 

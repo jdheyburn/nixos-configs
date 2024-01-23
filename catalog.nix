@@ -4,9 +4,11 @@
 
   nodesBase = {
     charlie = {
-      ip.private = "128.140.63.95";
+      ip.tailscale = "100.74.217.71";
+      domain = "bishop-beardie.ts.net";
       system = "x86_64-linux";
       isNixOS = true;
+      shouldScrape = true;
     };
 
     dee = {
@@ -15,6 +17,7 @@
       system = "aarch64-linux";
       isNixOS = true;
       nixosHardware = nixos-hardware.nixosModules.raspberry-pi-4;
+      shouldScrape = true;
     };
 
     dennis = {
@@ -22,24 +25,28 @@
       ip.tailscale = "100.127.102.123";
       system = "x86_64-linux";
       isNixOS = true;
+      shouldScrape = true;
     };
 
     frank = {
       ip.private = "192.168.1.11";
       ip.tailscale = "100.71.206.55";
       isNixOS = false;
+      shouldScrape = false;
     };
 
     paddys = {
       ip.private = "192.168.1.20";
       ip.tailscale = "100.107.150.109";
       isNixOS = false;
+      shouldScrape = true;
     };
 
     pve0 = {
       ip.private = "192.168.1.15";
       ip.tailscale = "100.80.112.68";
       isNixOS = false;
+      shouldScrape = false;
     };
   };
 
@@ -82,7 +89,6 @@
     huginn = {
       host = nodes.frank;
       port = 3000;
-      caddify.forwardTo = nodes.dee;
       dashy.icon = "hl-huginn";
       dns.enable = false;
     };
@@ -124,7 +130,6 @@
     portainer = {
       host = nodes.frank;
       port = 9000;
-      caddify.forwardTo = nodes.dee;
       dashy.section = "virtualisation";
       dashy.description = "Frontend for containers";
       dashy.icon = "hl-portainer";
@@ -183,7 +188,6 @@
     unifi = {
       host = nodes.dennis;
       port = 8443;
-      caddify.skip_tls_verify = true;
       dashy.section = "networks";
       dashy.description = "UniFi controller";
       dashy.icon = "hl-unifi-controller";
