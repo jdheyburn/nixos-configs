@@ -14,6 +14,29 @@ in {
 
   config = mkIf cfg.enable {
 
+   services.caddy.virtualHosts = {
+     "grafana.svc.joannet.casa".extraConfig = ''
+       tls {
+         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+       }
+       reverse_proxy localhost:${toString catalog.services.grafana.port}
+     '';
+     "loki.svc.joannet.casa".extraConfig = ''
+       tls {
+         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+       }
+       reverse_proxy localhost:${toString catalog.services.loki.port}
+     '';
+     "victoriametrics.svc.joannet.casa" = mkIf cfg.victoriametrics.enable {
+        extraConfig = ''
+          tls {
+            dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+          }
+          reverse_proxy localhost:${toString catalog.services.victoriametrics.port}
+        '';
+      };
+    };
+
     networking.firewall.allowedTCPPorts = [
       # TODO are all these still required after being fronted by local reverse proxy?
       config.services.grafana.settings.server.http_port

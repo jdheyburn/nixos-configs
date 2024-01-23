@@ -6,9 +6,7 @@ let
     RemoteCommand = "tmux new-session -A -s ssh_tmux";
   };
 in {
-  home.packages = with pkgs; [
-    obsidian
-  ];
+  home.packages = with pkgs; [ ];
 
   # SSH client related stuff here, I only want this on paddys (laptop)
   services.ssh-agent.enable = true;

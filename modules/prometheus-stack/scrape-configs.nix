@@ -4,10 +4,17 @@ with lib;
 
 let
   nodeExporterTargets =
-    map (node_name: "${node_name}.joannet.casa") (attrNames catalog.nodes);
+    map (node:
+      if node ? "domain" then
+        "${node.hostName}.${node.domain}"
+      else
+        "${node.hostName}.joannet.casa"
+    ) (attrValues (filterAttrs(node_name: node_def: node_def ? "shouldScrape" && node_def.shouldScrape) catalog.nodes));
+
+  shouldDNS = service: service ? "dns" && service.dns ? "enable" && service.dns.enable;
 
   caddified_services = attrValues (filterAttrs
-    (svc_name: svc_def: svc_def ? "caddify" && svc_def.caddify.enable)
+    (svc_name: svc_def: shouldDNS svc_def)
     catalog.services);
 
   internal_https_targets =
@@ -90,18 +97,23 @@ let
 
   promtail_targets = map
     (node:
-      "${node.hostName}.joannet.casa:${toString catalog.services.promtail.port}")
-    nixOSNodes;
+      if node ? "domain" then
+        "${node.hostName}.${node.domain}:${toString catalog.services.promtail.port}"
+      else
+        "${node.hostName}.joannet.casa:${toString catalog.services.promtail.port}"
+    ) nixOSNodes;
 
 in
+# TODO a way to build scrape configs and set their targets dynamically
+# i.e. avoid the hardcode of hostnames in the targets
 [
-  {
-    job_name = "prometheus";
-    scrape_interval = "5s";
-    static_configs = [{
-      targets = [ "localhost:${toString config.services.prometheus.port}" ];
-    }];
-  }
+  # {
+  #   job_name = "prometheus";
+  #   scrape_interval = "5s";
+  #   static_configs = [{
+  #     targets = [ "localhost:${toString config.services.prometheus.port}" ];
+  #   }];
+  # }
   {
     job_name = "grafana";
     scrape_interval = "5s";
@@ -177,12 +189,12 @@ in
     scheme = "https";
     static_configs = [{ targets = [ "minio.svc.joannet.casa" ]; }];
   }
-  {
-    job_name = "pve";
-    metrics_path = "/pve";
-    params.module = [ "default" ];
-    static_configs = [{ targets = [ "pve0.joannet.casa:9221" ]; }];
-  }
+  # {
+  #   job_name = "pve";
+  #   metrics_path = "/pve";
+  #   params.module = [ "default" ];
+  #   static_configs = [{ targets = [ "pve0.joannet.casa:9221" ]; }];
+  # }
   {
     job_name = "loki";
     static_configs = [{
@@ -197,14 +209,14 @@ in
     job_name = "promtail";
     static_configs = [{ targets = promtail_targets; }];
   }
-  {
-    job_name = "zfs";
-    static_configs = [{
-      targets = [
-        "dee.joannet.casa:${
-          toString config.services.prometheus.exporters.zfs.port
-        }"
-      ];
-    }];
-  }
+  # {
+  #   job_name = "zfs";
+  #   static_configs = [{
+  #     targets = [
+  #       "dee.joannet.casa:${
+  #         toString config.services.prometheus.exporters.zfs.port
+  #       }"
+  #     ];
+  #   }];
+  # }
 ]

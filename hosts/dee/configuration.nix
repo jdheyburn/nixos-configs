@@ -1,4 +1,4 @@
-{ argononed, config, pkgs, lib, ... }:
+{ argononed, catalog, config, pkgs, lib, ... }:
 let
 
   backupPaths = with lib;
@@ -120,6 +120,18 @@ in
   modules.plex.enable = true;
 
   services.prometheus.exporters.zfs.enable = true;
+
+  # dee does some extra forwarding to non-NixOS hosts, which are to be decommed
+  services.caddy.virtualHosts."proxmox.svc.joannet.casa".extraConfig = ''
+    tls {
+      dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    }
+    reverse_proxy ${catalog.nodes.pve0.ip.private}:${toString catalog.services.proxmox.port} {
+      transport http {
+        tls_insecure_skip_verify
+      }
+    }
+  '';
 
   nix.buildMachines = [{
     hostName = "charlie";

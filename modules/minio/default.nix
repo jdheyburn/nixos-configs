@@ -18,6 +18,19 @@ in {
     age.secrets."minio-root-credentials".file =
       ../../secrets/minio-root-credentials.age;
 
+    services.caddy.virtualHosts."minio.svc.joannet.casa".extraConfig = ''
+      tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+      }
+      reverse_proxy localhost:${toString catalog.services.minio.port}
+    '';
+    services.caddy.virtualHosts."ui.minio.svc.joannet.casa".extraConfig = ''
+      tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+      }
+      reverse_proxy localhost:${toString catalog.services.minio.consolePort}
+    '';
+
     services.minio = {
       enable = true;
       dataDir = [ cfg.dataDir ];

@@ -99,6 +99,13 @@ in
 
   config = mkIf cfg.enable {
 
+    services.caddy.virtualHosts."home.svc.joannet.casa".extraConfig = ''
+      tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+      }
+      reverse_proxy localhost:${toString catalog.services.home.port}
+    '';
+
     virtualisation.oci-containers.containers.dashy = {
       image = "lissy93/dashy:${version}";
       volumes = [ "${configFile}:/app/public/conf.yml" ];
