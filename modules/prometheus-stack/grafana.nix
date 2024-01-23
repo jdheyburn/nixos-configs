@@ -168,7 +168,7 @@
                   relativeTimeRange.to = 0;
                   model = {
                     refId = "A";
-                    expr = "count_over_time({host=~\".+\", unit!=\"loki.service\"} |= \"Failed with result\" | regexp \"(?P<service>.*): Failed with result ''(?P<result>.*)''.\" [5m])";
+                    expr = "count_over_time({host=~\".+\", unit!~\"(loki|grafana).service\"} |= \"Failed with result\" | regexp \"(?P<service>.*): Failed with result ''(?P<result>.*)''.\" [5m])";
                     hide = false;
                     interval = 1000;
                     maxDataPoints = 43200;
