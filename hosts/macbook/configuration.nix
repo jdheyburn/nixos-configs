@@ -88,7 +88,7 @@
       "com.apple.trackpad.scaling" = 2.0;
     };
 
-    ".GlobalPreferences"."com.apple.mouse.scaling" = "7.0";
+    ".GlobalPreferences"."com.apple.mouse.scaling" = 7.0;
 
     trackpad = {
       # Enable tap to click
