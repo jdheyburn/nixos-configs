@@ -44,6 +44,8 @@ in
     jq
     yq
     
+    (pkgs.wrapHelm pkgs.kubernetes-helm { plugins = [ pkgs.kubernetes-helmPlugins.helm-secrets ]; })
+
     kubernetes-helm
     
     # TUI for k8s
