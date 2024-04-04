@@ -52,6 +52,9 @@
     # If making tailscale optional in future, consider conditionally setting below if enabled
     networking.firewall.checkReversePath = "loose";
 
+    # Rotate logs to prevent them getting too big
+    services.logrotate.enable = true;
+
     #############################################################################
     ## User accounts
     #############################################################################
