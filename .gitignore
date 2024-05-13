@@ -3,3 +3,7 @@ host
 
 # If nixos-rebuild test was executed here, don't commit the output
 result
+
+# deploy-rs build cache for when --keep-result is defined
+.deploy-gc
+
