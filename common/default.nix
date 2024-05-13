@@ -27,7 +27,7 @@
 
     # Keyboard
     console.keyMap = "uk";
-    services.xserver.layout = "gb";
+    services.xserver.xkb.layout = "gb";
 
     #############################################################################
     ## Services
