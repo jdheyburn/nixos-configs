@@ -89,6 +89,7 @@ in
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
 
+  modules.aria2.enable = true;
   modules.backupSF = {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;

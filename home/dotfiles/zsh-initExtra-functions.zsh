@@ -195,6 +195,27 @@ function restart_bluetooth() {
     fi
 }
 
+# For a given K8s node, output what Redis pods running on there and what their role is
+function get-redis-on-node() {
+    local node=$1
+
+    if [ -z $node ]; then
+        echo "ERR: node not provided, usage:"
+        echo "  get-redis-on-node NODE_NAME"
+        return 1
+    fi
+
+    for pod in $(kubectl get pods --no-headers -o custom-columns=":metadata.name"  --field-selector spec.nodeName=$node); do
+        role=$(kubectl exec -it $pod -c redis -- sh -c 'redis-cli --no-auth-warning -a $AUTH role | grep -E "(master|slave)"')
+        echo "$pod - $role"
+    done
+}
+
+# Outputs info I use to troubleshoot k8s nodes
+function get-k8s-nodes() {
+    kubectl get nodes -o custom-columns="NAME:metadata.name,STATUS:status.conditions[-1].type,IP_ADDRESS:status.addresses[?(@.type == 'InternalIP')].address,INSTANCE_TYPE:metadata.labels.node\.kubernetes\.io/instance-type,CREATED:metadata.creationTimestamp" $@
+}
+
 # HeadPhones
 function hp() {
     local id="94-db-56-84-69-49"

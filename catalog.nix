@@ -68,6 +68,11 @@
       dns.enable = true;
     };
 
+    aria2 = {
+      host = nodes.dee;
+      dns.enable = true;
+    };
+
     blackboxExporter = { port = 9115; };
 
     healthchecks = {
