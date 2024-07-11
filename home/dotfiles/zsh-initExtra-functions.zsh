@@ -61,18 +61,18 @@ function uz() {
         return 1
     fi
 
-    local archivePath=$(basename $($readlinkCmd -f $archive))
-    if [ ! -f $archivePath ]; then
+    local archivePath=$(basename "$($readlinkCmd -f "$archive")")
+    if [ ! -f "$archivePath" ]; then
         echo "uz - Archive not found: $archivePath"
         return 1
     fi
 
-    local extractDir=$(echo $archivePath | sed -e "s/.zip$//" | sed -e "s/^.\///")
-    if [ -e $extractDir ] && [ ! -d $extractDir ]; then
+    local extractDir=$(echo "$archivePath" | sed -e "s/.zip$//" | sed -e "s/^.\///")
+    if [ -e "$extractDir" ] && [ ! -d "$extractDir" ]; then
         echo "uz - ExtractDir exists but not as a directory: $extractDir"
     fi
-    mkdir $extractDir
-    unzip $archive -d $extractDir
+    mkdir "$extractDir"
+    unzip "$archive" -d "$extractDir"
 }
 
 # Change AWS instance type by hostname
@@ -213,7 +213,12 @@ function get-redis-on-node() {
 
 # Outputs info I use to troubleshoot k8s nodes
 function get-k8s-nodes() {
-    kubectl get nodes -o custom-columns="NAME:metadata.name,STATUS:status.conditions[-1].type,IP_ADDRESS:status.addresses[?(@.type == 'InternalIP')].address,INSTANCE_TYPE:metadata.labels.node\.kubernetes\.io/instance-type,CREATED:metadata.creationTimestamp" $@
+    kubectl get nodes -o custom-columns="NAME:metadata.name,STATUS:status.conditions[-1].type,IP_ADDRESS:status.addresses[?(@.type == 'InternalIP')].address,ZONE:metadata.labels.topology\.kubernetes\.io/zone,INSTANCE_TYPE:metadata.labels.node\.kubernetes\.io/instance-type,CREATED:metadata.creationTimestamp" $@
+}
+
+# Get the pods running on a particular node
+function get-pods-on-node() {
+    kubectl get pods -o wide --field-selector spec.nodeName=$1
 }
 
 # HeadPhones
