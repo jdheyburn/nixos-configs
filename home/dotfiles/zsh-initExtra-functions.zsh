@@ -218,7 +218,13 @@ function get-k8s-nodes() {
 
 # Get the pods running on a particular node
 function get-pods-on-node() {
-    kubectl get pods -o wide --field-selector spec.nodeName=$1
+    local node=$1
+    kubectl get pods -o wide --field-selector spec.nodeName=$node
+}
+
+# Exec into a pod - because I can never remember the command for it
+function exec-pod() {
+    kubectl exec -it $1 -- sh
 }
 
 # HeadPhones
