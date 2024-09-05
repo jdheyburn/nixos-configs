@@ -68,7 +68,7 @@ in
         "--no-etc-hosts"
       ];
       settings = {
-        bind_port = catalog.services.adguard.port;
+        port = catalog.services.adguard.port;
         users = [{
           name = "admin";
           password =
