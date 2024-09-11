@@ -89,6 +89,8 @@ in
     
     # Interfacing with Velero on K8s
     velero_1_9_5
+
+    wget
   ];
 
   programs.direnv.enable = true;
@@ -223,6 +225,9 @@ in
       "files.autoSaveDelay" = 1000;
 
       "python.showStartPage" = false;
+
+      # Disable warning when built-in terminal wants to load files into editor view
+      "security.promptForLocalFileProtocolHandling" = false;
 
       "tailscale.ssh.defaultUsername" = "jdheyburn";
 

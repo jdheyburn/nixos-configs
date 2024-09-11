@@ -101,8 +101,7 @@
   time.timeZone = "Europe/London";
 
   fonts = {
-    fontDir.enable = true;
-    fonts = [
+    packages = [
       pkgs.meslo-lgs-nf
     ];
   };

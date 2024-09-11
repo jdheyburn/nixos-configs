@@ -6,6 +6,9 @@ if [ -n "$\{commands[fzf-share]\}" ]; then
     source "$(fzf-share)/completion.zsh"
 fi
 
+# Add Go binaries
+export PATH="$HOME/go/bin:$PATH"
+
 # Load in rbenv (really only for macbook)
 if type rbenv &>/dev/null; then
   eval "$(rbenv init -)"
