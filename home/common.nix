@@ -110,7 +110,7 @@
       EOF
 
       " indent on new line
-      set autoindent 
+      set autoindent
       " indent, but this time be smart
       set smartindent
     '';
@@ -319,7 +319,7 @@
       enable = true;
       theme = "agnoster";
       plugins =
-        [ "ag" "colored-man-pages" "fd" "fzf" "git" "ripgrep" "sudo" "tmux" ];
+        [ "colored-man-pages" "fzf" "git" "sudo" "tmux" ];
     };
 
     prezto = {
