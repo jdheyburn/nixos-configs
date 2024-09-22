@@ -23,14 +23,12 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  # This does take over the whole bat/themes directory, whereas I only
-  # need the *.tmTheme files from it. For now this does the job.
-  home.file.".config/bat/themes".source = pkgs.fetchFromGitHub {
+  home.file.".config/bat/themes/Catppuccin Macchiato.tmTheme".source = pkgs.fetchFromGitHub {
     owner = "catppuccin";
     repo = "bat";
-    rev = "ba4d16880d63e656acced2b7d4e034e4a93f74b1";
-    sha256 = "sha256-6WVKQErGdaqb++oaXnY3i6/GuH2FhTgK0v4TN4Y0Wbw=";
-  };
+    rev = "d3feec47b16a8e99eabb34cdfbaa115541d374fc";
+    sha256 = "sha256-s0CHTihXlBMCKmbBBb8dUhfgOOQu9PBCQ+uviy7o47w=";
+  } + "/themes/Catppuccin Macchiato.tmTheme";
 
   programs.git = {
     enable = true;
@@ -297,7 +295,7 @@
     # sessionVariables get prefixed with `export`
     # localVariables do not
     sessionVariables = {
-      BAT_THEME = "Catppuccin-macchiato";
+      BAT_THEME = "Catppuccin Macchiato";
       DELTA_PAGER = "less --tabs=4 --RAW-CONTROL-CHARS --no-init --quit-if-one-screen";
       EDITOR = "nvim";
       SUDO_EDITOR = "nvim";
