@@ -17,7 +17,7 @@ in {
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         }
-        reverse_proxy /jsonrpc localhost:${toString config.services.aria2.rpcListenPort}
+        reverse_proxy /jsonrpc localhost:${toString config.services.aria2.settings.rpc-listen-port}
         file_server {
           root ${pkgs.ariang}/share/ariang
         }
