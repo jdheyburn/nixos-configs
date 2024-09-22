@@ -16,6 +16,8 @@
       flake = false;
     };
 
+    catppuccin.url = "github:catppuccin/nix";
+
     darwin.url = "github:lnl7/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
@@ -105,6 +107,7 @@
             ./home/users/jdheyburn
             # This is just for paddys
             ./home/roles/desktop
+            catppuccin.homeManagerModules.catppuccin
           ];
         };
 
