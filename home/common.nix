@@ -23,12 +23,14 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  home.file.".config/bat/themes/Catppuccin Macchiato.tmTheme".source = pkgs.fetchFromGitHub {
-    owner = "catppuccin";
-    repo = "bat";
-    rev = "d3feec47b16a8e99eabb34cdfbaa115541d374fc";
-    sha256 = "sha256-s0CHTihXlBMCKmbBBb8dUhfgOOQu9PBCQ+uviy7o47w=";
-  } + "/themes/Catppuccin Macchiato.tmTheme";
+  # https://nix.catppuccin.com/options/home-manager-options.html
+  catppuccin = {
+    # Enable catppuccin themes whereever supported
+    enable = true;
+    flavor = "macchiato";
+  };
+
+  programs.bat.enable = true;
 
   programs.git = {
     enable = true;
@@ -86,8 +88,6 @@
     viAlias = true;
     vimAlias = true;
     plugins = with pkgs.vimPlugins; [
-      # catppuccin theme
-      catppuccin-nvim
       # gui for undo tree
       gundo
       # Integration with tmux for ctrl+hjkl keybindings
@@ -125,12 +125,6 @@
           ["<C-k>"] = { "<cmd> TmuxNavigateUp<CR>", "window up" },
         }
       }
-
-      -- set theme
-      require("catppuccin").setup({
-        flavour = "macchiato",
-      })
-      vim.cmd.colorscheme "catppuccin"
     '';
   };
 
@@ -226,14 +220,6 @@
       { plugin = tmuxPlugins.tmux-fzf; }
       # Allow vim key bindings to move between panes (ctrl+hjkl), also integrate with neovim
       { plugin = tmuxPlugins.vim-tmux-navigator; }
-      # catppuccin theme
-      {
-        plugin = tmuxPlugins.catppuccin;
-        extraConfig = ''
-          # Set the theme flavour, defaults to mocha
-          set -g @catppuccin_flavour 'macchiato'
-        '';
-      }
       # Better text copy / clipboard support
       {
         plugin = tmuxPlugins.yank;
@@ -295,7 +281,6 @@
     # sessionVariables get prefixed with `export`
     # localVariables do not
     sessionVariables = {
-      BAT_THEME = "Catppuccin Macchiato";
       DELTA_PAGER = "less --tabs=4 --RAW-CONTROL-CHARS --no-init --quit-if-one-screen";
       EDITOR = "nvim";
       SUDO_EDITOR = "nvim";
