@@ -49,30 +49,7 @@ function sdd() {
 
 # UnZip - unzip the archive into a dir at the same location with the archive name
 function uz() {
-
-    local readlinkCmd="readlink"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-    	local readlinkCmd="greadlink"
-    fi
-
-    local archive=$1
-    if [ -z "$archive" ]; then
-        echo "uz - No archive specified"
-        return 1
-    fi
-
-    local archivePath=$(basename "$($readlinkCmd -f "$archive")")
-    if [ ! -f "$archivePath" ]; then
-        echo "uz - Archive not found: $archivePath"
-        return 1
-    fi
-
-    local extractDir=$(echo "$archivePath" | sed -e "s/.zip$//" | sed -e "s/^.\///")
-    if [ -e "$extractDir" ] && [ ! -d "$extractDir" ]; then
-        echo "uz - ExtractDir exists but not as a directory: $extractDir"
-    fi
-    mkdir "$extractDir"
-    unzip "$archive" -d "$extractDir"
+    unzip "$1" -d "${1##*/}"
 }
 
 # Change AWS instance type by hostname
@@ -234,7 +211,7 @@ function hp() {
 
     if [[ "$OSTYPE" != "darwin"* ]]; then
         echo "hp not implemented for $OSTYPE"
-        return 1        
+        return 1
     fi
 
     if [[ $action == "c" ]]; then
@@ -253,12 +230,12 @@ function squeezeme() {
 
     if [[ "$OSTYPE" != "darwin"* ]]; then
         echo "squeezeme not implemented for $OSTYPE"
-        return 1        
+        return 1
     fi
 
     local id="94-db-56-84-69-49"
     local headphones="WH-1000XM3"
-    
+
     if ps -ef | grep squeezelite | grep -v grep; then
         killall squeezelite
     fi
@@ -305,4 +282,3 @@ function _fzf_compgen_path() {
 function _fzf_compgen_dir() {
     fd --type d --hidden --follow --exclude ".git" . "$1"
 }
-
