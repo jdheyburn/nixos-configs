@@ -72,6 +72,7 @@
                   imports = [
                     ./home/common
                     (./home/users + "/${user}")
+                    catppuccin.homeManagerModules.catppuccin
                   ];
                 };
               })
@@ -132,7 +133,7 @@
               home-manager.useUserPackages = true;
               home-manager.users."joseph.heyburn" = {
                 imports =
-                  [ ./home/common ./home/users/joseph.heyburn ];
+                  [ ./home/common ./home/users/joseph.heyburn catppuccin.homeManagerModules.catppuccin ];
               };
             }
           ];
