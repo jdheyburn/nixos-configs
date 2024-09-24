@@ -70,7 +70,7 @@
                 name = user;
                 value = {
                   imports = [
-                    ./home/common.nix
+                    ./home/common
                     (./home/users + "/${user}")
                   ];
                 };
@@ -103,7 +103,7 @@
         homeConfigurations.jdheyburn = home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages."x86_64-linux";
           modules = [
-            ./home/common.nix
+            ./home/common
             ./home/users/jdheyburn
             # This is just for paddys
             ./home/roles/desktop
@@ -132,7 +132,7 @@
               home-manager.useUserPackages = true;
               home-manager.users."joseph.heyburn" = {
                 imports =
-                  [ ./home/common.nix ./home/users/joseph.heyburn ];
+                  [ ./home/common ./home/users/joseph.heyburn ];
               };
             }
           ];
@@ -148,7 +148,7 @@
               home-manager.useUserPackages = true;
               home-manager.users."joseph.heyburn" = {
                 imports =
-                  [ ./home/common.nix ./home/users/joseph.heyburn ];
+                  [ ./home/common ./home/users/joseph.heyburn ];
               };
             }
           ];
