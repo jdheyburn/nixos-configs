@@ -14,20 +14,20 @@ in {
 
   config = mkIf cfg.enable {
 
-   services.caddy.virtualHosts = {
-     "grafana.svc.joannet.casa".extraConfig = ''
-       tls {
-         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-       }
-       reverse_proxy localhost:${toString catalog.services.grafana.port}
-     '';
-     "loki.svc.joannet.casa".extraConfig = ''
-       tls {
-         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-       }
-       reverse_proxy localhost:${toString catalog.services.loki.port}
-     '';
-     "victoriametrics.svc.joannet.casa" = mkIf cfg.victoriametrics.enable {
+    services.caddy.virtualHosts = {
+      "grafana.svc.joannet.casa".extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy localhost:${toString catalog.services.grafana.port}
+      '';
+      "loki.svc.joannet.casa".extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy localhost:${toString catalog.services.loki.port}
+      '';
+      "victoriametrics.svc.joannet.casa" = mkIf cfg.victoriametrics.enable {
         extraConfig = ''
           tls {
             dns cloudflare {env.CLOUDFLARE_API_TOKEN}

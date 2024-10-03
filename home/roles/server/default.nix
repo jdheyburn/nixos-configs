@@ -1,4 +1,4 @@
 { pkgs, ... }:
 {
-    # Empty for now
+  # Empty for now
 }

@@ -6,7 +6,7 @@ let
   cfg = config.modules.dns;
 
   shouldDNS = service: service ? "dns" && service.dns ? "enable" && service.dns.enable;
-    
+
   # Get services which are being served by caddy
   caddy_services = attrValues (filterAttrs
     (svc_name: svc_def: shouldDNS svc_def)

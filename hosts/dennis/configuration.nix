@@ -80,7 +80,7 @@ in
     systems = [ "x86_64-linux" ];
     maxJobs = 1;
     speedFactor = 2;
-    mandatoryFeatures = [];
+    mandatoryFeatures = [ ];
   }];
   nix.distributedBuilds = true;
   nix.extraOptions = ''

@@ -43,11 +43,11 @@ in
 
     jq
     yq
-    
+
     (pkgs.wrapHelm pkgs.kubernetes-helm { plugins = [ pkgs.kubernetes-helmPlugins.helm-secrets ]; })
 
     kubernetes-helm
-    
+
     # TUI for k8s
     k9s
 
@@ -69,7 +69,7 @@ in
     obsidian
 
     openlens
-    
+
     # Installs Python, and the defined packages
     (python311.withPackages python-packages)
 
@@ -78,15 +78,15 @@ in
 
     # rg - Search for strings in files
     ripgrep
-    
+
     # Secrets management
     sops_3_7_3
-    
+
     terraform_1_5_2
     terraform-docs
 
     tldr
-    
+
     # Interfacing with Velero on K8s
     velero_1_9_5
 

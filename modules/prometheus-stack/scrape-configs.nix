@@ -4,12 +4,14 @@ with lib;
 
 let
   nodeExporterTargets =
-    map (node:
-      if node ? "domain" then
-        "${node.hostName}.${node.domain}"
-      else
-        "${node.hostName}.joannet.casa"
-    ) (attrValues (filterAttrs(node_name: node_def: node_def ? "shouldScrape" && node_def.shouldScrape) catalog.nodes));
+    map
+      (node:
+        if node ? "domain" then
+          "${node.hostName}.${node.domain}"
+        else
+          "${node.hostName}.joannet.casa"
+      )
+      (attrValues (filterAttrs (node_name: node_def: node_def ? "shouldScrape" && node_def.shouldScrape) catalog.nodes));
 
   shouldDNS = service: service ? "dns" && service.dns ? "enable" && service.dns.enable;
 
@@ -101,11 +103,12 @@ let
         "${node.hostName}.${node.domain}:${toString catalog.services.promtail.port}"
       else
         "${node.hostName}.joannet.casa:${toString catalog.services.promtail.port}"
-    ) nixOSNodes;
+    )
+    nixOSNodes;
 
 in
 # TODO a way to build scrape configs and set their targets dynamically
-# i.e. avoid the hardcode of hostnames in the targets
+  # i.e. avoid the hardcode of hostnames in the targets
 [
   # {
   #   job_name = "prometheus";

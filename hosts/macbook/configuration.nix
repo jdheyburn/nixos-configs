@@ -45,11 +45,11 @@
 
   # Dumb hack because something changed causing zsh not to load
   # 2023-08-24 I believe I fixed this by having zsh as a profile in hyper.js
-#   environment.etc.profile.text = ''
-# if [[ $0 == "/bin/sh" ]]; then
-#   zsh
-# fi
-# '';
+  #   environment.etc.profile.text = ''
+  # if [[ $0 == "/bin/sh" ]]; then
+  #   zsh
+  # fi
+  # '';
 
   # Does not install homebrew, follow the install instructions for this: https://brew.sh
   homebrew.enable = true;
