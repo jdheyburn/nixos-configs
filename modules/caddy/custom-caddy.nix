@@ -1,84 +1,35 @@
-# TODO experiment with overlays instead of this file
+# https://mdleom.com/blog/2021/12/27/caddy-plugins-nixos/#xcaddy
 
-{ stdenv, lib, buildGo117Module, nixosTests, plugins ? [ ], fetchFromGitHub
-, vendorSha256 ? "" }:
+{ pkgs, config, plugins, stdenv, lib, ... }:
 
-with lib;
-
-let
-  version = "2.5.2";
-
-  dist = fetchFromGitHub {
-    owner = "caddyserver";
-    repo = "dist";
-    rev = "v${version}";
-    sha256 = "sha256-wzW0eb+O7JqQJkWtpMwV4G56uqLd1U2NduNAMPGvD3o=";
-  };
-
-  imports = flip concatMapStrings plugins (pkg: "			_ \"${pkg}\"\n");
-
-  main = ''
-    		package main
-    	
-    		import (
-    			caddycmd "github.com/caddyserver/caddy/v2/cmd"
-
-    			_ "github.com/caddyserver/caddy/v2/modules/standard"
-    ${imports}
-    		)
-
-    		func main() {
-    			caddycmd.Main()
-    		}
-    	'';
-
-in buildGo117Module rec {
+stdenv.mkDerivation rec {
   pname = "caddy";
-  inherit version;
+  # https://github.com/NixOS/nixpkgs/issues/113520
+  version = "2.7.6";
+  dontUnpack = true;
 
-  subPackages = [ "cmd/caddy" ];
+  nativeBuildInputs = [ pkgs.git pkgs.go pkgs.xcaddy ];
 
-  src = fetchFromGitHub {
-    owner = "caddyserver";
-    repo = "caddy";
-    rev = "v${version}";
-    sha256 = "sha256-Z9A2DRdX0LWjIKdHAHk2IRxsUzvC90Gf5ohFLXNHcsw=";
-  };
+  configurePhase = ''
+    export GOCACHE=$TMPDIR/go-cache
+    export GOPATH="$TMPDIR/go"
+  '';
 
-  inherit vendorSha256;
-
-  overrideModAttrs = (_: {
-    preBuild = ''
-      echo '${main}' > cmd/caddy/main.go
+  buildPhase =
+    let
+      pluginArgs =
+        lib.concatMapStringsSep " " (plugin: "--with ${plugin}") plugins;
+    in
+    ''
+      runHook preBuild
+      ${pkgs.xcaddy}/bin/xcaddy build "v${version}" ${pluginArgs}
+      runHook postBuild
     '';
-    postInstall = ''
-      cp go.sum go.mod $out/ && ls $out/
-    '';
-  });
 
-  postPatch = ''
-    echo '${main}' > cmd/caddy/main.go
-    cat cmd/caddy/main.go
+  installPhase = ''
+    runHook preInstall
+    mkdir -p $out/bin
+    mv caddy $out/bin
+    runHook postInstall
   '';
-
-  postConfigure = ''
-    cp vendor/go.sum ./
-    cp vendor/go.mod ./
-  '';
-
-  postInstall = ''
-    install -Dm644 ${dist}/init/caddy.service ${dist}/init/caddy-api.service -t $out/lib/systemd/system
-    substituteInPlace $out/lib/systemd/system/caddy.service --replace "/usr/bin/caddy" "$out/bin/caddy"
-    substituteInPlace $out/lib/systemd/system/caddy-api.service --replace "/usr/bin/caddy" "$out/bin/caddy"
-  '';
-
-  passthru.tests = { inherit (nixosTests) caddy; };
-
-  meta = with lib; {
-    homepage = "https://caddyserver.com";
-    description = "Fast, cross-platform HTTP/2 web server with automatic HTTPS";
-    license = licenses.asl20;
-    maintainers = with maintainers; [ Br1ght0ne techknowlogick ];
-  };
 }
-

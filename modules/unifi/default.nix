@@ -1,11 +1,8 @@
-{ config, pkgs, lib, ... }:
+{ config, catalog, pkgs, lib, ... }:
 
 with lib;
 
-let
-  cfg = config.modules.unifi;
-
-  unifiMinJavaHeapSize = 256;
+let cfg = config.modules.unifi;
 in {
 
   options.modules.unifi = {
@@ -14,26 +11,35 @@ in {
 
   config = mkIf cfg.enable {
 
+    services.caddy.virtualHosts."unifi.svc.joannet.casa".extraConfig = ''
+      tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+      }
+      reverse_proxy localhost:${toString catalog.services.unifi.port} {
+        transport http {
+          tls_insecure_skip_verify
+        }
+      }
+    '';
+
+    # If doing a fresh install then you may need to open 8443
+    # temporarily before you can close it out again
     networking.firewall.allowedTCPPorts =
-      [ config.services.prometheus.exporters.unifi-poller.port ];
+      [ config.services.prometheus.exporters.unpoller.port 8443 ];
 
     age.secrets."unifi-poller-password".file =
       ../../secrets/unifi-poller-password.age;
     age.secrets."unifi-poller-password".owner =
-      config.services.prometheus.exporters.unifi-poller.user;
+      config.services.prometheus.exporters.unpoller.user;
 
     services.unifi = {
       enable = true;
-      unifiPackage = pkgs.unifiStable;
-      maximumJavaHeapSize = unifiMinJavaHeapSize;
-      jrePackage = pkgs.jre8_headless;
-      # TODO explore if this can be closed, if Caddy reverse proxies enough
-      # Port 8443 does not need to be open because caddy proxies 443 -> 8443
-      # But other ports may need to be open for unifi operations
+      unifiPackage = pkgs.unifi7;
+      maximumJavaHeapSize = 256;
       openFirewall = true;
     };
 
-    services.prometheus.exporters.unifi-poller = {
+    services.prometheus.exporters.unpoller = {
       enable = true;
       controllers = [{
         url = "https://unifi.svc.joannet.casa";

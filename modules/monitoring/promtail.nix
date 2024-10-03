@@ -1,5 +1,3 @@
-
-
 { catalog, config, pkgs, lib, ... }:
 
 with lib;
@@ -44,5 +42,6 @@ in {
       };
     };
 
+    systemd.services.promtail.serviceConfig.TimeoutStartSec = "5m";
   };
 }

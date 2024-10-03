@@ -6,7 +6,8 @@ let
     ++ (optional config.services.prometheus.enable "/var/lib/prometheus2/data")
     ++ (optional config.services.loki.enable "/var/lib/loki");
 
-in {
+in
+{
 
   imports = [ ./hardware-configuration.nix ];
 
@@ -53,19 +54,37 @@ in {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     paths = backupPaths;
+    healthcheck =
+      "https://healthchecks.svc.joannet.casa/ping/b4f0796c-b0c6-48d3-926e-2f7fdebc4e1b";
   };
 
   modules.caddy.enable = true;
 
+  modules.dashy.enable = true;
+
   modules.monitoring.enable = true;
 
   modules.prometheusStack.enable = true;
+  modules.prometheusStack.victoriametrics.enable = true;
 
-  modules.victoriametrics.enable = true;
+  modules.unifi.enable = true;
 
   services.qemuGuest.enable = true;
 
   # Keeps crapping out for some reason: https://askubuntu.com/questions/1018576/what-does-networkmanager-wait-online-service-do
   systemd.services."NetworkManager-wait-online".enable = false;
+
+
+  nix.buildMachines = [{
+    hostName = "charlie";
+    systems = [ "x86_64-linux" ];
+    maxJobs = 1;
+    speedFactor = 2;
+    mandatoryFeatures = [ ];
+  }];
+  nix.distributedBuilds = true;
+  nix.extraOptions = ''
+    builders-use-substitutes = true
+  '';
 }
 

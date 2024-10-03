@@ -7,15 +7,41 @@ in {
   options.modules.prometheusStack = {
     # TODO the string passed to these should be something simple as it gets appended to 'Whether to enable '
     enable = mkEnableOption "Deploy Prometheus suite";
+    prometheus.enable = mkEnableOption "Deploy Prometheus";
+    thanos.enable = mkEnableOption "Deploy Thanos long term storage";
+    victoriametrics.enable = mkEnableOption "victoriametrics";
   };
 
   config = mkIf cfg.enable {
 
+    services.caddy.virtualHosts = {
+      "grafana.svc.joannet.casa".extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy localhost:${toString catalog.services.grafana.port}
+      '';
+      "loki.svc.joannet.casa".extraConfig = ''
+        tls {
+          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        }
+        reverse_proxy localhost:${toString catalog.services.loki.port}
+      '';
+      "victoriametrics.svc.joannet.casa" = mkIf cfg.victoriametrics.enable {
+        extraConfig = ''
+          tls {
+            dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+          }
+          reverse_proxy localhost:${toString catalog.services.victoriametrics.port}
+        '';
+      };
+    };
+
     networking.firewall.allowedTCPPorts = [
       # TODO are all these still required after being fronted by local reverse proxy?
-      catalog.services.grafana.port
-      catalog.services.loki.port
-      catalog.services.prometheus.port
+      config.services.grafana.settings.server.http_port
+      config.services.loki.configuration.server.http_listen_port
+      config.services.prometheus.port
     ];
 
     age.secrets."smtp-password" = {
@@ -37,5 +63,23 @@ in {
     services.prometheus =
       import ./prometheus.nix { inherit catalog config pkgs lib; };
     services.thanos = import ./thanos.nix { inherit catalog config pkgs; };
+    services.victoriametrics =
+      import ./victoria-metrics.nix { inherit catalog config pkgs lib; };
+
+    # Since upgrading Grafana to 9.4 there are panics that occur at 00:11 UTC
+    # Adding some retry logic on failure
+    systemd.services.grafana = {
+      serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = "10s";
+      };
+
+      unitConfig = {
+        StartLimitIntervalSec = "500";
+        StartLimitBurst = "5";
+      };
+    };
+
+    systemd.services.victoriametrics.serviceConfig.TimeoutStartSec = "5m";
   };
 }

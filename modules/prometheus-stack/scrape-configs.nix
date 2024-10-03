@@ -4,28 +4,38 @@ with lib;
 
 let
   nodeExporterTargets =
-    map (node_name: "${node_name}.joannet.casa") (attrNames catalog.nodes);
+    map
+      (node:
+        if node ? "domain" then
+          "${node.hostName}.${node.domain}"
+        else
+          "${node.hostName}.joannet.casa"
+      )
+      (attrValues (filterAttrs (node_name: node_def: node_def ? "shouldScrape" && node_def.shouldScrape) catalog.nodes));
 
-  caddified_services =
-    (filterAttrs (n: v: v ? "caddify" && v.caddify.enable) catalog.services);
+  shouldDNS = service: service ? "dns" && service.dns ? "enable" && service.dns.enable;
 
-  caddified_services_list = map (service_name:
-    caddified_services."${service_name}" // {
-      name = service_name;
-    }) (attrNames caddified_services);
+  caddified_services = attrValues (filterAttrs
+    (svc_name: svc_def: shouldDNS svc_def)
+    catalog.services);
 
-  internal_https_targets = map (service:
-    "https://${service.name}.svc.joannet.casa${
-      if service ? "blackbox" && service.blackbox ? "path" then
-        service.blackbox.path
-      else
-        ""
-    };${
-      if service ? "blackbox" && service.blackbox ? "name" then
-        service.blackbox.name
-      else
-        service.name
-    };internal") caddified_services_list;
+  internal_https_targets =
+    let
+      getPath = service:
+        optionalString (service ? "blackbox" && service.blackbox ? "path")
+          service.blackbox.path;
+      getHumanName = service:
+        if service ? "blackbox" && service.blackbox ? "name" then
+          service.blackbox.name
+        else
+          service.name;
+    in
+    map
+      (service:
+        "https://${service.name}.svc.joannet.casa${getPath service};${
+      getHumanName service
+    };internal")
+      caddified_services;
 
   external_targets = map (url: "https://${url};${url};external") [
     "bbc.co.uk"
@@ -49,7 +59,7 @@ let
     #       service.name
     #   };internal")
     #   (filter (service: service.blackbox.module == "tls_connect")
-    #     caddified_services_list);
+    #     caddified_services);
 
     relabel_configs = [
       {
@@ -77,41 +87,54 @@ let
       }
       {
         target_label = "__address__";
-        replacement = "127.0.0.1:9115";
+        replacement =
+          "127.0.0.1:${toString catalog.services.blackboxExporter.port}";
       }
     ];
 
   };
 
-  nixOS_nodes = (filterAttrs (n: v: v.isNixOS) catalog.nodes);
-  nixOS_nodes_list =
-    map (node_name: nixOS_nodes."${node_name}" // { name = node_name; })
-    (attrNames nixOS_nodes);
+  nixOSNodes = attrValues
+    (filterAttrs (node_name: node_def: node_def.isNixOS) catalog.nodes);
 
-  promtail_targets = map (node:
-    "${node.name}.joannet.casa:${toString catalog.services.promtail.port}")
-    nixOS_nodes_list;
+  promtail_targets = map
+    (node:
+      if node ? "domain" then
+        "${node.hostName}.${node.domain}:${toString catalog.services.promtail.port}"
+      else
+        "${node.hostName}.joannet.casa:${toString catalog.services.promtail.port}"
+    )
+    nixOSNodes;
 
-in [
-  {
-    job_name = "prometheus";
-    scrape_interval = "5s";
-    static_configs = [{
-      targets = [ "localhost:${toString config.services.prometheus.port}" ];
-    }];
-  }
+in
+# TODO a way to build scrape configs and set their targets dynamically
+  # i.e. avoid the hardcode of hostnames in the targets
+[
+  # {
+  #   job_name = "prometheus";
+  #   scrape_interval = "5s";
+  #   static_configs = [{
+  #     targets = [ "localhost:${toString config.services.prometheus.port}" ];
+  #   }];
+  # }
   {
     job_name = "grafana";
     scrape_interval = "5s";
-    static_configs =
-      [{ targets = [ "localhost:${toString config.services.grafana.port}" ]; }];
+    static_configs = [{
+      targets = [
+        "localhost:${
+          toString config.services.grafana.settings.server.http_port
+        }"
+      ];
+    }];
   }
   {
     job_name = "node";
     scrape_interval = "5s";
     static_configs = [{
-      targets = map (node:
-        "${node}:${toString config.services.prometheus.exporters.node.port}")
+      targets = map
+        (node:
+          "${node}:${toString config.services.prometheus.exporters.node.port}")
         nodeExporterTargets;
     }];
     # Convert instance label "<hostname>:<port>" -> "<hostname>"
@@ -127,16 +150,20 @@ in [
     job_name = "unifi";
     static_configs = [{
       targets = [
-        "dee.joannet.casa:${
-          toString config.services.prometheus.exporters.unifi-poller.port
+        "dennis.joannet.casa:${
+          toString config.services.prometheus.exporters.unpoller.port
         }"
       ];
     }];
   }
-  # {
-  #   job_name = "caddy";
-  #   static_configs = [{ targets = [ "dee.joannet.casa:2019" ]; }];
-  # }
+  # disabled caddy scrape since couldn't get it to reach from external location
+  #{
+  #  job_name = "caddy";
+  #  static_configs = [{ targets = [ 
+  #    "dennis.joannet.casa:2019"
+  #    "dee.joannet.casa:2019"
+  #  ]; }];
+  #}
   # {
   #   job_name = "adguard";
   #   static_configs = [{ targets = [ "dee.joannet.casa:9617" ]; }];
@@ -147,7 +174,7 @@ in [
   {
     job_name = "blackbox-https";
     metrics_path = "/probe";
-    params = { module = [ "http_2xx" ]; };
+    params.module = [ "http_2xx" ];
     static_configs = [{ targets = blackbox.https_targets; }];
     relabel_configs = blackbox.relabel_configs;
   }
@@ -165,12 +192,12 @@ in [
     scheme = "https";
     static_configs = [{ targets = [ "minio.svc.joannet.casa" ]; }];
   }
-  {
-    job_name = "pve";
-    metrics_path = "/pve";
-    params.module = [ "default" ];
-    static_configs = [{ targets = [ "pve0.joannet.casa:9221" ]; }];
-  }
+  # {
+  #   job_name = "pve";
+  #   metrics_path = "/pve";
+  #   params.module = [ "default" ];
+  #   static_configs = [{ targets = [ "pve0.joannet.casa:9221" ]; }];
+  # }
   {
     job_name = "loki";
     static_configs = [{
@@ -185,4 +212,14 @@ in [
     job_name = "promtail";
     static_configs = [{ targets = promtail_targets; }];
   }
+  # {
+  #   job_name = "zfs";
+  #   static_configs = [{
+  #     targets = [
+  #       "dee.joannet.casa:${
+  #         toString config.services.prometheus.exporters.zfs.port
+  #       }"
+  #     ];
+  #   }];
+  # }
 ]

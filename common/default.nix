@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, flake-self, ... }:
 
 {
   config = {
@@ -10,7 +10,7 @@
     # Pi uses 21.05
     # system.stateVersion = "21.11";
 
-    boot.cleanTmpDir = true;
+    boot.tmp.cleanOnBoot = true;
 
     networking.domain = "joannet.casa";
 
@@ -27,7 +27,7 @@
 
     # Keyboard
     console.keyMap = "uk";
-    services.xserver.layout = "gb";
+    services.xserver.xkb.layout = "gb";
 
     #############################################################################
     ## Services
@@ -37,9 +37,11 @@
 
     services.openssh = {
       enable = true;
-      permitRootLogin = "no";
-      passwordAuthentication = false;
-      kbdInteractiveAuthentication = false;
+      settings = {
+        PermitRootLogin = "no";
+        PasswordAuthentication = false;
+        KbdInteractiveAuthentication = false;
+      };
     };
 
     # Start ssh-agent as a systemd user service
@@ -50,11 +52,19 @@
     # If making tailscale optional in future, consider conditionally setting below if enabled
     networking.firewall.checkReversePath = "loose";
 
+    # Rotate logs to prevent them getting too big
+    services.logrotate.enable = true;
+
     #############################################################################
     ## User accounts
     #############################################################################
 
+    # Set zsh as the default shell
+    environment.shells = with pkgs; [ zsh ];
+    programs.zsh.enable = true;
     users.defaultUserShell = pkgs.zsh;
+
+    # Now for user stuff
     users.mutableUsers = false;
     users.users.jdheyburn = {
       uid = 1000;
@@ -66,7 +76,11 @@
         "$6$gFv39xwgs6Trun89$0uSAiTKWURlFUk5w4NoxmZXWlCKRamWYbTFdta7LSW1svzAUeuR3FGH2jX4UIcOaaMlLBJfqWLPUXKx1P1gch0";
 
       openssh.authorizedKeys.keys = [
+        # Not sure what below is for
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIj0aUriXCgY/wNnYMvGoXajOqAr3EXdu7AeGA23s8ZG"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMmocucDbkSd6A2xCE4JTQXDZSuOQH3p3c9khu1/0LIe jdheyburn@paddys.joannet.casa"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILe14GNyaLe1K09LMSdj1RuD3U6HHSJAZ7rBF40N2C6m jdheyburn@dee"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC0kg1FOtTN0y3Dpigb6OyPiMtvcPHTfWJXLeO6yyzUp jdheyburn@dennis"
       ];
     };
 
@@ -90,26 +104,34 @@
     nix.settings.auto-optimise-store = true;
 
     # Enable flakes
-    nix.package = pkgs.nixFlakes;
+    nix.package = pkgs.nixVersions.stable;
     nix.extraOptions = ''
       experimental-features = nix-command flakes
     '';
 
     # Allow packages with non-free licenses.
     nixpkgs.config.allowUnfree = true;
+    # Given we're using unfree, let's use numtide's cachix which should have cached binaries of some unfree packages
+    # Nix Hydra doesn't build unfree packages
+    nix.settings.substituters = [ "https://numtide.cachix.org" ];
+    nix.settings.trusted-public-keys =
+      [ "numtide.cachix.org-1:2ps1kLBUWjxIneOy1Ik6cQjb41X0iXVXeHigGmycPPE=" ];
+
+    nixpkgs.overlays = [ flake-self.overlays.default ];
 
     # System-wide packages
+    ## TODO there are packages here which should be shared with home-manager
+    ## to allow macbook to get them too
     environment.systemPackages = with pkgs; [
       bind # Gets dig
-      exa # posh ls
-      # busybox # Gets nslookup - but disabled since reboot was clashing with systemd
+      # busybox # Gets nslookup - but disabled since reboot was clashing with systemd, use q instead
       fd # better find commmand - search for files matching a name
       git
       htop
       jq
       ncdu
-      nixfmt
       python3
+      q # nice simple DNS client
       ranger
       rclone
       ripgrep # silver-searcher but newer

@@ -6,7 +6,14 @@ let
 
   cfg = config.modules.backupSF;
 
-in {
+  healthcheckAfter =
+    if cfg.prune then
+      "restic-backups-small-files-prune.service"
+    else
+      "restic-backups-small-files.service";
+
+in
+{
 
   options.modules.backupSF = {
     enable =
@@ -43,6 +50,11 @@ in {
       default = "*-*-* 02:30:00";
     };
 
+    healthcheck = mkOption {
+      type = types.str;
+      default = "";
+    };
+
   };
 
   config = mkIf cfg.enable (mkMerge [
@@ -69,6 +81,18 @@ in {
         timerConfig = { OnCalendar = cfg.pruneTime; };
       };
     })
+
+    (mkIf (cfg.healthcheck != "") {
+      systemd.services.restic-backups-small-files-healthcheck = {
+        enable = true;
+        wantedBy = [ healthcheckAfter ];
+        after = [ healthcheckAfter ];
+        environment = { HEALTHCHECK_ENDPOINT = cfg.healthcheck; };
+        script = ''
+          echo "sending healthcheck to $HEALTHCHECK_ENDPOINT"
+          ${pkgs.curl}/bin/curl -v $HEALTHCHECK_ENDPOINT
+        '';
+      };
+    })
   ]);
 }
-

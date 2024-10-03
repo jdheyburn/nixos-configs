@@ -49,30 +49,7 @@ function sdd() {
 
 # UnZip - unzip the archive into a dir at the same location with the archive name
 function uz() {
-
-    local readlinkCmd="readlink"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-    	local readlinkCmd="greadlink"
-    fi
-
-    local archive=$1
-    if [ -z "$archive" ]; then
-        echo "uz - No archive specified"
-        return 1
-    fi
-
-    local archivePath=$($readlinkCmd -f $archive)
-    if [ ! -f $archivePath ]; then
-        echo "uz - Archive not found: $archivePath"
-        return 1
-    fi
-
-    local extractDir=$(echo $archivePath | sed -e "s/.zip$//")
-    if [ -e $extractDir ] && [ ! -d $extractDir ]; then
-        echo "uz - ExtractDir exists but not as a directory: $extractDir"
-    fi
-    mkdir $extractDir
-    unzip $archive -d $extractDir
+    unzip "$1" -d "${1##*/}"
 }
 
 # Change AWS instance type by hostname
@@ -195,6 +172,38 @@ function restart_bluetooth() {
     fi
 }
 
+# For a given K8s node, output what Redis pods running on there and what their role is
+function get-redis-on-node() {
+    local node=$1
+
+    if [ -z $node ]; then
+        echo "ERR: node not provided, usage:"
+        echo "  get-redis-on-node NODE_NAME"
+        return 1
+    fi
+
+    for pod in $(kubectl get pods --no-headers -o custom-columns=":metadata.name"  --field-selector spec.nodeName=$node); do
+        role=$(kubectl exec -it $pod -c redis -- sh -c 'redis-cli --no-auth-warning -a $AUTH role | grep -E "(master|slave)"')
+        echo "$pod - $role"
+    done
+}
+
+# Outputs info I use to troubleshoot k8s nodes
+function get-k8s-nodes() {
+    kubectl get nodes -o custom-columns="NAME:metadata.name,STATUS:status.conditions[-1].type,IP_ADDRESS:status.addresses[?(@.type == 'InternalIP')].address,ZONE:metadata.labels.topology\.kubernetes\.io/zone,INSTANCE_TYPE:metadata.labels.node\.kubernetes\.io/instance-type,CREATED:metadata.creationTimestamp" $@
+}
+
+# Get the pods running on a particular node
+function get-pods-on-node() {
+    local node=$1
+    kubectl get pods -o wide --field-selector spec.nodeName=$node
+}
+
+# Exec into a pod - because I can never remember the command for it
+function exec-pod() {
+    kubectl exec -it $1 -- sh
+}
+
 # HeadPhones
 function hp() {
     local id="94-db-56-84-69-49"
@@ -202,7 +211,7 @@ function hp() {
 
     if [[ "$OSTYPE" != "darwin"* ]]; then
         echo "hp not implemented for $OSTYPE"
-        return 1        
+        return 1
     fi
 
     if [[ $action == "c" ]]; then
@@ -221,12 +230,12 @@ function squeezeme() {
 
     if [[ "$OSTYPE" != "darwin"* ]]; then
         echo "squeezeme not implemented for $OSTYPE"
-        return 1        
+        return 1
     fi
 
     local id="94-db-56-84-69-49"
     local headphones="WH-1000XM3"
-    
+
     if ps -ef | grep squeezelite | grep -v grep; then
         killall squeezelite
     fi
@@ -242,6 +251,20 @@ function squeezeme() {
     squeezelite -n macos -d all=info -o $headphones_id &
 }
 
+# Better diff
+function diff() {
+
+    local file1=$1
+    local file2=$2
+
+    # cat may be aliased to bat
+    /usr/bin/diff -u $file1 $file2 | diff-so-fancy | cat
+}
+
+# GitTop: navigate to root of git repo  - https://blog.meain.io/2023/navigating-around-in-shell/#navigating-to-project-root
+function gt() {
+    cd "$(git rev-parse --show-toplevel 2>/dev/null)"
+}
 
 # Third-party functions
 
@@ -259,4 +282,3 @@ function _fzf_compgen_path() {
 function _fzf_compgen_dir() {
     fd --type d --hidden --follow --exclude ".git" . "$1"
 }
-

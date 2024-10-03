@@ -4,7 +4,7 @@ A place for me to dump nix configs
 
 ## Deployment
 
-[deploy-rs]() is used to deploy the configurations.
+[deploy-rs](https://github.com/serokell/deploy-rs) is used to deploy the configurations.
 
 ```bash
 # all hosts
@@ -26,22 +26,19 @@ Services is a mapping of service name to service attributes, it can accept:
   - The node that runs this service
 - `port`
   - Port this service runs on
-- `caddify.enable`
-  - Whether Caddy configs should be created
-  - Also used by DNS module to create a rewrite entry
-- `caddify.skip_tls_verify`
-  - Whether Caddy should ignore TLS verification when forwarding traffic to this service
-  - Usually for when the backend service is on HTTPS, and I cba to set up certificate trust
-- `caddify.forwardTo`
-  - Define a node name here different to host to have that node set up reverse proxy instead
-  - Currently I'm using this to reverse proxy for services where nodes do not have Caddy on them (i.e. non-NixOS nodes)
-- `caddify.paths`
-  - A list of paths, additional path forwarding to ports that
-  - Used this for testing path forwarding for minio console, reverted as it didn't play nice
-  - `path`
-    - The URL path to forward (e.g. `/ui/*`)
-  - `port`
-    - The port to forward to
+- `dns.enable`
+  - Whether a DNS rewrite entry should be created on the DNS server
+  - i.e. gives the service a `$SERVICE.svc.joannet.casa` hostname
+- `dashy.section`
+  - What section in dashy it should fall under
+- `dashy.description`
+  - The description to use in dashy
+- `dashy.icon`
+  - The icon to display in dashy
+- `blackbox.name`
+  - Whether the service name in healthchecks differs from the DNS name
+- `blackbox.path`
+  - The path that blackbox healthchecks should use, if it differs from root `/`
 
 ## Hosts
 
@@ -50,6 +47,58 @@ Services is a mapping of service name to service attributes, it can accept:
   - Replaced dee_rpi3
 - dennis
   - VM on a Proxmox hypervisor
+- macbook
+  - MBP with nix-darwin
+
+Hosts are defined in `nodes`, which can have these attributes:
+
+- `ip.private`
+  - Private IP address
+- `ip.tailscale`
+  - IP address as tailscale sees it
+- `domain`
+  - If the host is on an 'external' domain to the homelab
+- `shouldScrape`
+  - If Prometheus should scrape this node for metrics
+  - This is only temporary while I decom the non-NixOS hosts
+- `isNixOS`
+  - Whether this node is on NixOS or not
+  - Infers some properties about the node
+
+## Runbooks
+
+### Upgrading to latest versions
+
+1. Update nix flake
+
+    ```bash
+    nix flake upgrade
+    ```
+
+2. Update overlays
+    - [healthchecks](https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/web-apps/healthchecks/default.nix)
+    - [plex](https://github.com/NixOS/nixpkgs/tree/master/pkgs/servers/plex)
+
+3. Update container images
+    - [dashy](https://github.com/Lissy93/dashy/releases)
+
+## Tips
+
+- [Go here](https://discourse.nixos.org/t/what-is-the-latest-best-practice-to-prefetch-the-hash/22103/4) for how blank hashes are structured
+- If after updating there are complaints about options no longer present, it's likely that they are no longer available, so they need to be removed
+- You can use `nixos-option` to find what options are available, and their specification
+
+## TODO
+
+- Better file structure, look to flake-parts for this
+  - i.e.:
+    - generic Nix settings across all systems
+    - generic NixOS
+    - generic nix-darwin
+    - host-level configs
+    - generic home-manager
+    - generic Linux home-manager
+    - generic macOS home-manager
 
 ## Credits / Inspiration
 

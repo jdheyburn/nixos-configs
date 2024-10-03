@@ -53,14 +53,12 @@ in {
     };
 
     services.minidlna = {
-      enable = false;
+      enable = true;
       settings = {
         notify_interval = 60;
         friendly_name = "dee";
-        media_dir =
-          [ "V,/mnt/nfs/Backup/media/tv/" "A,/mnt/nfs/Backup/media/music/" ];
+        media_dir = [ "V,/mnt/nfs/media/tv/" "A,/mnt/nfs/media/music/" ];
       };
     };
-
   };
 }

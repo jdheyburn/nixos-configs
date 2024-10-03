@@ -2,13 +2,22 @@
 # Inspired from https://github.com/jhillyerd/homelab/blob/main/nixos/catalog.nix
 { nixos-hardware }: rec {
 
-  nodes = {
+  nodesBase = {
+    charlie = {
+      ip.tailscale = "100.74.217.71";
+      domain = "bishop-beardie.ts.net";
+      system = "x86_64-linux";
+      isNixOS = true;
+      shouldScrape = true;
+    };
+
     dee = {
       ip.private = "192.168.1.10";
       ip.tailscale = "100.127.189.33";
       system = "aarch64-linux";
       isNixOS = true;
       nixosHardware = nixos-hardware.nixosModules.raspberry-pi-4;
+      shouldScrape = true;
     };
 
     dennis = {
@@ -16,111 +25,168 @@
       ip.tailscale = "100.127.102.123";
       system = "x86_64-linux";
       isNixOS = true;
+      shouldScrape = true;
     };
 
     frank = {
       ip.private = "192.168.1.11";
       ip.tailscale = "100.71.206.55";
       isNixOS = false;
+      shouldScrape = false;
+    };
+
+    macbook = {
+      ip.private = "192.168.1.26";
+      # TODO replace isSYSTEM with a single attribute
+      isNixOS = false;
+      isDarwin = true;
+      shouldScrape = false;
+      users = [ "joseph.heyburn" ];
     };
 
     paddys = {
       ip.private = "192.168.1.20";
       ip.tailscale = "100.107.150.109";
       isNixOS = false;
+      shouldScrape = true;
     };
 
     pve0 = {
       ip.private = "192.168.1.15";
       ip.tailscale = "100.80.112.68";
       isNixOS = false;
+      shouldScrape = false;
     };
   };
 
-  services = {
+  # Enrich nodeBase by adding the key as the hostname - DRY
+  nodes = builtins.listToAttrs (map
+    (hostName: {
+      name = hostName;
+      value = (nodesBase."${hostName}" // { hostName = hostName; });
+    })
+    (builtins.attrNames nodesBase));
+
+  servicesBase = {
     adguard = {
-      host = "dee";
+      host = nodes.dee;
       port = 3000;
-      caddify.enable = true;
+      dashy.section = "networks";
+      dashy.description = "DNS resolver";
+      dashy.icon = "hl-adguardhome";
+      dns.enable = true;
+    };
+
+    aria2 = {
+      host = nodes.dee;
+      dns.enable = true;
+    };
+
+    blackboxExporter = { port = 9115; };
+
+    healthchecks = {
+      host = nodes.dee;
+      port = 8000;
+      dashy.section = "monitoring";
+      dashy.description = "Monitor status of cron jobs";
+      dashy.icon = "hl-healthchecks";
+      dns.enable = true;
     };
 
     home = {
-      host = "frank";
-      port = 49154;
-      blackbox.name = "heimdall";
-      caddify.enable = true;
-      caddify.forwardTo = "dee";
+      host = nodes.dennis;
+      port = 4000;
+      blackbox.name = "dashy";
+      dns.enable = true;
     };
 
     huginn = {
-      host = "frank";
+      host = nodes.frank;
       port = 3000;
-      caddify.enable = true;
-      caddify.forwardTo = "dee";
+      dashy.icon = "hl-huginn";
+      dns.enable = false;
     };
 
     grafana = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 2342;
-      caddify.enable = true;
+      dashy.section = "monitoring";
+      dashy.description = "View logs and metrics";
+      dashy.icon = "hl-grafana";
+      dns.enable = true;
     };
 
     loki = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 3100;
       blackbox.path = "/ready";
-      caddify.enable = true;
+      dns.enable = true;
     };
 
     nodeExporter = { port = 9002; };
 
     minio = {
-      host = "dee";
+      host = nodes.dee;
       port = 9100;
       consolePort = 9101;
-      caddify.enable = true;
+      dns.enable = true;
     };
 
     "ui.minio" = {
-      host = "dee";
+      host = nodes.dee;
       port = services.minio.consolePort;
-      caddify.enable = true;
+      dashy.section = "storage";
+      dashy.description = "S3 compatible object storage";
+      dashy.icon = "hl-minio";
+      dns.enable = true;
     };
 
     portainer = {
-      host = "frank";
+      host = nodes.frank;
       port = 9000;
-      caddify.enable = true;
-      caddify.forwardTo = "dee";
+      dashy.section = "virtualisation";
+      dashy.description = "Frontend for containers";
+      dashy.icon = "hl-portainer";
+      dns.enable = false;
     };
 
     prometheus = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 9001;
-      caddify.enable = true;
+      dashy.section = "monitoring";
+      dashy.description = "Polls for metrics before captured by Thanos";
+      dashy.icon = "hl-prometheus";
+      dns.enable = false;
     };
 
     promtail = { port = 28183; };
 
     proxmox = {
-      host = "pve0";
+      host = nodes.dee;
       port = 8006;
-      caddify.enable = true;
-      caddify.skip_tls_verify = true;
-      caddify.forwardTo = "dee";
+      dashy.section = "virtualisation";
+      dashy.description = "Frontend for VMs";
+      dashy.icon = "hl-proxmox";
+      dns.enable = true;
     };
 
     plex = {
-      host = "dee";
+      host = nodes.dee;
       port = 32400;
-      caddify.enable = true;
+      dashy.section = "media";
+      dashy.description = "Watch TV and movies";
+      dashy.icon = "hl-plex";
+      dns.enable = true;
     };
 
     thanos-query = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 19192;
       grpcPort = 10902;
-      caddify.enable = true;
+      dashy.section = "monitoring";
+      dashy.description = "Long term storage for Prometheus metrics";
+      dashy.icon = "hl-thanos";
+      dns.enable = false;
     };
 
     thanos-sidecar = {
@@ -134,16 +200,29 @@
     };
 
     unifi = {
-      host = "dee";
+      host = nodes.dennis;
       port = 8443;
-      caddify.enable = true;
-      caddify.skip_tls_verify = true;
+      dashy.section = "networks";
+      dashy.description = "UniFi controller";
+      dashy.icon = "hl-unifi-controller";
+      dns.enable = true;
     };
 
     victoriametrics = {
-      host = "dennis";
+      host = nodes.dennis;
       port = 8428;
-      caddify.enable = true;
+      dashy.section = "monitoring";
+      dashy.description = "Alternate poller of metrics in PromQL format";
+      dashy.icon = "https://avatars.githubusercontent.com/u/43720803";
+      dns.enable = true;
     };
   };
+
+  # Enrich servicesBase by adding the key as the name - DRY
+  services = builtins.listToAttrs (map
+    (serviceName: {
+      name = serviceName;
+      value = (servicesBase."${serviceName}" // { name = serviceName; });
+    })
+    (builtins.attrNames servicesBase));
 }
