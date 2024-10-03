@@ -46,10 +46,10 @@ in {
           "guest ok" = "yes";
         };
       };
-      extraConfig = ''
-        hosts allow = 192.168.1.20 192.168.1.25 192.168.1.25 localhost
-        hosts deny = 0.0.0.0/0
-      '';
+      settings = {
+        "hosts allow" = "192.168.1.20 192.168.1.25 192.168.1.25 localhost";
+        "hosts deny" = "0.0.0.0/0";
+      };
     };
 
     services.minidlna = {
