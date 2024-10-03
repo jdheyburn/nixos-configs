@@ -58,36 +58,10 @@
           (builtins.attrNames (builtins.readDir ./modules)));
 
         ## home-manager modules and users
-        ## Need to verify this works as expected for non-nixOS hosts
         homeFeatures = system: [
           home-manager.nixosModules.home-manager
-          # TODO test on NixOS
           # TODO users should be retrieved from the catalog
           (mkHomeManager [ "root" "jdheyburn" ])
-
-          # {
-          #   # Fixes https://github.com/divnix/digga/issues/30
-          #   home-manager.useGlobalPkgs = true;
-          #   home-manager.extraSpecialArgs = { inherit system inputs; };
-
-          #   # Builds user list from directories under /home-manager/users
-          #   # home-manager.users = builtins.listToAttrs (map
-          #   #   (user: {
-          #   #     name = user;
-          #   #     value = {
-          #   #       imports = [
-          #   #         ./home/common
-          #   #         (./home/users + "/${user}")
-          #   #         catppuccin.homeManagerModules.catppuccin
-          #   #       ];
-          #   #     };
-          #   #   })
-          #   #   [ "root" "jdheyburn" ]);
-          #   # TODO test
-          #   # TODO users should be retrieved from the catalog
-          #   home-manager.users = mkHomeUsers [ "root" "jdheyburn" ];
-          #   # (builtins.attrNames (builtins.readDir ./home/users)));
-          # }
         ];
         # End of modules
 
