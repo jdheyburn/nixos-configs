@@ -48,6 +48,7 @@
         # Modules to import to hosts
         ## Common modules to apply to everything
         common = [ ./common agenix.nixosModules.default ];
+
         ## Modules under ./modules
         nixosModules = builtins.listToAttrs (map
           (module: {
@@ -55,32 +56,64 @@
             value = import (./modules + "/${module}");
           })
           (builtins.attrNames (builtins.readDir ./modules)));
+
         ## home-manager modules and users
         ## Need to verify this works as expected for non-nixOS hosts
         homeFeatures = system: [
           home-manager.nixosModules.home-manager
-          {
-            # Fixes https://github.com/divnix/digga/issues/30
-            home-manager.useGlobalPkgs = true;
-            home-manager.extraSpecialArgs = { inherit system inputs; };
+          # TODO test on NixOS
+          # TODO users should be retrieved from the catalog
+          (mkHomeManager [ "root" "jdheyburn" ])
 
-            # Builds user list from directories under /home-manager/users
-            home-manager.users = builtins.listToAttrs (map
-              (user: {
-                name = user;
-                value = {
-                  imports = [
-                    ./home/common
-                    (./home/users + "/${user}")
-                    catppuccin.homeManagerModules.catppuccin
-                  ];
-                };
-              })
-              [ "root" "jdheyburn" ]);
-            # (builtins.attrNames (builtins.readDir ./home/users)));
-          }
+          # {
+          #   # Fixes https://github.com/divnix/digga/issues/30
+          #   home-manager.useGlobalPkgs = true;
+          #   home-manager.extraSpecialArgs = { inherit system inputs; };
+
+          #   # Builds user list from directories under /home-manager/users
+          #   # home-manager.users = builtins.listToAttrs (map
+          #   #   (user: {
+          #   #     name = user;
+          #   #     value = {
+          #   #       imports = [
+          #   #         ./home/common
+          #   #         (./home/users + "/${user}")
+          #   #         catppuccin.homeManagerModules.catppuccin
+          #   #       ];
+          #   #     };
+          #   #   })
+          #   #   [ "root" "jdheyburn" ]);
+          #   # TODO test
+          #   # TODO users should be retrieved from the catalog
+          #   home-manager.users = mkHomeUsers [ "root" "jdheyburn" ];
+          #   # (builtins.attrNames (builtins.readDir ./home/users)));
+          # }
         ];
         # End of modules
+
+        mkHomeUsers = users: builtins.listToAttrs (map
+          (
+            user: {
+              name = user;
+              value = {
+                imports = [
+                  catppuccin.homeManagerModules.catppuccin
+                  ./home/common
+                  (./home/users + "/${user}")
+                ];
+              };
+            }
+          )
+          users
+        );
+
+        mkHomeManager = users: {
+          # Fixes https://github.com/divnix/digga/issues/30
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.extraSpecialArgs = { inherit system inputs; };
+          home-manager.users = mkHomeUsers users;
+        };
 
         # Function to create a nixosSystem
         mkLinuxSystem = system: extraModules:
@@ -92,6 +125,19 @@
             } // inputs;
             modules = common ++ [{ imports = builtins.attrValues nixosModules; }]
               ++ homeFeatures system ++ extraModules;
+          };
+
+        mkDarwinSystem = extraModules: users:
+          darwin.lib.darwinSystem {
+            system = "aarch64-darwin";
+            specialArgs = {
+              inherit catalog;
+              flake-self = self;
+            } // inputs;
+            modules = [
+              home-manager.darwinModules.home-manager
+              (mkHomeManager users)
+            ] ++ extraModules;
           };
 
         hosts = builtins.attrNames (builtins.readDir ./hosts);
@@ -112,48 +158,20 @@
           ];
         };
 
-        # No fancy nixlang stuff here like in nixosConfigurations, there's only one host
-        # and I'm just playing around with it for the time being
-        darwinConfigurations."macbook" = darwin.lib.darwinSystem {
-          system = "aarch64-darwin";
-          # specialArgs = {
-          #   inherit inputs;
-          # };
-          modules = [
-            ./hosts/macbook/configuration.nix
+        darwinConfigurations = builtins.listToAttrs (map
+          (host:
+            let
+              node = catalog.nodes.${host};
+              modules = [
+                (./hosts + "/${host}/configuration.nix")
+              ];
+            in
             {
-              users.users."joseph.heyburn" = {
-                home = "/Users/joseph.heyburn";
-              };
-            }
-            home-manager.darwinModules.home-manager
-            {
-              home-manager.extraSpecialArgs = { inherit system inputs; };
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users."joseph.heyburn" = {
-                imports =
-                  [ ./home/common ./home/users/joseph.heyburn catppuccin.homeManagerModules.catppuccin ];
-              };
-            }
-          ];
-        };
-
-        darwinConfigurations."macbook-old" = darwin.lib.darwinSystem {
-          system = "x86_64-darwin";
-          modules = [
-            ./hosts/macbook/configuration.nix
-            home-manager.darwinModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users."joseph.heyburn" = {
-                imports =
-                  [ ./home/common ./home/users/joseph.heyburn ];
-              };
-            }
-          ];
-        };
+              name = host;
+              value = mkDarwinSystem modules node.users;
+            })
+          # TODO macbook should be pulled from somewhere
+          [ "macbook" ]);
 
         nixosConfigurations = builtins.listToAttrs (map
           (host:

@@ -35,6 +35,15 @@
       shouldScrape = false;
     };
 
+    macbook = {
+      ip.private = "192.168.1.26";
+      # TODO replace isSYSTEM with a single attribute
+      isNixOS = false;
+      isDarwin = true;
+      shouldScrape = false;
+      users = [ "joseph.heyburn" ];
+    };
+
     paddys = {
       ip.private = "192.168.1.20";
       ip.tailscale = "100.107.150.109";
