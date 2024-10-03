@@ -91,16 +91,18 @@
         ];
         # End of modules
 
+        mkUserImports = user: [
+          catppuccin.homeManagerModules.catppuccin
+          ./home/common
+          (./home/users + "/${user}")
+        ];
+
         mkHomeUsers = users: builtins.listToAttrs (map
           (
             user: {
               name = user;
               value = {
-                imports = [
-                  catppuccin.homeManagerModules.catppuccin
-                  ./home/common
-                  (./home/users + "/${user}")
-                ];
+                imports = mkUserImports user;
               };
             }
           )
@@ -116,6 +118,7 @@
         };
 
         # Function to create a nixosSystem
+        # TODO any refactoring available with mkDarwinSystem?
         mkLinuxSystem = system: extraModules:
           nixpkgs.lib.nixosSystem {
             inherit system;
@@ -147,16 +150,16 @@
         overlays.default = final: prev: (import ./overlays inputs) final prev;
 
         # home-manager standalone installations
-        homeConfigurations.jdheyburn = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages."x86_64-linux";
-          modules = [
-            ./home/common
-            ./home/users/jdheyburn
-            # This is just for paddys
-            ./home/roles/desktop
-            catppuccin.homeManagerModules.catppuccin
-          ];
-        };
+        homeConfigurations = builtins.listToAttrs (map
+          (user: {
+            name = user;
+            value = home-manager.lib.homeManagerConfiguration {
+              pkgs = nixpkgs.legacyPackages."x86_64-linux";
+              # TODO roles shouldn't be appended here
+              modules = (mkUserImports user) ++ [ ./home/roles/desktop ];
+            };
+            # TODO jdheyburn should not be hardcoded here
+          }) [ "jdheyburn" ]);
 
         darwinConfigurations = builtins.listToAttrs (map
           (host:
