@@ -68,7 +68,7 @@
               else
                 home-manager.nixosModules.home-manager;
             # Only create root user on nixOS machines, I might hate this way of declaring it
-            additionalUsers = nixpkgs.lib.optional (!isDarwin system) [ "root" ];
+            additionalUsers = nixpkgs.lib.optional (!isDarwin system) "root";
           in
           [
             homeManager
@@ -118,24 +118,6 @@
             modules =
               # Imports home-manager
               (homeFeatures system users)
-              # Imports host level modules and nixos-hardware
-              ++ extraModules;
-          };
-
-
-        # Function to create a nixosSystem
-        # TODO any refactoring available with mkDarwinSystem?
-        mkLinuxSystem = system: users: extraModules:
-          nixpkgs.lib.nixosSystem {
-            inherit system;
-            specialArgs = {
-              inherit catalog;
-              flake-self = self;
-            } // inputs;
-            modules =
-              # Imports home-manager
-              (homeFeatures system users)
-              # Imports host level modules and nixos-hardware
               ++ extraModules;
           };
 
@@ -177,18 +159,19 @@
         nixosConfigurations = builtins.listToAttrs (map
           (node:
             let
-              modules = [
+              modules =
                 # Top level common that should be applied to all Nix
                 common
-                # Imports my own nixOS mdules
-                { imports = builtins.attrValues nixosModules; }
-                # Host level configuration
-                (./hosts + "/${node.hostName}/configuration.nix")
-              ] ++ nixpkgs.lib.optional (node ? "nixosHardware") node.nixosHardware;
+                ++ [
+                  # Imports my own nixOS mdules
+                  { imports = builtins.attrValues nixosModules; }
+                  # Host level configuration
+                  (./hosts + "/${node.hostName}/configuration.nix")
+                ] ++ nixpkgs.lib.optional (node ? "nixosHardware") node.nixosHardware;
             in
             {
               name = node.hostName;
-              value = mkLinuxSystem node.system node.users modules;
+              value = mkSystem node.system node.users modules;
             })
           nixOSNodes);
 
