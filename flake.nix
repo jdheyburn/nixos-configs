@@ -42,6 +42,8 @@
     }@inputs:
       with inputs;
       let
+        isDarwin = system: builtins.elem system [ "aarch64-darwin" ];
+
         inherit (flake-utils.lib) eachSystemMap system;
         catalog = import ./catalog.nix { inherit nixos-hardware; };
 
@@ -58,11 +60,20 @@
           (builtins.attrNames (builtins.readDir ./modules)));
 
         ## home-manager modules and users
-        homeFeatures = system: [
-          home-manager.nixosModules.home-manager
-          # TODO users should be retrieved from the catalog
-          (mkHomeManager [ "root" "jdheyburn" ])
-        ];
+        homeFeatures = system: users:
+          let
+            homeManager =
+              if (isDarwin system) then
+                home-manager.darwinModules.home-manager
+              else
+                home-manager.nixosModules.home-manager;
+            # Only create root user on nixOS machines, I might hate this way of declaring it
+            additionalUsers = nixpkgs.lib.optional (!isDarwin system) [ "root" ];
+          in
+          [
+            homeManager
+            (mkHomeManager ((map (user: user.name) users) ++ additionalUsers))
+          ];
         # End of modules
 
         mkUserImports = user: [
@@ -71,53 +82,63 @@
           (./home/users + "/${user}")
         ];
 
-        mkHomeUsers = users: builtins.listToAttrs (map
-          (
-            user: {
-              name = user;
-              value = {
-                imports = mkUserImports user;
-              };
-            }
-          )
-          users
-        );
-
-        mkHomeManager = users: {
+        mkHomeManager = usernames: {
           # Fixes https://github.com/divnix/digga/issues/30
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.extraSpecialArgs = { inherit system inputs; };
-          home-manager.users = mkHomeUsers users;
+          home-manager.users = builtins.listToAttrs (map
+            (
+              username: {
+                name = username;
+                value = {
+                  imports = mkUserImports username;
+                };
+              }
+            )
+            usernames
+          );
         };
+
+        # Platform agnostic function for creating a system
+        mkSystem = system: users: extraModules:
+          let
+            systemManager =
+              if (isDarwin system) then
+                darwin.lib.darwinSystem
+              else
+                nixpkgs.lib.nixosSystem;
+          in
+          systemManager {
+            inherit system;
+            specialArgs = {
+              inherit catalog;
+              flake-self = self;
+            } // inputs;
+            modules =
+              # Imports home-manager
+              (homeFeatures system users)
+              # Imports host level modules and nixos-hardware
+              ++ extraModules;
+          };
+
 
         # Function to create a nixosSystem
         # TODO any refactoring available with mkDarwinSystem?
-        mkLinuxSystem = system: extraModules:
+        mkLinuxSystem = system: users: extraModules:
           nixpkgs.lib.nixosSystem {
             inherit system;
             specialArgs = {
               inherit catalog;
               flake-self = self;
             } // inputs;
-            modules = common ++ [{ imports = builtins.attrValues nixosModules; }]
-              ++ homeFeatures system ++ extraModules;
+            modules =
+              # Imports home-manager
+              (homeFeatures system users)
+              # Imports host level modules and nixos-hardware
+              ++ extraModules;
           };
 
-        mkDarwinSystem = extraModules: users:
-          darwin.lib.darwinSystem {
-            system = "aarch64-darwin";
-            specialArgs = {
-              inherit catalog;
-              flake-self = self;
-            } // inputs;
-            modules = [
-              home-manager.darwinModules.home-manager
-              (mkHomeManager users)
-            ] ++ extraModules;
-          };
-
-        hosts = builtins.attrNames (builtins.readDir ./hosts);
         darwinNodes = (nixpkgs.lib.attrValues (nixpkgs.lib.filterAttrs (node_name: node_def: node_def ? "isDarwin" && node_def.isDarwin) catalog.nodes));
         nixOSNodes = (nixpkgs.lib.attrValues (nixpkgs.lib.filterAttrs (node_name: node_def: node_def ? "isNixOS" && node_def.isNixOS) catalog.nodes));
       in
@@ -128,15 +149,17 @@
         # home-manager standalone installations
         homeConfigurations = builtins.listToAttrs (map
           (user: {
-            name = user;
+            name = user.name;
             value = home-manager.lib.homeManagerConfiguration {
               pkgs = nixpkgs.legacyPackages."x86_64-linux";
-              # TODO roles shouldn't be appended here
-              modules = (mkUserImports user) ++ [ ./home/roles/desktop ];
+              # TODO roles shouldn't be appended here, should be defined similar to modules
+              modules = (mkUserImports user.name) ++ [ ./home/roles/desktop ];
             };
-            # TODO jdheyburn should not be hardcoded here
-          }) [ "jdheyburn" ]);
+          })
+          # Currently hardcoded to jdheyburn, for paddys
+          [ catalog.users.jdheyburn ]);
 
+        # macOS installations
         darwinConfigurations = builtins.listToAttrs (map
           (node:
             let
@@ -146,23 +169,29 @@
             in
             {
               name = node.hostName;
-              value = mkDarwinSystem modules node.users;
+              value = mkSystem node.system node.users modules;
             })
           darwinNodes);
 
+        # good old NixOS installations
         nixosConfigurations = builtins.listToAttrs (map
           (node:
             let
-              modules = [ (./hosts + "/${node.hostName}/configuration.nix") ]
-                ++ nixpkgs.lib.optional (node ? "nixosHardware") node.nixosHardware;
+              modules = [
+                # Top level common that should be applied to all Nix
+                common
+                # Imports my own nixOS mdules
+                { imports = builtins.attrValues nixosModules; }
+                # Host level configuration
+                (./hosts + "/${node.hostName}/configuration.nix")
+              ] ++ nixpkgs.lib.optional (node ? "nixosHardware") node.nixosHardware;
             in
             {
               name = node.hostName;
-              value = mkLinuxSystem node.system modules;
+              value = mkLinuxSystem node.system node.users modules;
             })
           nixOSNodes);
 
-        # deploy-rs configs - built off what exists in ./hosts and in catalog.nix
         deploy.nodes = builtins.listToAttrs (map
           (host: {
             name = node.hostName;
@@ -183,10 +212,11 @@
           deploy-rs.lib;
 
         # allows nix fmt
-        # TODO repeated context here, can I map over each of them?
-        formatter.x86_64-darwin = nixpkgs.legacyPackages.x86_64-darwin.nixpkgs-fmt;
-        formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
-        formatter.aarch64-linux = nixpkgs.legacyPackages.aarch64-linux.nixpkgs-fmt;
-        formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.nixpkgs-fmt;
+        formatter = builtins.listToAttrs (map
+          (system: {
+            name = system;
+            value = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
+          })
+          flake-utils.lib.defaultSystems);
       };
 }

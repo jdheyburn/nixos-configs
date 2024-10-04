@@ -9,6 +9,7 @@
       system = "x86_64-linux";
       isNixOS = true;
       shouldScrape = true;
+      users = [ users.jdheyburn ];
     };
 
     dee = {
@@ -18,6 +19,7 @@
       isNixOS = true;
       nixosHardware = nixos-hardware.nixosModules.raspberry-pi-4;
       shouldScrape = true;
+      users = [ users.jdheyburn ];
     };
 
     dennis = {
@@ -26,6 +28,7 @@
       system = "x86_64-linux";
       isNixOS = true;
       shouldScrape = true;
+      users = [ users.jdheyburn ];
     };
 
     frank = {
@@ -37,11 +40,13 @@
 
     macbook = {
       ip.private = "192.168.1.26";
+      # Could either be Apple Silicon or Intel arch
+      system = "aarch64-darwin";
       # TODO replace isSYSTEM with a single attribute
       isNixOS = false;
       isDarwin = true;
       shouldScrape = false;
-      users = [ "joseph.heyburn" ];
+      users = [ users."joseph.heyburn" ];
     };
 
     paddys = {
@@ -225,4 +230,18 @@
       value = (servicesBase."${serviceName}" // { name = serviceName; });
     })
     (builtins.attrNames servicesBase));
+
+  usersBase = {
+    # Empty for now to allow for future changes
+    jdheyburn = { };
+    "joseph.heyburn" = { };
+  };
+
+  # Enrich usersBase by adding the key as the name - DRY
+  users = builtins.listToAttrs (map
+    (userName: {
+      name = userName;
+      value = (usersBase."${userName}" // { name = userName; });
+    })
+    (builtins.attrNames usersBase));
 }
