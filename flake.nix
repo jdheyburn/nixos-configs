@@ -118,6 +118,8 @@
           };
 
         hosts = builtins.attrNames (builtins.readDir ./hosts);
+        darwinNodes = (nixpkgs.lib.attrValues (nixpkgs.lib.filterAttrs (node_name: node_def: node_def ? "isDarwin" && node_def.isDarwin) catalog.nodes));
+        nixOSNodes = (nixpkgs.lib.attrValues (nixpkgs.lib.filterAttrs (node_name: node_def: node_def ? "isNixOS" && node_def.isNixOS) catalog.nodes));
       in
       {
 
@@ -136,56 +138,52 @@
           }) [ "jdheyburn" ]);
 
         darwinConfigurations = builtins.listToAttrs (map
-          (host:
+          (node:
             let
-              node = catalog.nodes.${host};
               modules = [
-                (./hosts + "/${host}/configuration.nix")
+                (./hosts + "/${node.hostName}/configuration.nix")
               ];
             in
             {
-              name = host;
+              name = node.hostName;
               value = mkDarwinSystem modules node.users;
             })
-          # TODO macbook should be pulled from somewhere
-          [ "macbook" ]);
+          darwinNodes);
 
         nixosConfigurations = builtins.listToAttrs (map
-          (host:
+          (node:
             let
-              node = catalog.nodes.${host};
-              modules = [ (./hosts + "/${host}/configuration.nix") ]
+              modules = [ (./hosts + "/${node.hostName}/configuration.nix") ]
                 ++ nixpkgs.lib.optional (node ? "nixosHardware") node.nixosHardware;
             in
             {
-              name = host;
+              name = node.hostName;
               value = mkLinuxSystem node.system modules;
             })
-          hosts);
+          nixOSNodes);
 
         # deploy-rs configs - built off what exists in ./hosts and in catalog.nix
         deploy.nodes = builtins.listToAttrs (map
-          (host:
-            let node = catalog.nodes.${host};
-            in {
-              name = host;
-              value = {
-                hostname = node.ip.tailscale;
-                profiles.system = {
-                  user = "root";
-                  path = deploy-rs.lib.${node.system}.activate.nixos
-                    self.nixosConfigurations.${host};
-                  sshOpts = [ "-o" "IdentitiesOnly=yes" ];
-                };
+          (host: {
+            name = node.hostName;
+            value = {
+              hostname = node.ip.tailscale;
+              profiles.system = {
+                user = "root";
+                path = deploy-rs.lib.${node.system}.activate.nixos
+                  self.nixosConfigurations.${node.hostName};
+                sshOpts = [ "-o" "IdentitiesOnly=yes" ];
               };
-            })
-          hosts);
+            };
+          })
+          nixOSNodes);
 
         checks = builtins.mapAttrs
           (system: deployLib: deployLib.deployChecks self.deploy)
           deploy-rs.lib;
 
         # allows nix fmt
+        # TODO repeated context here, can I map over each of them?
         formatter.x86_64-darwin = nixpkgs.legacyPackages.x86_64-darwin.nixpkgs-fmt;
         formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixpkgs-fmt;
         formatter.aarch64-linux = nixpkgs.legacyPackages.aarch64-linux.nixpkgs-fmt;
