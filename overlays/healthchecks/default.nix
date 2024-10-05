@@ -1,9 +1,3 @@
-# Forked from https://github.com/NixOS/nixpkgs/blob/69940c042cb6a0f2db1f3696fb5b78defde28470/pkgs/servers/web-apps/healthchecks/default.nix
-# Made changes to local_settings.py
-
-# Forked from https://github.com/NixOS/nixpkgs/blob/69940c042cb6a0f2db1f3696fb5b78defde28470/pkgs/servers/web-apps/healthchecks/default.nix
-# Made changes to local_settings.py
-
 { lib
 , writeText
 , fetchFromGitHub
@@ -12,50 +6,73 @@
 }:
 let
   py = python3.override {
+    self = py;
     packageOverrides = final: prev: {
-      django = prev.django_4;
+      django = prev.django_5;
     };
   };
 in
 py.pkgs.buildPythonApplication rec {
   pname = "healthchecks";
-  version = "2.10";
+  version = "3.6";
   format = "other";
 
   src = fetchFromGitHub {
     owner = "healthchecks";
     repo = pname;
     rev = "refs/tags/v${version}";
-    sha256 = "sha256-1x+pYMHaKgLFWcL1axOv/ok1ebs0I7Q+Q6htncmgJzU=";
+    sha256 = "sha256-aKt9L3ZgZ8HffcNNJaR+hAI38raWuLp2q/6+rvkl2pM=";
   };
 
   propagatedBuildInputs = with py.pkgs; [
+    aiosmtpd
     apprise
-    cron-descriptor
     cronsim
     django
     django-compressor
+    django-stubs-ext
     fido2
     minio
+    oncalendar
     psycopg2
     pycurl
+    pydantic
     pyotp
     segno
     statsd
     whitenoise
   ];
 
+  secrets = [
+    "DB_PASSWORD"
+    "DISCORD_CLIENT_SECRET"
+    "EMAIL_HOST_PASSWORD"
+    "LINENOTIFY_CLIENT_SECRET"
+    "MATRIX_ACCESS_TOKEN"
+    "PD_APP_ID"
+    "PUSHBULLET_CLIENT_SECRET"
+    "PUSHOVER_API_TOKEN"
+    "S3_SECRET_KEY"
+    "SECRET_KEY"
+    "SLACK_CLIENT_SECRET"
+    "TELEGRAM_TOKEN"
+    "TRELLO_APP_KEY"
+    "TWILIO_AUTH"
+  ];
+
   localSettings = writeText "local_settings.py" ''
     import os
+
     STATIC_ROOT = os.getenv("STATIC_ROOT")
-    SECRET_KEY_FILE = os.getenv("SECRET_KEY_FILE")
-    if SECRET_KEY_FILE:
-        with open(SECRET_KEY_FILE, "r") as file:
-            SECRET_KEY = file.readline()
-    EMAIL_HOST_PASSWORD_FILE = os.getenv("EMAIL_HOST_PASSWORD_FILE")
-    if EMAIL_HOST_PASSWORD_FILE:
-        with open(EMAIL_HOST_PASSWORD_FILE, "r") as file:
-            EMAIL_HOST_PASSWORD = file.readline()
+
+    ${lib.concatLines (map
+      (secret: ''
+        ${secret}_FILE = os.getenv("${secret}_FILE")
+        if ${secret}_FILE:
+            with open(${secret}_FILE, "r") as file:
+                ${secret} = file.readline()
+      '')
+      secrets)}
   '';
 
   # From https://github.com/linuxserver/docker-healthchecks/blob/master/root/etc/cont-init.d/30-config#L116
@@ -93,14 +110,15 @@ py.pkgs.buildPythonApplication rec {
     # PYTHONPATH of all dependencies used by the package
     pythonPath = py.pkgs.makePythonPath propagatedBuildInputs;
 
-    tests = { inherit (nixosTests) healthchecks; };
+    tests = {
+      inherit (nixosTests) healthchecks;
+    };
   };
 
   meta = with lib; {
     homepage = "https://github.com/healthchecks/healthchecks";
-    description = "A cron monitoring tool written in Python & Django ";
+    description = "Cron monitoring tool written in Python & Django";
     license = licenses.bsd3;
     maintainers = with maintainers; [ phaer ];
   };
 }
-
