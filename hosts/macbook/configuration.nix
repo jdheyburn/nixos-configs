@@ -43,6 +43,7 @@
   # Needs to be duplicated here, even though it is defined in home-manager too
   programs.zsh.enable = true;
 
+  # TODO this should be pulled from nodes.NODE.users
   users.users."joseph.heyburn" = {
     home = "/Users/joseph.heyburn";
   };
