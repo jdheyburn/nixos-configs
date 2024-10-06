@@ -1,6 +1,7 @@
 { config, pkgs, lib, ... }: {
 
   imports = [
+    ./beets
     ./cli
     ./git
     ./neovim
