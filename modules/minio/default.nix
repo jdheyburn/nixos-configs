@@ -39,11 +39,23 @@ in {
       rootCredentialsFile = config.age.secrets."minio-root-credentials".path;
     };
 
-    systemd.services.minio.environment.MINIO_BROWSER_REDIRECT_URL =
-      "https://ui.minio.svc.joannet.casa";
-    systemd.services.minio.environment.MINIO_SERVER_URL =
-      "https://minio.svc.joannet.casa";
-    systemd.services.minio.environment.MINIO_PROMETHEUS_AUTH_TYPE = "public";
+    systemd.services.minio = {
+      environment = {
+        MINIO_BROWSER_REDIRECT_URL = "https://ui.minio.svc.joannet.casa";
+        MINIO_SERVER_URL = "https://minio.svc.joannet.casa";
+        MINIO_PROMETHEUS_AUTH_TYPE = "public";
+      };
+
+      serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = "10s";
+      };
+
+      unitConfig = {
+        StartLimitIntervalSec = "500";
+        StartLimitBurst = "5";
+      };
+    };
     # systemd.services.minio.environment.MINIO_PROMETHEUS_JOB_ID = "minio";
     # systemd.services.minio.environment.MINIO_PROMETHEUS_URL =
     #   "https://prometheus.svc.joannet.casa";

@@ -94,8 +94,10 @@ let
 
   };
 
+  # TODO duplicated from flake.nix - remove the duplication
+  isNixOS = system: builtins.elem system [ "x86_64-linux" "aarch64-linux" ];
   nixOSNodes = attrValues
-    (filterAttrs (node_name: node_def: node_def.isNixOS) catalog.nodes);
+    (filterAttrs (node_name: node_def: node_def ? "system" && isNixOS node_def.system) catalog.nodes);
 
   promtail_targets = map
     (node:

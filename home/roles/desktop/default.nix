@@ -7,7 +7,9 @@ let
   };
 in
 {
-  home.packages = with pkgs; [ ];
+  home.packages = with pkgs; [
+    #  mullvad-vpn
+  ];
 
   # SSH client related stuff here, I only want this on paddys (laptop)
   services.ssh-agent.enable = true;
@@ -41,3 +43,4 @@ in
     };
   };
 }
+
