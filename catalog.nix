@@ -7,7 +7,6 @@
       ip.tailscale = "100.74.217.71";
       domain = "bishop-beardie.ts.net";
       system = "x86_64-linux";
-      isNixOS = true;
       shouldScrape = true;
       users = [ users.jdheyburn ];
     };
@@ -16,7 +15,6 @@
       ip.private = "192.168.1.10";
       ip.tailscale = "100.127.189.33";
       system = "aarch64-linux";
-      isNixOS = true;
       nixosHardware = nixos-hardware.nixosModules.raspberry-pi-4;
       shouldScrape = true;
       users = [ users.jdheyburn ];
@@ -26,7 +24,6 @@
       ip.private = "192.168.1.12";
       ip.tailscale = "100.127.102.123";
       system = "x86_64-linux";
-      isNixOS = true;
       shouldScrape = true;
       users = [ users.jdheyburn ];
     };
@@ -34,7 +31,6 @@
     frank = {
       ip.private = "192.168.1.11";
       ip.tailscale = "100.71.206.55";
-      isNixOS = false;
       shouldScrape = false;
     };
 
@@ -42,9 +38,6 @@
       ip.private = "192.168.1.26";
       # Could either be Apple Silicon or Intel arch
       system = "aarch64-darwin";
-      # TODO replace isSYSTEM with a single attribute
-      isNixOS = false;
-      isDarwin = true;
       shouldScrape = false;
       users = [ users."joseph.heyburn" ];
     };
@@ -52,14 +45,12 @@
     paddys = {
       ip.private = "192.168.1.20";
       ip.tailscale = "100.107.150.109";
-      isNixOS = false;
       shouldScrape = true;
     };
 
     pve0 = {
       ip.private = "192.168.1.15";
       ip.tailscale = "100.80.112.68";
-      isNixOS = false;
       shouldScrape = false;
     };
   };

@@ -43,6 +43,7 @@
       with inputs;
       let
         isDarwin = system: builtins.elem system [ "aarch64-darwin" ];
+        isNixOS = system: builtins.elem system [ "x86_64-linux" "aarch64-linux" ];
 
         inherit (flake-utils.lib) eachSystemMap system;
         catalog = import ./catalog.nix { inherit nixos-hardware; };
@@ -121,8 +122,8 @@
               ++ extraModules;
           };
 
-        darwinNodes = (nixpkgs.lib.attrValues (nixpkgs.lib.filterAttrs (node_name: node_def: node_def ? "isDarwin" && node_def.isDarwin) catalog.nodes));
-        nixOSNodes = (nixpkgs.lib.attrValues (nixpkgs.lib.filterAttrs (node_name: node_def: node_def ? "isNixOS" && node_def.isNixOS) catalog.nodes));
+        darwinNodes = (nixpkgs.lib.attrValues (nixpkgs.lib.filterAttrs (node_name: node_def: node_def ? "system" && isDarwin node_def.system) catalog.nodes));
+        nixOSNodes = (nixpkgs.lib.attrValues (nixpkgs.lib.filterAttrs (node_name: node_def: node_def ? "system" && isNixOS node_def.system) catalog.nodes));
       in
       {
 
