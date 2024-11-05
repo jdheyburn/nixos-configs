@@ -43,7 +43,12 @@ in
       kc = "kubie ctx";
       kn = "kubie ns";
     };
+    initExtra = ''
+      ${builtins.readFile ./zsh-initExtra-kubectl_aliases.zsh}
+    '';
   };
+
+
 
   home.file.".kube/kubie.yaml" = {
     enable = true;

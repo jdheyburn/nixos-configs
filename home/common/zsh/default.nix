@@ -48,7 +48,6 @@
     '';
 
     initExtra = ''
-      ${builtins.readFile ./zsh-initExtra-kubectl_aliases.zsh}
       ${builtins.readFile ./zsh-initExtra-functions.zsh}
       ${builtins.readFile ./zsh-initExtra-misc.zsh}
     '';
