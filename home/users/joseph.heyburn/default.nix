@@ -1,12 +1,6 @@
 { config, pkgs, ... }:
 let
 
-  terraform_0_14_10 = pkgs.mkTerraform {
-    version = "0.14.10";
-    hash = "sha256-3Ie19UfYpapBVvSTIFwE6Zm0X61FwMAJ7nio+iFabhc=";
-    vendorHash = "sha256-tWrSr6JCS9s+I0T1o3jgZ395u8IBmh73XGrnJidWI7U=";
-  };
-
   terraform_1_5_2 = pkgs.mkTerraform {
     version = "1.5.2";
     hash = "sha256-Ri2nWLjPPBINXyPIQSbnd1L+t7QLgXiTOgqX8Dk/rXg=";
@@ -15,8 +9,6 @@ let
 
   # TODO should be pulled from overlays but it's not, so redeclaring here
   velero_1_9_5 = pkgs.callPackage ./velero { };
-  kubectl_1_25_4 = pkgs.callPackage ./kubectl/kubectl.nix { };
-  openlens = pkgs.callPackage ./openlens { };
   sops_3_7_3 = pkgs.callPackage ./sops { };
 
   # Declare Python packages that should be available in the global python
@@ -27,6 +19,9 @@ let
   ];
 in
 {
+  imports = [
+    ./kubernetes
+  ];
 
   home.file.".hyper.js" = {
     enable = true;
@@ -44,31 +39,10 @@ in
     jq
     yq
 
-    (pkgs.wrapHelm pkgs.kubernetes-helm { plugins = [ pkgs.kubernetes-helmPlugins.helm-secrets ]; })
-
-    kubernetes-helm
-
-    # TUI for k8s
-    k9s
-
-    kubectl_1_25_4
-
-    # Additional kube switchers in testing
-    kubectx
-    kubie
-
-    # switch - better kubectl context and namespace switching
-    # Seems to be broken though
-    kubeswitch
-
     # data parsing, in testing
     miller
 
-    minikube
-
     obsidian
-
-    openlens
 
     # Installs Python, and the defined packages
     (python311.withPackages python-packages)
@@ -134,6 +108,9 @@ in
       # Syntax highlting and autocompletion for Terraform
       hashicorp.terraform
 
+      # Nix language support for Visual Studio Code.
+      jnoortheen.nix-ide
+
       # Rich Go language support
       golang.go
 
@@ -163,6 +140,13 @@ in
     ]
     # Install other extension from the marketplace that aren't in nixpkgs
     ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+      # AI pair programmer tool that helps you write code faster and smarter.
+      {
+        name = "copilot";
+        publisher = "GitHub";
+        version = "1.243.1194";
+        sha256 = "sha256-QGJOH4qgqtpwHES8tnIJT7XbXyl83Fr0FrM6eSocBS0=";
+      }
       # Material theme
       # {
       #   name = "vsc-material-theme";

@@ -1,0 +1,4 @@
+prompt:
+  disable: true
+behavior:
+  validate_namespaces: partial
