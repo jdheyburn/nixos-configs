@@ -18,8 +18,6 @@
       df = "${pkgs.duf}/bin/duf";
       gpm = "git pull origin $(git_main_branch)";
       h = "history";
-      kc = "kubectx";
-      kn = "kubens";
       ls = "${pkgs.eza}/bin/eza";
       mv = "mv -v";
       nrs = "sudo nixos-rebuild switch";

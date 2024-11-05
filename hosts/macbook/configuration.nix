@@ -52,6 +52,7 @@
   homebrew.enable = true;
   homebrew.brews = [
     "blueutil"
+    "switchaudio-osx"
   ];
   homebrew.casks = [
     "1password"
