@@ -64,6 +64,12 @@
     (builtins.attrNames nodesBase));
 
   servicesBase = {
+    actual = {
+      host = nodes.dee;
+      port = 5006;
+      dns.enable = true;
+    };
+
     adguard = {
       host = nodes.dee;
       port = 3000;
