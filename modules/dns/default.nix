@@ -67,6 +67,7 @@ in
         # Router knows best, i.e. stop returning 127.0.0.1 for DNS calls for self
         "--no-etc-hosts"
       ];
+      mutableSettings = false;
       settings = {
         port = catalog.services.adguard.port;
         users = [{
@@ -75,8 +76,6 @@ in
             "$2a$10$4rSCa07722Xa9G8BXaBTP.HX973a4FiH7HXJ5Go0GIilPuR85KPLi";
         }];
         dns = {
-          # bind_hosts = [ "0.0.0.0" ];
-          bind_host = "0.0.0.0";
           edns_client_subnet.enabled = false;
           upstream_dns = [
             "https://dns10.quad9.net/dns-query"
@@ -84,8 +83,11 @@ in
           ];
           bootstrap_dns =
             [ "9.9.9.10" "149.112.112.10" "2620:fe::10" "2620:fe::fe:10" ];
-          rewrites = rewrites;
           resolve_clients = true;
+        };
+
+        filtering = {
+          rewrites = rewrites;
         };
 
         statistics.interval = "24h";
