@@ -89,6 +89,7 @@ in
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
 
+  modules.actualbudget.enable = true;
   modules.aria2.enable = true;
   modules.backupSF = {
     enable = true;
@@ -99,7 +100,6 @@ in
     healthcheck =
       "https://healthchecks.svc.joannet.casa/ping/2d062a25-b297-45c0-a2b3-cdb188802fb8";
   };
-
   modules.backupUSB = {
     enable = true;
     healthcheckRcloneSmallFiles =
