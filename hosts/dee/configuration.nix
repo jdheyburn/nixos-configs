@@ -1,24 +1,4 @@
-{ argononed, catalog, config, pkgs, lib, ... }:
-let
-
-  backupPaths = with lib;
-    (optional config.services.unifi.enable
-      "/var/lib/unifi/data/backup/autobackup")
-    ++ (optionals config.services.adguardhome.enable [
-      "/var/lib/AdGuardHome/"
-      "/var/lib/private/AdGuardHome"
-    ]) ++ (optionals config.services.plex.enable
-      [ ''"/var/lib/plex/Plex Media Server"'' ]);
-
-  backupExcludePaths = with lib;
-    concatStrings [
-      "--exclude="
-      (concatStringsSep " " (optionals config.services.plex.enable
-        [ ''"/var/lib/plex/Plex Media Server/Cache"'' ]))
-    ];
-
-in
-{
+{ argononed, catalog, config, pkgs, lib, ... }: {
 
   imports = [ ./hardware-configuration.nix "${argononed}/OS/nixos" ];
 
@@ -94,12 +74,11 @@ in
   modules.backupSF = {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
-    paths = backupPaths;
-    extraBackupArgs = [ backupExcludePaths ];
     prune = true;
     healthcheck =
       "https://healthchecks.svc.joannet.casa/ping/2d062a25-b297-45c0-a2b3-cdb188802fb8";
   };
+
   modules.backupUSB = {
     enable = true;
     healthcheckRcloneSmallFiles =

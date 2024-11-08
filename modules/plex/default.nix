@@ -5,9 +5,18 @@ with lib;
 let cfg = config.modules.plex;
 in {
 
-  options.modules.plex = { enable = mkEnableOption "Deploy plex"; };
+  options.modules.plex = {
+    enable = mkEnableOption "Deploy plex";
+  };
 
   config = mkIf cfg.enable {
+
+    services.restic.backups.small-files = {
+      paths = [
+        config.services.plex.dataDir
+      ];
+      exclude = [ "/var/lib/plex/Plex Media Server/Cache" ];
+    };
 
     services.caddy.virtualHosts."plex.svc.joannet.casa".extraConfig = ''
       tls {

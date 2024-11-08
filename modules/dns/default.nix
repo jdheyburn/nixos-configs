@@ -102,6 +102,13 @@ in
       };
     };
 
+    services.restic.backups.small-files = {
+      paths = [
+        "/var/lib/AdGuardHome/"
+        "/var/lib/private/AdGuardHome"
+      ];
+    };
+
     # TODO change to prometheus when it is added there
     #services.adguard-exporter = {
     #  enable = false;

@@ -1,13 +1,4 @@
-{ config, lib, pkgs, ... }:
-let
-
-  backupPaths = with lib;
-    (optional config.services.grafana.enable "/var/lib/grafana/data")
-    ++ (optional config.services.prometheus.enable "/var/lib/prometheus2/data")
-    ++ (optional config.services.loki.enable "/var/lib/loki");
-
-in
-{
+{ config, lib, pkgs, ... }: {
 
   imports = [ ./hardware-configuration.nix ];
 
@@ -53,7 +44,6 @@ in
   modules.backupSF = {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
-    paths = backupPaths;
     healthcheck =
       "https://healthchecks.svc.joannet.casa/ping/b4f0796c-b0c6-48d3-926e-2f7fdebc4e1b";
   };
