@@ -62,8 +62,6 @@ in
       services.restic.backups.small-files = {
         repository = cfg.repository;
         passwordFile = cfg.passwordFile;
-        paths = cfg.paths;
-        extraBackupArgs = cfg.extraBackupArgs;
         timerConfig = { OnCalendar = cfg.backupTime; };
       };
     }
