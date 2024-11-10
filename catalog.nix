@@ -143,6 +143,12 @@
       dns.enable = true;
     };
 
+    paperless = {
+      host = nodes.charlie;
+      port = 28981;
+      dns.enable = false;
+    };
+
     portainer = {
       host = nodes.frank;
       port = 9000;
