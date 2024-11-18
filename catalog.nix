@@ -34,6 +34,12 @@
       shouldScrape = false;
     };
 
+    mac = {
+      ip.private = "";
+      system = "x86_64-linux";
+      users = [ users.jdheyburn ];
+    };
+
     macbook = {
       ip.private = "192.168.1.26";
       # Could either be Apple Silicon or Intel arch
