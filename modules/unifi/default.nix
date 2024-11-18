@@ -57,12 +57,13 @@ in {
       # };
     };
 
-    services.restic.backups.small-files = {
-      # WorkingDirectory translates to the stateDir
-      # https://github.com/NixOS/nixpkgs/blob/7eee17a8a5868ecf596bbb8c8beb527253ea8f4d/nixos/modules/services/networking/unifi.nix#L4
-      paths = [
-        "${config.systemd.services.unifi.serviceConfig.WorkingDirectory}/data/backup/autobackup"
-      ];
-    };
+    # TODO this causes a recusive loop
+    #services.restic.backups.small-files = {
+    #  # WorkingDirectory translates to the stateDir
+    #  # https://github.com/NixOS/nixpkgs/blob/7eee17a8a5868ecf596bbb8c8beb527253ea8f4d/nixos/modules/services/networking/unifi.nix#L4
+    #  paths = [
+    #    "${config.systemd.services.unifi.serviceConfig.WorkingDirectory}/data/backup/autobackup"
+    #  ];
+    #};
   };
 }
