@@ -16,6 +16,7 @@ in
   programs.ssh = {
     enable = true;
     matchBlocks = {
+      # TODO be dynamic 
       charlie = {
         extraOptions = tmuxSettings;
       };
@@ -33,6 +34,12 @@ in
       };
       dennis-no-tmux = {
         hostname = "dennis";
+      };
+      mac = {
+        extraOptions = tmuxSettings;
+      };
+      mac-no-tmux = {
+        hostname = "mac";
       };
       "gitlab.com" = {
         user = "git";
