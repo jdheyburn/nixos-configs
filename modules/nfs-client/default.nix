@@ -12,7 +12,11 @@ in {
     fileSystems."/mnt/nfs" = {
       device = "dee:/mnt/nfs";
       fsType = "nfs";
-      options = [ "x-systemd.requires=tailscaled" ];
+      options = [
+        "x-systemd.automount"
+        "x-systemd.requires=tailscaled.service"
+        "x-systemd.before=tailscaled.service"
+      ];
     };
 
     #systemd.services.nfs-mountd.requires = [ "tailscale-online.target" ];
