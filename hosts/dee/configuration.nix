@@ -69,7 +69,7 @@
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
 
-  modules.actualbudget.enable = true;
+  modules.actualbudget.enable = false;
   modules.aria2.enable = true;
   modules.backupSF = {
     enable = true;
@@ -95,8 +95,9 @@
   modules.monitoring.enable = true;
   modules.mopidy.enable = false;
   modules.navidrome.enable = false;
-  modules.nfs.enable = true;
+  modules.nfs-server.enable = true;
   modules.plex.enable = true;
+  modules.unifi.enable = true;
 
   services.prometheus.exporters.zfs.enable = true;
 

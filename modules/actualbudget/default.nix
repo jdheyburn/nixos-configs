@@ -11,7 +11,7 @@ let
 in
 {
   imports = [ ../../pkgs/actual.nix ];
-  options.modules.actualbudget= { enable = mkEnableOption "enable actual budget"; };
+  options.modules.actualbudget = { enable = mkEnableOption "enable actual budget"; };
 
   config = mkIf cfg.enable {
 

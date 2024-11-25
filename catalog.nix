@@ -208,7 +208,7 @@
     };
 
     unifi = {
-      host = nodes.dennis;
+      host = nodes.dee;
       port = 8443;
       dashy.section = "networks";
       dashy.description = "UniFi controller";

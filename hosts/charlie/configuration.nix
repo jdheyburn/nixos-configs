@@ -26,6 +26,7 @@
   ###############################################################################
 
   modules.monitoring.enable = true;
+  modules.nfs-client.enable = true;
 
   environment.systemPackages = [
     pkgs.ffmpeg
@@ -38,7 +39,7 @@
 
   programs.nix-ld.enable = true;
 
-  services.jellyfin.enable = true;
+  services.jellyfin.enable = false;
   services.jellyfin.user = "jdheyburn";
   services.jellyfin.group = "users";
 
