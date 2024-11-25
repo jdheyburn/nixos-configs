@@ -2,8 +2,11 @@
 
 with lib;
 
-let cfg = config.modules.unifi;
-in {
+let
+
+  cfg = config.modules.unifi;
+in
+{
 
   options.modules.unifi = {
     enable = mkEnableOption "Deploy unifi controller";
@@ -34,8 +37,8 @@ in {
 
     services.unifi = {
       enable = true;
-      unifiPackage = pkgs.unifi7;
-      maximumJavaHeapSize = 256;
+      unifiPackage = pkgs.unifi8;
+      mongodbPackage = pkgs.mongodb-7_0;
       openFirewall = true;
     };
 
@@ -57,13 +60,12 @@ in {
       # };
     };
 
-    # TODO this causes a recusive loop
-    #services.restic.backups.small-files = {
-    #  # WorkingDirectory translates to the stateDir
-    #  # https://github.com/NixOS/nixpkgs/blob/7eee17a8a5868ecf596bbb8c8beb527253ea8f4d/nixos/modules/services/networking/unifi.nix#L4
-    #  paths = [
-    #    "${config.systemd.services.unifi.serviceConfig.WorkingDirectory}/data/backup/autobackup"
-    #  ];
-    #};
+    services.restic.backups.small-files = {
+      # WorkingDirectory translates to the stateDir
+      # https://github.com/NixOS/nixpkgs/blob/7eee17a8a5868ecf596bbb8c8beb527253ea8f4d/nixos/modules/services/networking/unifi.nix#L4
+      paths = [
+        "/var/lib/unifi/data/backup/autobackup"
+      ];
+    };
   };
 }

@@ -86,10 +86,10 @@ in {
 
     # Backups
     services.restic.backups.small-files = {
-      paths = (lib.optionals config.services.grafana.enable ["${config.services.grafana.dataDir}/data"]) ++
-        (lib.optionals config.services.prometheus.enable ["${config.systemd.services.prometheus.serviceConfig.WorkingDirectory}/data"]) ++
-        (lib.optionals config.services.loki.enable [config.services.loki.dataDir]) ++
-        (lib.optionals config.services.victoriametrics.enable ["/var/lib/victoriametrics"]);
+      paths = (lib.optionals config.services.grafana.enable [ "${config.services.grafana.dataDir}/data" ]) ++
+        (lib.optionals config.services.prometheus.enable [ "${config.systemd.services.prometheus.serviceConfig.WorkingDirectory}/data" ]) ++
+        (lib.optionals config.services.loki.enable [ config.services.loki.dataDir ]) ++
+        (lib.optionals config.services.victoriametrics.enable [ "/var/lib/victoriametrics" ]);
     };
   };
 }

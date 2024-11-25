@@ -17,8 +17,14 @@
 
 
   boot.loader.grub.enable = true;
-   boot.loader.grub.device = "/dev/sda";
-  ## Emulate building for aarch64 (Raspberry Pi)
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+  boot.loader.grub.device = "/dev/sda";
+
+
+  ###############################################################################
+  ## Modules
+  ###############################################################################
+
+  modules.remote-builder.enable = true;
 
 }
+
