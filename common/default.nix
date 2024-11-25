@@ -48,6 +48,8 @@
     programs.ssh.startAgent = true;
 
     services.tailscale.enable = true;
+    # Below used as a test to see if I could get NFS clients to mount over tailscale
+    # It wasn't needed in the end but keeping it in case I do down the line
     systemd.timers."tailscale-dispatcher" = {
       bindsTo = [ "tailscaled.service" ];
       after = [ "tailscaled.service" ];
@@ -58,7 +60,6 @@
         AccuracySec = "1";
       };
     };
-
     systemd.services."tailscale-dispatcher" = {
       requisite = [ "tailscaled.service" ];
       after = [ "tailscaled.service" ];
