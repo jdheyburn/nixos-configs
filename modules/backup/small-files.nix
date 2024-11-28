@@ -4,7 +4,7 @@ with lib;
 
 let
 
-  cfg = config.modules.backupSF;
+  cfg = config.modules.backup.small-files;
 
   healthcheckAfter =
     if cfg.prune then
@@ -15,20 +15,16 @@ let
 in
 {
 
-  options.modules.backupSF = {
+  options.modules.backup.small-files = {
     enable =
       mkEnableOption "Enable backup of defined paths to small-files repo";
 
     repository = mkOption {
       type = types.str;
-      default = "/mnt/nfs/restic/small-files";
+      default = "rclone:b2:iifu8Noi-backups/restic/small-files";
     };
 
     passwordFile = mkOption { type = types.path; };
-
-    # TODO discover what paths to backup depending on what services are running on the box
-    # then change this to allow extraPaths
-    paths = mkOption { type = types.listOf types.str; };
 
     extraBackupArgs = mkOption {
       type = types.listOf types.str;

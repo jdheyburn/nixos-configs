@@ -4,7 +4,7 @@ with lib;
 
 let
 
-  cfg = config.modules.backupUSB;
+  cfg = config.modules.backup.usb;
 
   # TODO refactor into function
   healthcheckRcloneMediaStartScript =
@@ -34,7 +34,7 @@ let
 in
 {
 
-  options.modules.backupUSB = {
+  options.modules.backup.usb = {
     enable = mkEnableOption "Enable backup of media and rclone to cloud";
     healthcheckResticMedia = mkOption {
       type = types.str;
@@ -109,8 +109,9 @@ in
         '';
       };
 
+      # small-files backups are made directly to B2, so this does not need run
       systemd.services.rclone-small-files = {
-        enable = true;
+        enable = false;
         wantedBy = [ "restic-backups-small-files-prune.service" ];
         after = [ "restic-backups-small-files-prune.service" ];
         environment = {

@@ -71,7 +71,7 @@
 
   modules.actualbudget.enable = false;
   modules.aria2.enable = true;
-  modules.backupSF = {
+  modules.backup.small-files = {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     prune = true;
@@ -79,7 +79,7 @@
       "https://healthchecks.svc.joannet.casa/ping/2d062a25-b297-45c0-a2b3-cdb188802fb8";
   };
 
-  modules.backupUSB = {
+  modules.backup.usb = {
     enable = true;
     healthcheckRcloneSmallFiles =
       "https://healthchecks.svc.joannet.casa/ping/09a44191-9fa2-4664-8f8b-2ef244f8576f";
