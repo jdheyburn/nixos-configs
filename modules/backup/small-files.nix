@@ -25,6 +25,8 @@ in
     };
 
     passwordFile = mkOption { type = types.path; };
+    
+    rcloneConfigFile = mkOption { type = types.path; };
 
     extraBackupArgs = mkOption {
       type = types.listOf types.str;
@@ -57,6 +59,7 @@ in
     {
       services.restic.backups.small-files = {
         repository = cfg.repository;
+        rcloneConfigFile = cfg.rcloneConfigFile;
         passwordFile = cfg.passwordFile;
         timerConfig = { OnCalendar = cfg.backupTime; };
       };
@@ -65,6 +68,7 @@ in
     (mkIf cfg.prune {
       services.restic.backups.small-files-prune = {
         repository = cfg.repository;
+        rcloneConfigFile = cfg.rcloneConfigFile;
         passwordFile = cfg.passwordFile;
         pruneOpts = [
           "--keep-daily 7"
