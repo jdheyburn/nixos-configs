@@ -25,7 +25,7 @@ in
     };
 
     passwordFile = mkOption { type = types.path; };
-    
+
     rcloneConfigFile = mkOption { type = types.path; };
 
     extraBackupArgs = mkOption {

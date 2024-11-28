@@ -6,55 +6,44 @@ let
 
   cfg = config.modules.backup.usb;
 
-  # TODO refactor into function
-  healthcheckRcloneMediaStartScript =
-    optionalString (cfg.healthcheckRcloneMedia != "") ''
-      echo "sending start healthcheck to ${cfg.healthcheckRcloneMedia}/start"
-      ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneMedia}/start
-    '';
+  healthcheckRcloneSmallFiles = "https://healthchecks.svc.joannet.casa/ping/09a44191-9fa2-4664-8f8b-2ef244f8576f";
 
-  healthcheckRcloneMediaFinishScript =
-    optionalString (cfg.healthcheckRcloneMedia != "") ''
-      echo "sending finish healthcheck to ${cfg.healthcheckRcloneMedia}"
-      ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneMedia}
-    '';
+  healthcheckRcloneMedia =
+    "https://healthchecks.svc.joannet.casa/ping/8f0ec51d-39b8-4853-8f7a-6076eb3ec60d";
 
-  healthcheckRcloneSmallFilesStartScript =
-    optionalString (cfg.healthcheckRcloneSmallFiles != "") ''
-      echo "sending start healthcheck to ${cfg.healthcheckRcloneSmallFiles}/start"
-      ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneSmallFiles}/start
-    '';
+  healthcheckResticMedia =
+    "https://healthchecks.svc.joannet.casa/ping/ddc2053b-0b28-48ad-9044-ecdcc79446d9";
 
-  healthcheckRcloneSmallFilesFinishScript =
-    optionalString (cfg.healthcheckRcloneSmallFiles != "") ''
-      echo "sending finish healthcheck to ${cfg.healthcheckRcloneSmallFiles}"
-      ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneSmallFiles}
-    '';
+  healthcheckRcloneMediaStartScript = ''
+    echo "sending start healthcheck to ${healthcheckRcloneMedia}/start"
+    ${pkgs.curl}/bin/curl -v ${healthcheckRcloneMedia}/start
+  '';
+
+  healthcheckRcloneMediaFinishScript = ''
+    echo "sending finish healthcheck to ${healthcheckRcloneMedia}"
+    ${pkgs.curl}/bin/curl -v ${healthcheckRcloneMedia}
+  '';
+
+  # TODO remove this if no longer used
+  healthcheckRcloneSmallFilesStartScript = ''
+    echo "sending start healthcheck to ${healthcheckRcloneSmallFiles}/start"
+    ${pkgs.curl}/bin/curl -v ${healthcheckRcloneSmallFiles}/start
+  '';
+
+  healthcheckRcloneSmallFilesFinishScript = ''
+    echo "sending finish healthcheck to ${cfg.healthcheckRcloneSmallFiles}"
+    ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneSmallFiles}
+  '';
 
 in
 {
 
   options.modules.backup.usb = {
     enable = mkEnableOption "Enable backup of media and rclone to cloud";
-    healthcheckResticMedia = mkOption {
-      type = types.str;
-      default = "";
-    };
-    healthcheckRcloneMedia = mkOption {
-      type = types.str;
-      default = "";
-    };
-    healthcheckRcloneSmallFiles = mkOption {
-      type = types.str;
-      default = "";
-    };
   };
 
-  config = mkIf cfg.enable (mkMerge [
+  config = mkIf cfg.enable
     {
-
-      age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
-
       age.secrets."restic-media-password".file =
         ../../secrets/restic-media-password.age;
 
@@ -74,11 +63,13 @@ in
           "/mnt/usb/Backup/media/vinyl"
         ];
         timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
+        backupCleanupCommand = ''
+          ${pkgs.curl}/bin/curl ${healthcheckResticMedia}
+        '';
       };
 
       systemd.services.rclone-media = {
         enable = true;
-        # TODO can I refer to this from output of services.restic.backups.media ?
         wantedBy = [ "restic-backups-media.service" ];
         after = [ "restic-backups-media.service" ];
         environment = {
@@ -110,6 +101,7 @@ in
       };
 
       # small-files backups are made directly to B2, so this does not need run
+      # TODO delete after some time if not needed
       systemd.services.rclone-small-files = {
         enable = false;
         wantedBy = [ "restic-backups-small-files-prune.service" ];
@@ -126,11 +118,11 @@ in
           ${healthcheckRcloneSmallFilesFinishScript}
         '';
       };
-    }
 
-    (mkIf (cfg.healthcheckResticMedia != "") {
+      #  Disabled as it should now be satisfied with backupCleanupCommand on the backup job
+      # TODO delete if not needed
       systemd.services.restic-backups-media-healthcheck = {
-        enable = true;
+        enable = false;
         wantedBy = [ "restic-backups-media.service" ];
         after = [ "restic-backups-media.service" ];
         environment = { HEALTHCHECK_ENDPOINT = cfg.healthcheckResticMedia; };
@@ -139,6 +131,6 @@ in
           ${pkgs.curl}/bin/curl -v $HEALTHCHECK_ENDPOINT
         '';
       };
-    })
-  ]);
+
+    }
 }
