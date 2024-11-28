@@ -69,10 +69,13 @@
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
 
+  age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
+
   modules.actualbudget.enable = false;
   modules.aria2.enable = true;
   modules.backup.small-files = {
     enable = true;
+    rcloneConfigFile = config.age.secrets."rclone.conf".file;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     prune = true;
     healthcheck =
