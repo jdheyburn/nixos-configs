@@ -75,7 +75,7 @@
   modules.aria2.enable = true;
   modules.backup.small-files = {
     enable = true;
-    rcloneConfigFile = config.age.secrets."rclone.conf".file;
+    rcloneConfigFile = config.age.secrets."rclone.conf".path;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     prune = true;
     healthcheck =
