@@ -6,12 +6,6 @@ let
 
   cfg = config.modules.backup.small-files;
 
-  healthcheckAfter =
-    if cfg.prune then
-      "restic-backups-small-files-prune.service"
-    else
-      "restic-backups-small-files.service";
-
 in
 {
 
@@ -62,6 +56,9 @@ in
         rcloneConfigFile = cfg.rcloneConfigFile;
         passwordFile = cfg.passwordFile;
         timerConfig = { OnCalendar = cfg.backupTime; };
+        backupCleanupCommand = ''
+          ${pkgs.curl}/bin/curl ${cfg.healthcheck}
+        '';
       };
     }
 
@@ -77,18 +74,9 @@ in
           "--keep-yearly 3"
         ];
         timerConfig = { OnCalendar = cfg.pruneTime; };
-      };
-    })
-
-    (mkIf (cfg.healthcheck != "") {
-      systemd.services.restic-backups-small-files-healthcheck = {
-        enable = true;
-        wantedBy = [ healthcheckAfter ];
-        after = [ healthcheckAfter ];
-        environment = { HEALTHCHECK_ENDPOINT = cfg.healthcheck; };
-        script = ''
-          echo "sending healthcheck to $HEALTHCHECK_ENDPOINT"
-          ${pkgs.curl}/bin/curl -v $HEALTHCHECK_ENDPOINT
+        # Prune would only be executed on one host, so it has a static healthcheck
+        backupCleanupCommand = ''
+          ${pkgs.curl}/bin/curl https://healthchecks.svc.joannet.casa/ping/fea7ebdd-b6dc-4eb5-b577-39aff3966ad4
         '';
       };
     })
