@@ -31,8 +31,8 @@ let
   '';
 
   healthcheckRcloneSmallFilesFinishScript = ''
-    echo "sending finish healthcheck to ${cfg.healthcheckRcloneSmallFiles}"
-    ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneSmallFiles}
+    echo "sending finish healthcheck to ${healthcheckRcloneSmallFiles}"
+    ${pkgs.curl}/bin/curl -v ${healthcheckRcloneSmallFiles}
   '';
 
 in
