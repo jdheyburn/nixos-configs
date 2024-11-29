@@ -6,34 +6,8 @@ let
 
   cfg = config.modules.backup.usb;
 
-  healthcheckRcloneSmallFiles = "https://healthchecks.svc.joannet.casa/ping/09a44191-9fa2-4664-8f8b-2ef244f8576f";
-
   healthcheckRcloneMedia =
     "https://healthchecks.svc.joannet.casa/ping/8f0ec51d-39b8-4853-8f7a-6076eb3ec60d";
-
-  healthcheckResticMedia =
-    "https://healthchecks.svc.joannet.casa/ping/ddc2053b-0b28-48ad-9044-ecdcc79446d9";
-
-  healthcheckRcloneMediaStartScript = ''
-    echo "sending start healthcheck to ${healthcheckRcloneMedia}/start"
-    ${pkgs.curl}/bin/curl -v ${healthcheckRcloneMedia}/start
-  '';
-
-  healthcheckRcloneMediaFinishScript = ''
-    echo "sending finish healthcheck to ${healthcheckRcloneMedia}"
-    ${pkgs.curl}/bin/curl -v ${healthcheckRcloneMedia}
-  '';
-
-  # TODO remove this if no longer used
-  healthcheckRcloneSmallFilesStartScript = ''
-    echo "sending start healthcheck to ${healthcheckRcloneSmallFiles}/start"
-    ${pkgs.curl}/bin/curl -v ${healthcheckRcloneSmallFiles}/start
-  '';
-
-  healthcheckRcloneSmallFilesFinishScript = ''
-    echo "sending finish healthcheck to ${healthcheckRcloneSmallFiles}"
-    ${pkgs.curl}/bin/curl -v ${healthcheckRcloneSmallFiles}
-  '';
 
 in
 {
@@ -64,7 +38,7 @@ in
         ];
         timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
         backupCleanupCommand = ''
-          ${pkgs.curl}/bin/curl ${healthcheckResticMedia}
+          ${pkgs.curl}/bin/curl https://healthchecks.svc.joannet.casa/ping/ddc2053b-0b28-48ad-9044-ecdcc79446d9
         '';
       };
 
@@ -76,7 +50,7 @@ in
           RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
         };
         script = ''
-          ${healthcheckRcloneMediaStartScript}
+          ${pkgs.curl}/bin/curl -v ${healthcheckRcloneMedia}/start
 
           echo "rcloning beets-db -> gdrive:media/beets-db"
           ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/media/beets-db gdrive:media/beets-db --config=$RCLONE_CONF_PATH
@@ -96,41 +70,8 @@ in
           echo "rcloning minio -> b2:minio"
           ${pkgs.rclone}/bin/rclone -v sync minio: b2:iifu8Noi-backups/minio --config=$RCLONE_CONF_PATH
 
-          ${healthcheckRcloneMediaFinishScript}
+          ${pkgs.curl}/bin/curl -v ${healthcheckRcloneMedia}
         '';
       };
-
-      # small-files backups are made directly to B2, so this does not need run
-      # TODO delete after some time if not needed
-      systemd.services.rclone-small-files = {
-        enable = false;
-        wantedBy = [ "restic-backups-small-files-prune.service" ];
-        after = [ "restic-backups-small-files-prune.service" ];
-        environment = {
-          RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
-        };
-        script = ''
-          ${healthcheckRcloneSmallFilesStartScript}
-
-          echo "rclone restic/small-files -> b2:restic/small-files"
-          ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=$RCLONE_CONF_PATH
-
-          ${healthcheckRcloneSmallFilesFinishScript}
-        '';
-      };
-
-      #  Disabled as it should now be satisfied with backupCleanupCommand on the backup job
-      # TODO delete if not needed
-      systemd.services.restic-backups-media-healthcheck = {
-        enable = false;
-        wantedBy = [ "restic-backups-media.service" ];
-        after = [ "restic-backups-media.service" ];
-        environment = { HEALTHCHECK_ENDPOINT = cfg.healthcheckResticMedia; };
-        script = ''
-          echo "sending healthcheck to $HEALTHCHECK_ENDPOINT"
-          ${pkgs.curl}/bin/curl -v $HEALTHCHECK_ENDPOINT
-        '';
-      };
-
     };
 }
