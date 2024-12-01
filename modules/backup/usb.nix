@@ -6,6 +6,8 @@ let
 
   cfg = config.modules.backup.usb;
 
+  healthcheckResticMedia = "https://healthchecks.svc.joannet.casa/ping/ddc2053b-0b28-48ad-9044-ecdcc79446d9";
+
   healthcheckRcloneMedia =
     "https://healthchecks.svc.joannet.casa/ping/8f0ec51d-39b8-4853-8f7a-6076eb3ec60d";
 
@@ -26,9 +28,9 @@ in
         passwordFile = config.age.secrets."restic-media-password".path;
         pruneOpts = [
           "--keep-daily 30"
-          "--keep-weekly 0"
-          "--keep-monthly 0"
-          "--keep-yearly 0"
+          "--keep-weekly 5"
+          "--keep-monthly 12"
+          "--keep-yearly 3"
         ];
         paths = [
           "/mnt/usb/Backup/media/beets-db"
@@ -37,11 +39,11 @@ in
           "/mnt/usb/Backup/media/vinyl"
         ];
         timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
-        backupCleanupCommand = ''
-          ${pkgs.curl}/bin/curl https://healthchecks.svc.joannet.casa/ping/ddc2053b-0b28-48ad-9044-ecdcc79446d9
-        '';
+        backupPrepareCommand = "${pkgs.curl}/bin/curl ${healthcheckResticMedia}/start";
+        backupCleanupCommand = "${pkgs.curl}/bin/curl ${healthcheckResticMedia}";
       };
 
+      # Once media has been backed up, rsync to cloud storage
       systemd.services.rclone-media = {
         enable = true;
         wantedBy = [ "restic-backups-media.service" ];
@@ -50,7 +52,7 @@ in
           RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
         };
         script = ''
-          ${pkgs.curl}/bin/curl -v ${healthcheckRcloneMedia}/start
+          ${pkgs.curl}/bin/curl ${healthcheckRcloneMedia}/start
 
           echo "rcloning beets-db -> gdrive:media/beets-db"
           ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/media/beets-db gdrive:media/beets-db --config=$RCLONE_CONF_PATH
@@ -70,7 +72,7 @@ in
           echo "rcloning minio -> b2:minio"
           ${pkgs.rclone}/bin/rclone -v sync minio: b2:iifu8Noi-backups/minio --config=$RCLONE_CONF_PATH
 
-          ${pkgs.curl}/bin/curl -v ${healthcheckRcloneMedia}
+          ${pkgs.curl}/bin/curl ${healthcheckRcloneMedia}
         '';
       };
     };

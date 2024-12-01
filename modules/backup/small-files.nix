@@ -6,6 +6,8 @@ let
 
   cfg = config.modules.backup.small-files;
 
+  # Prune would only be executed on one host, so it has a static healthcheck
+  healthcheckPrune = "https://healthchecks.svc.joannet.casa/ping/fea7ebdd-b6dc-4eb5-b577-39aff3966ad4";
 in
 {
 
@@ -39,7 +41,7 @@ in
 
     pruneTime = mkOption {
       type = types.str;
-      default = "*-*-* 02:30:00";
+      default = "Tue *-*-* 02:30:00";
     };
 
     healthcheck = mkOption {
@@ -56,9 +58,8 @@ in
         rcloneConfigFile = cfg.rcloneConfigFile;
         passwordFile = cfg.passwordFile;
         timerConfig = { OnCalendar = cfg.backupTime; };
-        backupCleanupCommand = ''
-          ${pkgs.curl}/bin/curl ${cfg.healthcheck}
-        '';
+        backupPrepareCommand = "${pkgs.curl}/bin/curl ${cfg.healthcheck}/start";
+        backupCleanupCommand = "${pkgs.curl}/bin/curl ${cfg.healthcheck}";
       };
     }
 
@@ -74,10 +75,8 @@ in
           "--keep-yearly 3"
         ];
         timerConfig = { OnCalendar = cfg.pruneTime; };
-        # Prune would only be executed on one host, so it has a static healthcheck
-        backupCleanupCommand = ''
-          ${pkgs.curl}/bin/curl https://healthchecks.svc.joannet.casa/ping/fea7ebdd-b6dc-4eb5-b577-39aff3966ad4
-        '';
+        backupPrepareCommand = "${pkgs.curl}/bin/curl ${healthcheckPrune}/start";
+        backupCleanupCommand = "${pkgs.curl}/bin/curl ${healthcheckPrune}";
       };
     })
   ]);
