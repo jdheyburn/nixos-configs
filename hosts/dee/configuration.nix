@@ -68,26 +68,21 @@
 
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
+  age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
 
   modules.actualbudget.enable = false;
   modules.aria2.enable = true;
-  modules.backupSF = {
+  modules.backup.small-files = {
     enable = true;
+    rcloneConfigFile = config.age.secrets."rclone.conf".path;
     passwordFile = config.age.secrets."restic-small-files-password".path;
-    prune = true;
     healthcheck =
       "https://healthchecks.svc.joannet.casa/ping/2d062a25-b297-45c0-a2b3-cdb188802fb8";
+    # Prune should only be executed on one host
+    prune = true;
   };
 
-  modules.backupUSB = {
-    enable = true;
-    healthcheckRcloneSmallFiles =
-      "https://healthchecks.svc.joannet.casa/ping/09a44191-9fa2-4664-8f8b-2ef244f8576f";
-    healthcheckRcloneMedia =
-      "https://healthchecks.svc.joannet.casa/ping/8f0ec51d-39b8-4853-8f7a-6076eb3ec60d";
-    healthcheckResticMedia =
-      "https://healthchecks.svc.joannet.casa/ping/ddc2053b-0b28-48ad-9044-ecdcc79446d9";
-  };
+  modules.backup.usb.enable = true;
   modules.caddy.enable = true;
   modules.dns.enable = true;
   modules.healthchecks.enable = true;
