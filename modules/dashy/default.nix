@@ -3,7 +3,7 @@
 with lib;
 
 let
-  version = "3.1.1";
+  version = "release-3.1.1";
 
   cfg = config.modules.dashy;
 
@@ -98,18 +98,19 @@ in
   options.modules.dashy = { enable = mkEnableOption "enable dashy"; };
 
   config = mkIf cfg.enable {
-
     services.caddy.virtualHosts."home.svc.joannet.casa".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        # Below required to get TLS to work on non-local hosts (i.e. charlie)
+        resolvers 8.8.8.8
       }
       reverse_proxy localhost:${toString catalog.services.home.port}
     '';
 
     virtualisation.oci-containers.containers.dashy = {
       image = "lissy93/dashy:${version}";
-      volumes = [ "${configFile}:/app/public/conf.yml" ];
-      ports = [ "${toString catalog.services.home.port}:80" ];
+      volumes = [ "${configFile}:/app/user-data/conf.yml" ];
+      ports = [ "${toString catalog.services.home.port}:8080" ];
     };
   };
 }

@@ -16,7 +16,7 @@ let
   service_rewrites = map
     (service: {
       domain = "${service.name}.svc.joannet.casa";
-      answer = service.host.ip.private;
+      answer = if service.host.ip ? "private" then service.host.ip.private else service.host.ip.tailscale;
     })
     caddy_services;
   # Add rewrites for any node that has a domain

@@ -102,7 +102,7 @@
     };
 
     home = {
-      host = nodes.dennis;
+      host = nodes.charlie;
       port = 4000;
       blackbox.name = "dashy";
       dns.enable = true;

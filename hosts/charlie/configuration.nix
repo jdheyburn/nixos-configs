@@ -25,6 +25,7 @@
   ## Modules
   ###############################################################################
 
+  modules.dashy.enable = true;
   modules.monitoring.enable = true;
   modules.nfs-client.enable = true;
 
