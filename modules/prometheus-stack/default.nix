@@ -15,20 +15,12 @@ in {
   imports = [
     ./blackbox-exporter.nix
     ./grafana.nix
+    ./loki.nix
   ];
 
   config = mkIf cfg.enable {
 
     services.caddy.virtualHosts = {
-      "loki.svc.joannet.casa".extraConfig = ''
-        tls {
-          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-          # Below required to get TLS to work on non-local hosts (i.e. charlie)
-          resolvers 8.8.8.8
-        }
-        reverse_proxy localhost:${toString catalog.services.loki.port}
-      '';
-
       "victoriametrics.svc.joannet.casa" = mkIf cfg.victoriametrics.enable {
         extraConfig = ''
           tls {
@@ -57,7 +49,7 @@ in {
     };
 
     # services.grafana = import ./grafana.nix { inherit catalog config pkgs; };
-    services.loki = import ./loki.nix { inherit catalog pkgs; };
+    # services.loki = import ./loki.nix { inherit catalog pkgs; };
     services.prometheus =
       import ./prometheus.nix { inherit catalog config pkgs lib; };
     services.thanos = import ./thanos.nix { inherit catalog config pkgs; };

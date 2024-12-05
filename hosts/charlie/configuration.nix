@@ -41,10 +41,14 @@
   modules.dashy.enable = true;
   modules.monitoring.enable = true;
   modules.nfs-client.enable = true;
-  modules.prometheusStack.enable = true;
-  modules.prometheusStack.blackbox.enable = true;
-  modules.prometheusStack.grafana.enable = true;
-  modules.prometheusStack.victoriametrics.enable = true;
+  modules.prometheusStack = {
+    enable = true;
+    blackbox.enable = true;
+    grafana.enable = true;
+    # TODO enable loki
+    loki.enable = false;
+    victoriametrics.enable = true;
+  };
   modules.remote-builder.enable = true;
 
   environment.systemPackages = [
