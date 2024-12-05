@@ -14,21 +14,12 @@ in {
 
   imports = [
     ./blackbox-exporter.nix
+    ./grafana.nix
   ];
 
   config = mkIf cfg.enable {
 
-
     services.caddy.virtualHosts = {
-      "grafana.svc.joannet.casa".extraConfig = ''
-        tls {
-          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-          # Below required to get TLS to work on non-local hosts (i.e. charlie)
-          resolvers 8.8.8.8
-        }
-        reverse_proxy localhost:${toString catalog.services.grafana.port}
-      '';
-
       "loki.svc.joannet.casa".extraConfig = ''
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
@@ -57,17 +48,6 @@ in {
       config.services.prometheus.port
     ];
 
-    age.secrets."grafana-admin-password" = {
-      file = ../../secrets/grafana-admin-password.age;
-      owner = "grafana";
-      group = "grafana";
-    };
-    age.secrets."smtp-password" = {
-      file = ../../secrets/smtp-password.age;
-      owner = "grafana";
-      group = "grafana";
-    };
-
     age.secrets."thanos-objstore-config" = {
       file = ../../secrets/thanos-objstore-config.age;
       # TODO thanos-store systemd runs as DynamicUser
@@ -76,27 +56,13 @@ in {
       mode = "0444";
     };
 
-    services.grafana = import ./grafana.nix { inherit catalog config pkgs; };
+    # services.grafana = import ./grafana.nix { inherit catalog config pkgs; };
     services.loki = import ./loki.nix { inherit catalog pkgs; };
     services.prometheus =
       import ./prometheus.nix { inherit catalog config pkgs lib; };
     services.thanos = import ./thanos.nix { inherit catalog config pkgs; };
     services.victoriametrics =
       import ./victoria-metrics.nix { inherit catalog config pkgs lib; };
-
-    # Since upgrading Grafana to 9.4 there are panics that occur at 00:11 UTC
-    # Adding some retry logic on failure
-    systemd.services.grafana = {
-      serviceConfig = {
-        Restart = "on-failure";
-        RestartSec = "10s";
-      };
-
-      unitConfig = {
-        StartLimitIntervalSec = "500";
-        StartLimitBurst = "5";
-      };
-    };
 
     systemd.services.victoriametrics.serviceConfig.TimeoutStartSec = "5m";
 
