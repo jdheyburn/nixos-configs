@@ -120,6 +120,6 @@ in
       # services.restic.backups.small-files = {
       #   paths = [ dataDir ];
       # };
-    }
+    };
 
 }

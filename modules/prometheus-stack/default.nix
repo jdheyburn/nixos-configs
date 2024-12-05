@@ -36,7 +36,7 @@ in {
     networking.firewall.allowedTCPPorts = [
       # TODO are all these still required after being fronted by local reverse proxy?
       config.services.grafana.settings.server.http_port
-      config.services.loki.configuration.server.http_listen_port
+      #  config.services.loki.configuration.server.http_listen_port
       config.services.prometheus.port
     ];
 

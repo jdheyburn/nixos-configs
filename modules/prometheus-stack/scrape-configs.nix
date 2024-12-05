@@ -195,16 +195,16 @@ in
   #   params.module = [ "default" ];
   #   static_configs = [{ targets = [ "pve0.joannet.casa:9221" ]; }];
   # }
-  {
-    job_name = "loki";
-    static_configs = [{
-      targets = [
-        "localhost:${
-          toString config.services.loki.configuration.server.http_listen_port
-        }"
-      ];
-    }];
-  }
+  #  {
+  #   job_name = "loki";
+  #   static_configs = [{
+  #     targets = [
+  #       "localhost:${
+  #         toString config.services.loki.configuration.server.http_listen_port
+  #       }"
+  #     ];
+  #  }];
+  #}
   {
     job_name = "promtail";
     static_configs = [{ targets = promtail_targets; }];
