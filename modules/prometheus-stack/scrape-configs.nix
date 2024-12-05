@@ -7,7 +7,7 @@ let
   nodeExporterTargets =
     map
       (node:
-          "${node.hostName}.${catalog.tailscale.domain}"
+        "${node.hostName}.${catalog.tailscale.domain}"
       )
       (attrValues (filterAttrs (node_name: node_def: node_def ? "shouldScrape" && node_def.shouldScrape) catalog.nodes));
 
@@ -98,8 +98,8 @@ let
     (filterAttrs (node_name: node_def: node_def ? "system" && isNixOS node_def.system) catalog.nodes);
 
   promtail_targets = map
-    (node: 
-        "${node.hostName}.${catalog.tailscale.domain}:${toString catalog.services.promtail.port}"
+    (node:
+      "${node.hostName}.${catalog.tailscale.domain}:${toString catalog.services.promtail.port}"
     )
     nixOSNodes;
 
@@ -147,7 +147,7 @@ in
     job_name = "unifi";
     static_configs = [{
       targets = [
-        "dennis.joannet.casa:${
+        "${catalog.services.unifi.host.hostName}.${catalog.tailscale.domain}:${
           toString config.services.prometheus.exporters.unpoller.port
         }"
       ];

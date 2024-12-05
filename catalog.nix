@@ -25,7 +25,7 @@
       ip.private = "192.168.1.12";
       ip.tailscale = "100.127.102.123";
       system = "x86_64-linux";
-      shouldScrape = true;
+      shouldScrape = false;
       users = [ users.jdheyburn ];
     };
 
@@ -38,6 +38,7 @@
     mac = {
       ip.tailscale = "100.125.40.20";
       system = "x86_64-linux";
+      shouldScrape = true;
       users = [ users.jdheyburn ];
     };
 

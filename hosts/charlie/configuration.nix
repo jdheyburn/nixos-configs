@@ -41,6 +41,7 @@
   modules.monitoring.enable = true;
   modules.nfs-client.enable = true;
   modules.prometheusStack.enable = true;
+  modules.prometheusStack.blackbox.enable = true;
   modules.prometheusStack.victoriametrics.enable = true;
   modules.remote-builder.enable = true;
 
