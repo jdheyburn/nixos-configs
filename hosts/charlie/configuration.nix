@@ -25,12 +25,13 @@
   ## Modules
   ###############################################################################
 
+  # TODO these secrets should be defined in the module
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
   age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
 
   modules.backup.small-files = {
-    enable = false;
+    enable = true;
     rcloneConfigFile = config.age.secrets."rclone.conf".path;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     healthcheck =
@@ -42,6 +43,7 @@
   modules.nfs-client.enable = true;
   modules.prometheusStack.enable = true;
   modules.prometheusStack.blackbox.enable = true;
+  modules.prometheusStack.grafana.enable = true;
   modules.prometheusStack.victoriametrics.enable = true;
   modules.remote-builder.enable = true;
 

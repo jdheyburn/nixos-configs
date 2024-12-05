@@ -6,7 +6,7 @@ let cfg = config.modules.prometheusStack;
 in {
   options.modules.prometheusStack.grafana.enable = mkEnableOption "Deploy Grafana";
 
-  config = mkIf cfg.enable && cfg.grafana.enable {
+  config = mkIf (cfg.enable && cfg.grafana.enable) {
 
     age.secrets."grafana-admin-password" = {
       file = ../../secrets/grafana-admin-password.age;
@@ -19,15 +19,14 @@ in {
       group = "grafana";
     };
 
-    services.caddy.virtualHosts = {
-      "grafana.svc.joannet.casa".extraConfig = ''
-        tls {
-          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-          # Below required to get TLS to work on non-local hosts (i.e. charlie)
-          resolvers 8.8.8.8
-        }
-        reverse_proxy localhost:${toString catalog.services.grafana.port}
-      '';
+    services.caddy.virtualHosts."grafana.svc.joannet.casa".extraConfig = ''
+      tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+        # Below required to get TLS to work on non-local hosts (i.e. charlie)
+        resolvers 8.8.8.8
+      }
+      reverse_proxy localhost:${toString catalog.services.grafana.port}
+    '';
 
       services.grafana = {
         enable = true;
@@ -322,6 +321,10 @@ in {
           StartLimitBurst = "5";
         };
       };
+      
+      services.restic.backups.small-files = {
+        paths = [ config.services.grafana.dataDir ];
+      };
     };
-
   }
+

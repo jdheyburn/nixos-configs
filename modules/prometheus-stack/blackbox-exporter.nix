@@ -7,7 +7,7 @@ in {
   };
 
 
-  config = mkIf cfg.enable && cfg.blackbox.enable {
+  config = mkIf (cfg.enable && cfg.blackbox.enable) {
 
     services.prometheus.exporters = {
       node = {
