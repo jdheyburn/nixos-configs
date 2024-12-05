@@ -9,7 +9,6 @@ in {
     enable = mkEnableOption "Deploy Prometheus suite";
     prometheus.enable = mkEnableOption "Deploy Prometheus";
     thanos.enable = mkEnableOption "Deploy Thanos long term storage";
-    victoriametrics.enable = mkEnableOption "victoriametrics";
   };
 
   imports = [
