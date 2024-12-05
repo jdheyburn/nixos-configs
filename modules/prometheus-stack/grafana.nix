@@ -15,10 +15,13 @@
       enable_gzip = true;
     };
 
+    security = {
+      admin_password = "$__file{${config.age.secrets."grafana-admin-password".path}}";
+    };
+
     smtp = {
       enabled = true;
       host = "smtp.gmail.com:587";
-      # from_address = "jdheyburn@gmail.com";
       user = "jdheyburn@gmail.com";
       password = "$__file{${config.age.secrets."smtp-password".path}}";
     };

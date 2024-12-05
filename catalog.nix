@@ -2,10 +2,11 @@
 # Inspired from https://github.com/jhillyerd/homelab/blob/main/nixos/catalog.nix
 { nixos-hardware }: rec {
 
+  tailscale.domain = "bishop-beardie.ts.net";
+
   nodesBase = {
     charlie = {
       ip.tailscale = "100.74.217.71";
-      domain = "bishop-beardie.ts.net";
       system = "x86_64-linux";
       shouldScrape = true;
       users = [ users.jdheyburn ];
@@ -116,7 +117,7 @@
     };
 
     grafana = {
-      host = nodes.dennis;
+      host = nodes.charlie;
       port = 2342;
       dashy.section = "monitoring";
       dashy.description = "View logs and metrics";
@@ -125,7 +126,7 @@
     };
 
     loki = {
-      host = nodes.dennis;
+      host = nodes.charlie;
       port = 3100;
       blackbox.path = "/ready";
       dns.enable = true;
@@ -217,7 +218,7 @@
     };
 
     victoriametrics = {
-      host = nodes.dennis;
+      host = nodes.charlie;
       port = 8428;
       dashy.section = "monitoring";
       dashy.description = "Alternate poller of metrics in PromQL format";

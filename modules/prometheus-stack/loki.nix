@@ -2,7 +2,7 @@
 
 let lokiDir = "/var/lib/loki";
 in {
-  enable = true;
+  enable = false;
   configuration = {
     auth_enabled = false;
     server.http_listen_port = catalog.services.loki.port;

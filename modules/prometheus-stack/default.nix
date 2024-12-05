@@ -18,6 +18,8 @@ in {
       "grafana.svc.joannet.casa".extraConfig = ''
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+          # Below required to get TLS to work on non-local hosts (i.e. charlie)
+          resolvers 8.8.8.8
         }
         reverse_proxy localhost:${toString catalog.services.grafana.port}
       '';
@@ -25,6 +27,8 @@ in {
       "loki.svc.joannet.casa".extraConfig = ''
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+          # Below required to get TLS to work on non-local hosts (i.e. charlie)
+          resolvers 8.8.8.8
         }
         reverse_proxy localhost:${toString catalog.services.loki.port}
       '';
@@ -33,6 +37,8 @@ in {
         extraConfig = ''
           tls {
             dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+            # Below required to get TLS to work on non-local hosts (i.e. charlie)
+            resolvers 8.8.8.8
           }
           reverse_proxy localhost:${toString catalog.services.victoriametrics.port}
         '';
@@ -46,6 +52,11 @@ in {
       config.services.prometheus.port
     ];
 
+    age.secrets."grafana-admin-password" = {
+      file = ../../secrets/grafana-admin-password.age;
+      owner = "grafana";
+      group = "grafana";
+    };
     age.secrets."smtp-password" = {
       file = ../../secrets/smtp-password.age;
       owner = "grafana";
@@ -85,11 +96,11 @@ in {
     systemd.services.victoriametrics.serviceConfig.TimeoutStartSec = "5m";
 
     # Backups
-    services.restic.backups.small-files = {
-      paths = (lib.optionals config.services.grafana.enable [ "${config.services.grafana.dataDir}/data" ]) ++
-        (lib.optionals config.services.prometheus.enable [ "${config.systemd.services.prometheus.serviceConfig.WorkingDirectory}/data" ]) ++
-        (lib.optionals config.services.loki.enable [ config.services.loki.dataDir ]) ++
-        (lib.optionals config.services.victoriametrics.enable [ "/var/lib/victoriametrics" ]);
-    };
+#    services.restic.backups.small-files = {
+#      paths = (lib.optionals config.services.grafana.enable [ "${config.services.grafana.dataDir}/data" ]) ++
+#        (lib.optionals config.services.prometheus.enable [ "${config.systemd.services.prometheus.serviceConfig.WorkingDirectory}/data" ]) ++
+#        (lib.optionals config.services.loki.enable [ config.services.loki.dataDir ]) ++
+#        (lib.optionals config.services.victoriametrics.enable [ "/var/lib/victoriametrics" ]);
+#    };
   };
 }

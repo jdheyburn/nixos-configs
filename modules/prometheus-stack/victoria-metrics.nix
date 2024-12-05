@@ -15,5 +15,5 @@ let
 in
 {
   enable = config.modules.prometheusStack.victoriametrics.enable;
-  extraOptions = [ "-promscrape.config=${prometheusYml}" ];
+  prometheusConfig = promConfig;
 }

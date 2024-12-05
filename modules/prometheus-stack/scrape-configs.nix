@@ -3,13 +3,11 @@
 with lib;
 
 let
+  # TODO review whether shouldScrape attribute is necessary
   nodeExporterTargets =
     map
       (node:
-        if node ? "domain" then
-          "${node.hostName}.${node.domain}"
-        else
-          "${node.hostName}.joannet.casa"
+          "${node.hostName}.${catalog.tailscale.domain}"
       )
       (attrValues (filterAttrs (node_name: node_def: node_def ? "shouldScrape" && node_def.shouldScrape) catalog.nodes));
 
@@ -100,11 +98,8 @@ let
     (filterAttrs (node_name: node_def: node_def ? "system" && isNixOS node_def.system) catalog.nodes);
 
   promtail_targets = map
-    (node:
-      if node ? "domain" then
-        "${node.hostName}.${node.domain}:${toString catalog.services.promtail.port}"
-      else
-        "${node.hostName}.joannet.casa:${toString catalog.services.promtail.port}"
+    (node: 
+        "${node.hostName}.${catalog.tailscale.domain}:${toString catalog.services.promtail.port}"
     )
     nixOSNodes;
 
