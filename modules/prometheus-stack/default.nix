@@ -16,22 +16,11 @@ in {
     ./blackbox-exporter.nix
     ./grafana.nix
     ./loki.nix
+    ./victoria-metrics.nix
   ];
 
   config = mkIf cfg.enable {
 
-    services.caddy.virtualHosts = {
-      "victoriametrics.svc.joannet.casa" = mkIf cfg.victoriametrics.enable {
-        extraConfig = ''
-          tls {
-            dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-            # Below required to get TLS to work on non-local hosts (i.e. charlie)
-            resolvers 8.8.8.8
-          }
-          reverse_proxy localhost:${toString catalog.services.victoriametrics.port}
-        '';
-      };
-    };
 
     networking.firewall.allowedTCPPorts = [
       # TODO are all these still required after being fronted by local reverse proxy?
@@ -53,10 +42,9 @@ in {
     services.prometheus =
       import ./prometheus.nix { inherit catalog config pkgs lib; };
     services.thanos = import ./thanos.nix { inherit catalog config pkgs; };
-    services.victoriametrics =
-      import ./victoria-metrics.nix { inherit catalog config pkgs lib; };
+    # services.victoriametrics =
+    #   import ./victoria-metrics.nix { inherit catalog config pkgs lib; };
 
-    systemd.services.victoriametrics.serviceConfig.TimeoutStartSec = "5m";
 
     # Backups
     #    services.restic.backups.small-files = {
