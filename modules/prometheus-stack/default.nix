@@ -14,6 +14,10 @@ in {
 
   config = mkIf cfg.enable {
 
+    imports = [
+      ./blackbox-exporter.nix { inherit catalog }
+    ];
+
     services.caddy.virtualHosts = {
       "grafana.svc.joannet.casa".extraConfig = ''
         tls {
