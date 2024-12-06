@@ -189,28 +189,28 @@ in
     scheme = "https";
     static_configs = [{ targets = [ "minio.svc.joannet.casa" ]; }];
   }
-    {
-     job_name = "loki";
-     static_configs = [{
-       targets = [
-         "localhost:${
+  {
+    job_name = "loki";
+    static_configs = [{
+      targets = [
+        "localhost:${
            toString config.services.loki.configuration.server.http_listen_port
          }"
-       ];
+      ];
     }];
   }
   {
     job_name = "promtail";
     static_configs = [{ targets = promtail_targets; }];
   }
-   {
-     job_name = "zfs";
-     static_configs = [{
-       targets = [
-         "dee.${catalog.tailscale.domain}:${
+  {
+    job_name = "zfs";
+    static_configs = [{
+      targets = [
+        "dee.${catalog.tailscale.domain}:${
            toString config.services.prometheus.exporters.zfs.port
          }"
-       ];
-     }];
-   }
+      ];
+    }];
+  }
 ]

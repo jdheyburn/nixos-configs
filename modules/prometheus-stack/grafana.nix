@@ -294,14 +294,14 @@ in {
                 timeInterval = "5s"; # node is scraping at 5s
               };
             }
-                  {
-                    uid = "loki";
-                    name = "Loki";
-                    type = "loki";
-                    url = "http://localhost:${
+            {
+              uid = "loki";
+              name = "Loki";
+              type = "loki";
+              url = "http://localhost:${
                       toString config.services.loki.configuration.server.http_listen_port
                     }";
-                 }
+            }
           ];
         };
       };

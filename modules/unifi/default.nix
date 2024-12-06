@@ -55,10 +55,10 @@ in
         save_dpi = true;
       }];
 
-       loki = {
-         url = "https://loki.svc.joannet.casa";
-         verify_ssl = true;
-       };
+      loki = {
+        url = "https://loki.svc.joannet.casa";
+        verify_ssl = true;
+      };
     };
 
     services.restic.backups.small-files = {
