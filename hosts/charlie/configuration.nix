@@ -25,10 +25,30 @@
   ## Modules
   ###############################################################################
 
+  # TODO these secrets should be defined in the module
+  age.secrets."restic-small-files-password".file =
+    ../../secrets/restic-small-files-password.age;
+  age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
+
+  modules.backup.small-files = {
+    enable = true;
+    rcloneConfigFile = config.age.secrets."rclone.conf".path;
+    passwordFile = config.age.secrets."restic-small-files-password".path;
+    healthcheck =
+      "https://healthchecks.svc.joannet.casa/ping/92e823bb-17ff-4d94-8a41-fcad88fb3b21";
+  };
   modules.caddy.enable = true;
   modules.dashy.enable = true;
   modules.monitoring.enable = true;
   modules.nfs-client.enable = true;
+  modules.prometheusStack = {
+    enable = true;
+    blackbox.enable = true;
+    grafana.enable = true;
+    loki.enable = true;
+    victoriametrics.enable = true;
+  };
+  modules.remote-builder.enable = true;
 
   environment.systemPackages = [
     pkgs.ffmpeg
@@ -44,8 +64,6 @@
   services.jellyfin.enable = false;
   services.jellyfin.user = "jdheyburn";
   services.jellyfin.group = "users";
-
-  modules.remote-builder.enable = true;
 
   # For tailscale exit nodes
   #boot.kernel.sysctl = {

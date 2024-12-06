@@ -2,10 +2,11 @@
 # Inspired from https://github.com/jhillyerd/homelab/blob/main/nixos/catalog.nix
 { nixos-hardware }: rec {
 
+  tailscale.domain = "bishop-beardie.ts.net";
+
   nodesBase = {
     charlie = {
       ip.tailscale = "100.74.217.71";
-      domain = "bishop-beardie.ts.net";
       system = "x86_64-linux";
       shouldScrape = true;
       users = [ users.jdheyburn ];
@@ -24,7 +25,7 @@
       ip.private = "192.168.1.12";
       ip.tailscale = "100.127.102.123";
       system = "x86_64-linux";
-      shouldScrape = true;
+      shouldScrape = false;
       users = [ users.jdheyburn ];
     };
 
@@ -37,6 +38,7 @@
     mac = {
       ip.tailscale = "100.125.40.20";
       system = "x86_64-linux";
+      shouldScrape = true;
       users = [ users.jdheyburn ];
     };
 
@@ -116,7 +118,7 @@
     };
 
     grafana = {
-      host = nodes.dennis;
+      host = nodes.charlie;
       port = 2342;
       dashy.section = "monitoring";
       dashy.description = "View logs and metrics";
@@ -125,7 +127,7 @@
     };
 
     loki = {
-      host = nodes.dennis;
+      host = nodes.charlie;
       port = 3100;
       blackbox.path = "/ready";
       dns.enable = true;
@@ -175,7 +177,7 @@
       dashy.section = "virtualisation";
       dashy.description = "Frontend for VMs";
       dashy.icon = "hl-proxmox";
-      dns.enable = true;
+      dns.enable = false;
     };
 
     plex = {
@@ -217,7 +219,7 @@
     };
 
     victoriametrics = {
-      host = nodes.dennis;
+      host = nodes.charlie;
       port = 8428;
       dashy.section = "monitoring";
       dashy.description = "Alternate poller of metrics in PromQL format";

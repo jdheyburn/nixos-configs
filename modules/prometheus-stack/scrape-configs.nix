@@ -3,13 +3,11 @@
 with lib;
 
 let
+  # TODO review whether shouldScrape attribute is necessary
   nodeExporterTargets =
     map
       (node:
-        if node ? "domain" then
-          "${node.hostName}.${node.domain}"
-        else
-          "${node.hostName}.joannet.casa"
+        "${node.hostName}.${catalog.tailscale.domain}"
       )
       (attrValues (filterAttrs (node_name: node_def: node_def ? "shouldScrape" && node_def.shouldScrape) catalog.nodes));
 
@@ -101,10 +99,7 @@ let
 
   promtail_targets = map
     (node:
-      if node ? "domain" then
-        "${node.hostName}.${node.domain}:${toString catalog.services.promtail.port}"
-      else
-        "${node.hostName}.joannet.casa:${toString catalog.services.promtail.port}"
+      "${node.hostName}.${catalog.tailscale.domain}:${toString catalog.services.promtail.port}"
     )
     nixOSNodes;
 
@@ -152,7 +147,7 @@ in
     job_name = "unifi";
     static_configs = [{
       targets = [
-        "dennis.joannet.casa:${
+        "${catalog.services.unifi.host.hostName}.${catalog.tailscale.domain}:${
           toString config.services.prometheus.exporters.unpoller.port
         }"
       ];
@@ -194,19 +189,13 @@ in
     scheme = "https";
     static_configs = [{ targets = [ "minio.svc.joannet.casa" ]; }];
   }
-  # {
-  #   job_name = "pve";
-  #   metrics_path = "/pve";
-  #   params.module = [ "default" ];
-  #   static_configs = [{ targets = [ "pve0.joannet.casa:9221" ]; }];
-  # }
   {
     job_name = "loki";
     static_configs = [{
       targets = [
         "localhost:${
-          toString config.services.loki.configuration.server.http_listen_port
-        }"
+           toString config.services.loki.configuration.server.http_listen_port
+         }"
       ];
     }];
   }
@@ -214,14 +203,14 @@ in
     job_name = "promtail";
     static_configs = [{ targets = promtail_targets; }];
   }
-  # {
-  #   job_name = "zfs";
-  #   static_configs = [{
-  #     targets = [
-  #       "dee.joannet.casa:${
-  #         toString config.services.prometheus.exporters.zfs.port
-  #       }"
-  #     ];
-  #   }];
-  # }
+  {
+    job_name = "zfs";
+    static_configs = [{
+      targets = [
+        "dee.${catalog.tailscale.domain}:${
+           toString config.services.prometheus.exporters.zfs.port
+         }"
+      ];
+    }];
+  }
 ]

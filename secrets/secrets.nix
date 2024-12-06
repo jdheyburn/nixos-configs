@@ -8,7 +8,9 @@ let
   dennis =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDL0adtqBxktlaeesYq+C0a9Wu2196VGKoC4CA2mnTf0";
 
-  servers = [ charlie dee dennis ];
+  mac = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHSbn8NGbcOm56ZIFfGBteYHErrlZbLAl0agBPPq0ZJO";
+
+  servers = [ charlie dee dennis mac ];
 
   jdheyburn = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIozTzNnp+KQAwlMUdJuIcvuQmM+Dz5wlB7H15Qx3iZT"
@@ -23,6 +25,7 @@ in
   "adguard-password.age".publicKeys = default;
   "aria2-password.age".publicKeys = default;
   "caddy-environment-file.age".publicKeys = default;
+  "grafana-admin-password.age".publicKeys = default;
   "healthchecks-secrets-file.age".publicKeys = default;
   "healthchecks-smtp-password.age".publicKeys = default;
   "healthchecks-superuser-password.age".publicKeys = default;
@@ -33,5 +36,6 @@ in
   "thanos-objstore-config.age".publicKeys = default;
   "smtp-password.age".publicKeys = default;
   "unifi-poller-password.age".publicKeys = default;
+  "victoriametrics-license.age".publicKeys = default;
 }
 
