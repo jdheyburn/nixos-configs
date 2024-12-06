@@ -189,34 +189,28 @@ in
     scheme = "https";
     static_configs = [{ targets = [ "minio.svc.joannet.casa" ]; }];
   }
-  # {
-  #   job_name = "pve";
-  #   metrics_path = "/pve";
-  #   params.module = [ "default" ];
-  #   static_configs = [{ targets = [ "pve0.joannet.casa:9221" ]; }];
-  # }
-  #  {
-  #   job_name = "loki";
-  #   static_configs = [{
-  #     targets = [
-  #       "localhost:${
-  #         toString config.services.loki.configuration.server.http_listen_port
-  #       }"
-  #     ];
-  #  }];
-  #}
+    {
+     job_name = "loki";
+     static_configs = [{
+       targets = [
+         "localhost:${
+           toString config.services.loki.configuration.server.http_listen_port
+         }"
+       ];
+    }];
+  }
   {
     job_name = "promtail";
     static_configs = [{ targets = promtail_targets; }];
   }
-  # {
-  #   job_name = "zfs";
-  #   static_configs = [{
-  #     targets = [
-  #       "dee.joannet.casa:${
-  #         toString config.services.prometheus.exporters.zfs.port
-  #       }"
-  #     ];
-  #   }];
-  # }
+   {
+     job_name = "zfs";
+     static_configs = [{
+       targets = [
+         "dee.${catalog.tailscale.domain}:${
+           toString config.services.prometheus.exporters.zfs.port
+         }"
+       ];
+     }];
+   }
 ]

@@ -8,6 +8,12 @@ in {
   options.modules.prometheusStack.victoriametrics.enable = mkEnableOption "Deploy VictoriaMetrics";
 
   config = mkIf (cfg.enable && cfg.victoriametrics.enable) {
+    age.secrets."victoriametrics-license" = {
+      file = ../../secrets/victoriametrics-license.age;
+      # victoriametrics systemd runs as DynamicUser
+      mode = "0444";
+    };
+
     services.caddy.virtualHosts."victoriametrics.svc.joannet.casa".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
@@ -19,7 +25,10 @@ in {
 
     services.victoriametrics = {
       enable = true;
+      #package = pkgs.victoriametrics-enterprise;
       prometheusConfig.scrape_configs = import ./scrape-configs.nix { inherit catalog config lib; };
+      #extraOptions = [ "-licenseFile=${config.age.secrets."victoriametrics-license".path}" ];
+      extraOptions = [ "-selfScrapeInterval=10s" ];
     };
 
     systemd.services.victoriametrics.serviceConfig.TimeoutStartSec = "5m";

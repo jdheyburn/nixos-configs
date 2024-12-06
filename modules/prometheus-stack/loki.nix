@@ -27,7 +27,6 @@ in
           server.http_listen_port = catalog.services.loki.port;
           compactor = {
             working_directory = lokiDir;
-            shared_store = "filesystem";
             compactor_ring.kvstore.store = "inmemory";
           };
 
@@ -48,27 +47,15 @@ in
             chunk_target_size = 1048576;
             # Must be greater than index read cache TTL if using an index cache (Default index read cache TTL is 5m)
             chunk_retain_period = "30s";
-            # Chunk transfers disabled
-            max_transfer_retries = 0;
           };
 
           schema_config = {
             configs = [
               {
-                from = "2020-10-24";
-                store = "boltdb-shipper";
-                object_store = "filesystem";
-                schema = "v11";
-                index = {
-                  prefix = "index_";
-                  period = "24h";
-                };
-              }
-              {
-                from = "2023-03-09";
+                from = "2024-12-06";
                 store = "tsdb";
                 object_store = "filesystem";
-                schema = "v12";
+                schema = "v13";
                 index = {
                   prefix = "index_";
                   period = "24h";
@@ -78,29 +65,20 @@ in
           };
 
           storage_config = {
-            boltdb_shipper = {
-              active_index_directory = "${lokiDir}/boltdb-shipper-active";
-              cache_location = "${lokiDir}/boltdb-shipper-cache";
-              # Can be increased for faster performance over longer query periods, uses more disk space
-              cache_ttl = "24h";
-              shared_store = "filesystem";
-            };
             tsdb_shipper = {
               active_index_directory = "${lokiDir}/tsdb-index";
               cache_location = "${lokiDir}/tsdb-cache";
               # Can be increased for faster performance over longer query periods, uses more disk space
               cache_ttl = "24h";
-              shared_store = "filesystem";
             };
             filesystem.directory = "${lokiDir}/chunks";
           };
 
           limits_config = {
+            allow_structured_metadata = false;
             reject_old_samples = true;
             reject_old_samples_max_age = "168h";
           };
-
-          chunk_store_config.max_look_back_period = "0s";
 
           table_manager = {
             retention_deletes_enabled = false;
@@ -116,10 +94,8 @@ in
         };
       };
 
-      # TODO decide on backup strategy
-      # services.restic.backups.small-files = {
-      #   paths = [ dataDir ];
-      # };
+      services.restic.backups.small-files = {
+        paths = [ lokiDir ];
+      };
     };
-
 }

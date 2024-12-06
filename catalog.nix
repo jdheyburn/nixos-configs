@@ -177,7 +177,7 @@
       dashy.section = "virtualisation";
       dashy.description = "Frontend for VMs";
       dashy.icon = "hl-proxmox";
-      dns.enable = true;
+      dns.enable = false;
     };
 
     plex = {

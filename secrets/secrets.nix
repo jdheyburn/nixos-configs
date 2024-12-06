@@ -36,5 +36,6 @@ in
   "thanos-objstore-config.age".publicKeys = default;
   "smtp-password.age".publicKeys = default;
   "unifi-poller-password.age".publicKeys = default;
+  "victoriametrics-license.age".publicKeys = default;
 }
 

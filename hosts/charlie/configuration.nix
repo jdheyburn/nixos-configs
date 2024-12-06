@@ -45,8 +45,7 @@
     enable = true;
     blackbox.enable = true;
     grafana.enable = true;
-    # TODO enable loki
-    loki.enable = false;
+    loki.enable = true;
     victoriametrics.enable = true;
   };
   modules.remote-builder.enable = true;
