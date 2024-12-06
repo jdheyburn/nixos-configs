@@ -24,6 +24,7 @@
   ## Modules
   ###############################################################################
 
+  modules.monitoring.enable = true;
   modules.remote-builder.enable = true;
 
 }
