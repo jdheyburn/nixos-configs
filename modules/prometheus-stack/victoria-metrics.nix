@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, flake-self, pkgs, lib, ... }:
 
 with lib;
 
@@ -26,7 +26,7 @@ in {
     services.victoriametrics = {
       enable = true;
       #package = pkgs.victoriametrics-enterprise;
-      prometheusConfig.scrape_configs = import ./scrape-configs.nix { inherit catalog config lib; };
+      prometheusConfig.scrape_configs = import ./scrape-configs.nix { inherit catalog config flake-self lib; };
       #extraOptions = [ "-licenseFile=${config.age.secrets."victoriametrics-license".path}" ];
       extraOptions = [ "-selfScrapeInterval=10s" ];
     };

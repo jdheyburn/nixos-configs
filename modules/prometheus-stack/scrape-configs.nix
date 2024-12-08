@@ -1,4 +1,4 @@
-{ catalog, config, lib }:
+{ catalog, config, flake-self, lib }:
 
 with lib;
 
@@ -11,7 +11,18 @@ let
       )
       (attrValues (filterAttrs (node_name: node_def: node_def ? "shouldScrape" && node_def.shouldScrape) catalog.nodes));
 
-  shouldDNS = service: service ? "dns" && service.dns ? "enable" && service.dns.enable;
+  # TODO isEnabled and shouldDNS are duplicated from modules/dns/default.nix - remove the duplication
+  isEnabled = moduleName: hostName:
+    let
+      parts = splitString "." moduleName;
+      module = builtins.foldl' (acc: part: builtins.getAttr part acc) flake-self.nixosConfigurations."${hostName}".config.modules parts;
+    in
+    module.enable;
+
+  shouldDNS = service:
+    # Only create DNS entries if the host that catalog.service says its running on has it enabled
+    # service.modules is a list of strings that contain paths to check for enabling, see catalog.nix
+    service ? "modules" && (all (x: x) (map (moduleName: isEnabled moduleName service.host.hostName) service.modules));
 
   caddified_services = attrValues (filterAttrs
     (svc_name: svc_def: shouldDNS svc_def)
