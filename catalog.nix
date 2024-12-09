@@ -150,6 +150,12 @@
       modules = [ "minio" ];
     };
 
+    obsidian = {
+      host = nodes.charlie;
+      port = 3050;
+      modules = [ "obsidian" ];
+    };
+
     portainer = {
       host = nodes.frank;
       port = 9000;

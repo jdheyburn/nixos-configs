@@ -41,6 +41,7 @@
   modules.dashy.enable = true;
   modules.monitoring.enable = true;
   modules.nfs-client.enable = true;
+  modules.obsidian.enable = true;
   modules.prometheusStack = {
     enable = true;
     blackbox.enable = true;
