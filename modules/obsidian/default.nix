@@ -5,12 +5,16 @@ with lib;
 let
   version = "v1.7.7-ls40";
   dataDir = "/var/lib/obsidian";
-
-  cfg = config.modules.dashy;
-
+  repoDir = "${dataDir}/repo";
+  healthcheck = "https://healthchecks.svc.joannet.casa/ping/89c48c0a-3075-460e-a02b-3a325335c488";
+  cfg = config.modules.obsidian;
 in
 {
-  options.modules.obsidian = { enable = mkEnableOption "enable obsidian"; };
+  options.modules.obsidian = {
+    enable = mkEnableOption "Enable Obsidian backups";
+    rcloneConfigFile = mkOption { type = types.path; };
+    passwordFile = mkOption { type = types.path; };
+  };
 
   config = mkIf cfg.enable {
     services.caddy.virtualHosts."obsidian.svc.joannet.casa".extraConfig = ''
@@ -25,6 +29,7 @@ in
     virtualisation.oci-containers.containers.obsidian = {
       image = "lscr.io/linuxserver/obsidian:${version}";
       volumes = [ "${dataDir}/config:/config" ];
+      volumes = [ "${repoDir}:/repo" ];
       ports = [ "${toString catalog.services.obsidian.port}:${toString catalog.services.obsidian.port}" ];
       environment = {
         CUSTOM_PORT = toString catalog.services.obsidian.port;
@@ -34,6 +39,40 @@ in
       };
       extraOptions = [
         "--network=bridge"
+      ];
+    };
+
+    age.secrets."restic-obsidian-password".file = ../../secrets/restic-obsidian-password.age;
+
+    services.restic.backups.obsidian = {
+      initialize = true;
+      repository = "rclone:b2:iifu8Noi-backups/restic/obsidian";
+      rcloneConfigFile = cfg.rcloneConfigFile;
+      passwordFile = config.age.secrets."restic-obsidian-password".path;
+      paths = [ repoDir ];
+      timerConfig.OnCalendar = "hourly";
+      backupPrepareCommand = ''
+        ${pkgs.curl}/bin/curl ${healthcheck}/start
+
+        # Exit if the repo does not exist
+        if [[ ! -d ${repoDir} ]]; then
+          ${pkgs.curl}/bin/curl ${healthcheck}/fail
+          exit 99
+        fi
+
+        # Exit if repo size < 50MiB
+        if [ $(du -s ${repoDir} | cut -f1) -lt 52428800 ]; then
+          ${pkgs.curl}/bin/curl ${healthcheck}/fail
+          exit 98
+        fi
+      '';
+      backupCleanupCommand = "${pkgs.curl}/bin/curl ${healthcheck}";
+      pruneOpts = [
+          "--keep-hourly 72"
+          "--keep-daily 90"
+          "--keep-weekly 24"
+          "--keep-monthly 36"
+          "--keep-yearly 10"
       ];
     };
   };
