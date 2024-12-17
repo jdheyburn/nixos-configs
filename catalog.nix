@@ -153,7 +153,7 @@
     obsidian = {
       host = nodes.charlie;
       port = 3050;
-      modules = [ "obsidian" ];
+      modules = [ "backup.obsidian" ];
     };
 
     portainer = {
