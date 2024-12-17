@@ -7,10 +7,10 @@ let
   dataDir = "/var/lib/obsidian";
   repoDir = "${dataDir}/repo";
   healthcheck = "https://healthchecks.svc.joannet.casa/ping/89c48c0a-3075-460e-a02b-3a325335c488";
-  cfg = config.modules.obsidian;
+  cfg = config.modules.backup.obsidian;
 in
 {
-  options.modules.obsidian = {
+  options.modules.backup.obsidian = {
     enable = mkEnableOption "Enable Obsidian backups";
     rcloneConfigFile = mkOption { type = types.path; };
     passwordFile = mkOption { type = types.path; };
