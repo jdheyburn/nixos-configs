@@ -28,8 +28,7 @@ in
 
     virtualisation.oci-containers.containers.obsidian = {
       image = "lscr.io/linuxserver/obsidian:${version}";
-      volumes = [ "${dataDir}/config:/config" ];
-      volumes = [ "${repoDir}:/repo" ];
+      volumes = [ "${dataDir}/config:/config" "${repoDir}:/repo" ];
       ports = [ "${toString catalog.services.obsidian.port}:${toString catalog.services.obsidian.port}" ];
       environment = {
         CUSTOM_PORT = toString catalog.services.obsidian.port;
@@ -56,23 +55,29 @@ in
 
         # Exit if the repo does not exist
         if [[ ! -d ${repoDir} ]]; then
-          ${pkgs.curl}/bin/curl ${healthcheck}/fail
+          echo "ERROR: ${repoDir} not found"
           exit 99
         fi
 
         # Exit if repo size < 50MiB
-        if [ $(du -s ${repoDir} | cut -f1) -lt 52428800 ]; then
-          ${pkgs.curl}/bin/curl ${healthcheck}/fail
+        if [ $(du -sb ${repoDir} | cut -f1) -lt 52428800 ]; then
+          echo "ERROR: ${repoDir} smaller than 50MiB"
           exit 98
         fi
       '';
-      backupCleanupCommand = "${pkgs.curl}/bin/curl ${healthcheck}";
+      backupCleanupCommand = ''
+        preStartExitStatus=$(systemctl show restic-backups-obsidian --property=ExecStartPre | grep -oEi 'status=([[:digit:]]+)' | cut -d '=' -f2)
+        echo "preStartExitStatus=$preStartExitStatus"
+        echo "EXIT_STATUS=$EXIT_STATUS"
+        [ $preStartExitStatus -ne 0 ] && returnStatus=$preStartExitStatus || returnStatus=$EXIT_STATUS
+        ${pkgs.curl}/bin/curl ${healthcheck}/$returnStatus
+      '';
       pruneOpts = [
-          "--keep-hourly 72"
-          "--keep-daily 90"
-          "--keep-weekly 24"
-          "--keep-monthly 36"
-          "--keep-yearly 10"
+        "--keep-hourly 72"
+        "--keep-daily 90"
+        "--keep-weekly 24"
+        "--keep-monthly 36"
+        "--keep-yearly 10"
       ];
     };
   };
