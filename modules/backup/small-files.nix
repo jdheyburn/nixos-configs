@@ -59,7 +59,13 @@ in
         passwordFile = cfg.passwordFile;
         timerConfig = { OnCalendar = cfg.backupTime; };
         backupPrepareCommand = "${pkgs.curl}/bin/curl ${cfg.healthcheck}/start";
-        backupCleanupCommand = "${pkgs.curl}/bin/curl ${cfg.healthcheck}";
+        backupCleanupCommand = ''
+          preStartExitStatus=$(systemctl show restic-backups-small-files --property=ExecStartPre | grep -oEi 'status=([[:digit:]]+)' | cut -d '=' -f2)
+          echo "preStartExitStatus=$preStartExitStatus"
+          echo "EXIT_STATUS=$EXIT_STATUS"
+          [ $preStartExitStatus -ne 0 ] && returnStatus=$preStartExitStatus || returnStatus=$EXIT_STATUS
+          ${pkgs.curl}/bin/curl ${cfg.healthcheck}/$returnStatus
+        '';
       };
     }
 
@@ -76,7 +82,13 @@ in
         ];
         timerConfig = { OnCalendar = cfg.pruneTime; };
         backupPrepareCommand = "${pkgs.curl}/bin/curl ${healthcheckPrune}/start";
-        backupCleanupCommand = "${pkgs.curl}/bin/curl ${healthcheckPrune}";
+        backupCleanupCommand = ''
+          preStartExitStatus=$(systemctl show restic-backups-small-files-prune --property=ExecStartPre | grep -oEi 'status=([[:digit:]]+)' | cut -d '=' -f2)
+          echo "preStartExitStatus=$preStartExitStatus"
+          echo "EXIT_STATUS=$EXIT_STATUS"
+          [ $preStartExitStatus -ne 0 ] && returnStatus=$preStartExitStatus || returnStatus=$EXIT_STATUS
+          ${pkgs.curl}/bin/curl ${healthcheckPrune}/$returnStatus
+        '';
       };
     })
   ]);

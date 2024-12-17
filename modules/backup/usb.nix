@@ -40,7 +40,13 @@ in
         ];
         timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
         backupPrepareCommand = "${pkgs.curl}/bin/curl ${healthcheckResticMedia}/start";
-        backupCleanupCommand = "${pkgs.curl}/bin/curl ${healthcheckResticMedia}";
+        backupCleanupCommand = ''
+          preStartExitStatus=$(systemctl show restic-backups-media --property=ExecStartPre | grep -oEi 'status=([[:digit:]]+)' | cut -d '=' -f2)
+          echo "preStartExitStatus=$preStartExitStatus"
+          echo "EXIT_STATUS=$EXIT_STATUS"
+          [ $preStartExitStatus -ne 0 ] && returnStatus=$preStartExitStatus || returnStatus=$EXIT_STATUS
+          ${pkgs.curl}/bin/curl ${healthcheckResticMedia}/$returnStatus
+        '';
       };
 
       # Once media has been backed up, rsync to cloud storage
