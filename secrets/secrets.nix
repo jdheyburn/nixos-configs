@@ -30,8 +30,10 @@ in
   "healthchecks-smtp-password.age".publicKeys = default;
   "healthchecks-superuser-password.age".publicKeys = default;
   "minio-root-credentials.age".publicKeys = default;
+  "obsidian-environment-file.age".publicKeys = default;
   "restic-small-files-password.age".publicKeys = default;
   "restic-media-password.age".publicKeys = default;
+  "restic-obsidian-password.age".publicKeys = default;
   "rclone.conf.age".publicKeys = default;
   "thanos-objstore-config.age".publicKeys = default;
   "smtp-password.age".publicKeys = default;

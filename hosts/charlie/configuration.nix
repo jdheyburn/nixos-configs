@@ -30,12 +30,18 @@
     ../../secrets/restic-small-files-password.age;
   age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
 
-  modules.backup.small-files = {
-    enable = true;
-    rcloneConfigFile = config.age.secrets."rclone.conf".path;
-    passwordFile = config.age.secrets."restic-small-files-password".path;
-    healthcheck =
-      "https://healthchecks.svc.joannet.casa/ping/92e823bb-17ff-4d94-8a41-fcad88fb3b21";
+  modules.backup = {
+    obsidian = {
+      enable = true;
+      rcloneConfigFile = config.age.secrets."rclone.conf".path;
+    };
+    small-files = {
+      enable = true;
+      rcloneConfigFile = config.age.secrets."rclone.conf".path;
+      passwordFile = config.age.secrets."restic-small-files-password".path;
+      healthcheck =
+        "https://healthchecks.svc.joannet.casa/ping/92e823bb-17ff-4d94-8a41-fcad88fb3b21";
+    };
   };
   modules.caddy.enable = true;
   modules.dashy.enable = true;
