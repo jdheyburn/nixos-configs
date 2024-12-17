@@ -26,6 +26,8 @@ in
       reverse_proxy localhost:${toString catalog.services.obsidian.port}
     '';
 
+    age.secrets."obsidian-environment-file".file = ../../secrets/obsidian-environment-file.age;
+
     virtualisation.oci-containers.containers.obsidian = {
       image = "lscr.io/linuxserver/obsidian:${version}";
       volumes = [ "${dataDir}/config:/config" "${repoDir}:/repo" ];
@@ -36,6 +38,7 @@ in
         PGUID = "100";
         TZ = "Europe/London";
       };
+      environmentFiles = [ config.age.secrets."obsidian-environment-file".path ];
       extraOptions = [
         "--network=bridge"
       ];

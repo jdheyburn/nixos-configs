@@ -30,6 +30,7 @@ in
   "healthchecks-smtp-password.age".publicKeys = default;
   "healthchecks-superuser-password.age".publicKeys = default;
   "minio-root-credentials.age".publicKeys = default;
+  "obsidian-environment-file.age".publicKeys = default;
   "restic-small-files-password.age".publicKeys = default;
   "restic-media-password.age".publicKeys = default;
   "restic-obsidian-password.age".publicKeys = default;
