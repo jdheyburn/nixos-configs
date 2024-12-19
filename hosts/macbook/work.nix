@@ -4,6 +4,7 @@
   homebrew.brews = [
     "rbenv"
     "predatorray/brew/kubectl-tmux-exec"
+    "kwok"
   ];
 
   homebrew.casks = [

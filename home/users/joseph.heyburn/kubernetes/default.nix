@@ -33,7 +33,7 @@ in
     };
     settings = {
       k9s = {
-        ui.enableMouse = true;
+        ui.enableMouse = false;
       };
     };
   };
