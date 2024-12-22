@@ -132,6 +132,12 @@
       modules = [ "prometheusStack" "prometheusStack.loki" ];
     };
 
+    lubelogger = {
+      host = nodes.charlie;
+      port = 5000;
+      modules = [ "lubelogger" ];
+    };
+
     nodeExporter = { port = 9002; };
 
     minio = {
