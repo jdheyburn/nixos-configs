@@ -5,6 +5,7 @@
 with lib;
 
 let
+  version = "1.4.1";
   cfg = config.modules.lubelogger;
 in
 {
@@ -34,11 +35,11 @@ in
         '';
       };
 
-      port = mkOption {
-        description = "The TCP port Lubelogger will listen on.";
-        default = catalog.services.lubelogger.port;
-        type = types.port;
-      };
+      # port = mkOption {
+      #   description = "The TCP port Lubelogger will listen on.";
+      #   default = catalog.services.lubelogger.port;
+      #   type = types.port;
+      # };
 
       user = mkOption {
         description = "User account under which Lubelogger runs.";
@@ -52,11 +53,11 @@ in
         type = types.str;
       };
 
-      openFirewall = mkOption {
-        description = "Open ports in the firewall for the Lubelogger web interface.";
-        default = false;
-        type = types.bool;
-      };
+      # openFirewall = mkOption {
+      #   description = "Open ports in the firewall for the Lubelogger web interface.";
+      #   default = false;
+      #   type = types.bool;
+      # };
     };
   };
 
@@ -81,36 +82,53 @@ in
       # Kestrel__Endpoints__Http__Url = "http://localhost:${toString cfg.port}";
     };
 
-    systemd.services.lubelogger = {
-      description = "Lubelogger, a self-hosted, open-source, web-based vehicle maintenance and fuel milage tracker";
-      after = [ "network.target" ];
-      wantedBy = [ "multi-user.target" ];
-      environment = cfg.settings;
+    # systemd.services.lubelogger = {
+    #   description = "Lubelogger, a self-hosted, open-source, web-based vehicle maintenance and fuel milage tracker";
+    #   after = [ "network.target" ];
+    #   wantedBy = [ "multi-user.target" ];
+    #   environment = cfg.settings;
 
-      serviceConfig = {
-        Type = "simple";
-        User = cfg.user;
-        Group = cfg.group;
-        StateDirectory = baseNameOf cfg.dataDir;
-        WorkingDirectory = cfg.dataDir; # "${cfg.package}/lib/lubelogger";
-        ExecStartPre = pkgs.writeShellScript "lubelogger-prestart" ''
-          cd $STATE_DIRECTORY
-          if [ ! -e .nixos-lubelogger-contentroot-copied ]; then
-            cp -r ${cfg.package}/lib/lubelogger/* .
-            chmod -R 744 .
-            touch .nixos-lubelogger-contentroot-copied
-          fi
-        '';
-        ExecStart = "${lib.getExe cfg.package}";
-        Restart = "on-failure";
-        # BindPaths = [
-        #   "${cfg.dataDir}/config:${cfg.package}/lib/lubelogger/config"
-        #   "${cfg.dataDir}/data:${cfg.package}/lib/lubelogger/data"
-        #   "${cfg.dataDir}/temp:${cfg.package}/lib/lubelogger/wwwroot/temp"
-        #   "${cfg.dataDir}/images:${cfg.package}/lib/lubelogger/wwwroot/images"
-        # ];
-      };
+    #   serviceConfig = {
+    #     Type = "simple";
+    #     User = cfg.user;
+    #     Group = cfg.group;
+    #     StateDirectory = baseNameOf cfg.dataDir;
+    #     WorkingDirectory = cfg.dataDir; # "${cfg.package}/lib/lubelogger";
+    #     ExecStartPre = pkgs.writeShellScript "lubelogger-prestart" ''
+    #       cd $STATE_DIRECTORY
+    #       if [ ! -e .nixos-lubelogger-contentroot-copied ]; then
+    #         cp -r ${cfg.package}/lib/lubelogger/* .
+    #         chmod -R 744 .
+    #         touch .nixos-lubelogger-contentroot-copied
+    #       fi
+    #     '';
+    #     ExecStart = "${lib.getExe cfg.package}";
+    #     Restart = "on-failure";
+    #     # BindPaths = [
+    #     #   "${cfg.dataDir}/config:${cfg.package}/lib/lubelogger/config"
+    #     #   "${cfg.dataDir}/data:${cfg.package}/lib/lubelogger/data"
+    #     #   "${cfg.dataDir}/temp:${cfg.package}/lib/lubelogger/wwwroot/temp"
+    #     #   "${cfg.dataDir}/images:${cfg.package}/lib/lubelogger/wwwroot/images"
+    #     # ];
+    #   };
+    # };
+
+    virtualisation.oci-containers.containers.lubelogger = {
+          image = "ghcr.io/hargata/lubelogger:v${version}";
+          volumes = [
+            "/var/lib/lubelogger/config:/App/config"
+            "/var/lib/lubelogger/data:/App/data"
+            "/var/lib/lubelogger/documents:/App/wwwroot/documents"
+            "/var/lib/lubelogger/images:/App/wwwroot/images"
+            "/var/lib/lubelogger/temp:/App/wwwroot/temp"
+            "/var/lib/lubelogger/log:/App/log"
+            "/var/lib/lubelogger/keys:/root/.aspnet/DataProtection-Key"
+          ];
+          ports = [ "${toString catalog.services.lubelogger.port}:8080" ];
+          # environmentFiles = [ /var/lib/lubelogger/.env ];
+          environment = modules.lubelogger.settings;
     };
+
 
     users.users = mkIf (cfg.user == "lubelogger") {
       lubelogger = {
@@ -122,7 +140,7 @@ in
 
     users.groups = mkIf (cfg.group == "lubelogger") { lubelogger = { }; };
 
-    networking.firewall = mkIf cfg.openFirewall { allowedTCPPorts = [ cfg.port ]; };
+    # networking.firewall = mkIf cfg.openFirewall { allowedTCPPorts = [ cfg.port ]; };
 
     # Inspiration from https://github.com/firecat53/nixos/blob/52269c82a1195d70a4209d75ed8cf774234510ca/hosts/homeserver/services/lubelogger.nix#L7
     # virtualisation.oci-containers.containers.lubelogger = {
