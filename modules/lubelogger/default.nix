@@ -70,8 +70,14 @@ in
       reverse_proxy localhost:${toString catalog.services.lubelogger.port}
     '';
 
-    services.lubelogger.settings = {
+    modules.lubelogger.settings = {
       DOTNET_CONTENTROOT = cfg.dataDir;
+      LC_ALL = "en_GB";
+      LANG = "en_GB";
+      UseDarkMode = "true";
+      EnableAuth = "true";
+      UserNameHash = "b53bdd407e178e9a00eb6d1b5cd5633564030ffb785904f7096109255f01631a";
+      UserPasswordHash = "ab8cd8ab7d3930490ec8233671f4259ebadd84148e9226ac8081097be5c417d1";
       # Kestrel__Endpoints__Http__Url = "http://localhost:${toString cfg.port}";
     };
 
