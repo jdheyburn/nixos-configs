@@ -1,6 +1,7 @@
-{ config, lib, pkgs, flake-self, ... }:
+{ catalog, config, lib, pkgs, flake-self, ... }:
 
 {
+  options.catalog = catalog;
   config = {
     #############################################################################
     ## General

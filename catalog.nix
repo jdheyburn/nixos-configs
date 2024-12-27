@@ -4,6 +4,9 @@
 
   tailscale.domain = "bishop-beardie.ts.net";
 
+  homelab.domain.base = "joannet.casa";
+  homelab.domain.service = "svc.${homelab.domain.base}";
+
   nodesBase = {
     charlie = {
       ip.tailscale = "100.74.217.71";
