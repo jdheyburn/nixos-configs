@@ -25,7 +25,37 @@
   ## Modules
   ###############################################################################
 
+  # TODO these secrets should be defined in the module
+  age.secrets."restic-small-files-password".file =
+    ../../secrets/restic-small-files-password.age;
+  age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
+
+  modules.backup = {
+    obsidian = {
+      enable = true;
+      rcloneConfigFile = config.age.secrets."rclone.conf".path;
+    };
+    small-files = {
+      enable = true;
+      rcloneConfigFile = config.age.secrets."rclone.conf".path;
+      passwordFile = config.age.secrets."restic-small-files-password".path;
+      healthcheck =
+        "https://healthchecks.svc.joannet.casa/ping/92e823bb-17ff-4d94-8a41-fcad88fb3b21";
+    };
+  };
+  modules.caddy.enable = true;
+  modules.dashy.enable = true;
+  modules.lubelogger.enable = true;
   modules.monitoring.enable = true;
+  modules.nfs-client.enable = true;
+  modules.prometheusStack = {
+    enable = true;
+    blackbox.enable = true;
+    grafana.enable = true;
+    loki.enable = true;
+    victoriametrics.enable = true;
+  };
+  modules.remote-builder.enable = true;
 
   environment.systemPackages = [
     pkgs.ffmpeg
@@ -38,20 +68,9 @@
 
   programs.nix-ld.enable = true;
 
-  services.jellyfin.enable = true;
+  services.jellyfin.enable = false;
   services.jellyfin.user = "jdheyburn";
   services.jellyfin.group = "users";
-
-  # For remote builds
-  ## Caddy cannot be built in a sandbox because it retrieves external dependencies (i.e. cloudflare-dns module)
-  nix.settings.sandbox = false;
-  ## Don't garbage collect nix builds from deploy-rs
-  ## Removing this will make failed deploys rebuild every time
-  nix.settings.keep-outputs = true;
-  nix.settings.keep-derivations = true;
-  ## Emulate building for aarch64 (Raspberry Pi)
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
-
 
   # For tailscale exit nodes
   #boot.kernel.sysctl = {

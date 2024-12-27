@@ -177,7 +177,7 @@
           nixOSNodes);
 
         deploy.nodes = builtins.listToAttrs (map
-          (host: {
+          (node: {
             name = node.hostName;
             value = {
               hostname = node.ip.tailscale;

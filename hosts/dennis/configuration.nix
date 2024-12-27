@@ -41,7 +41,7 @@
   age.secrets."restic-small-files-password".file =
     ../../secrets/restic-small-files-password.age;
 
-  modules.backupSF = {
+  modules.backup.small-files = {
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     healthcheck =

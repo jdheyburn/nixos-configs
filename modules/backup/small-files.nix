@@ -4,31 +4,25 @@ with lib;
 
 let
 
-  cfg = config.modules.backupSF;
+  cfg = config.modules.backup.small-files;
 
-  healthcheckAfter =
-    if cfg.prune then
-      "restic-backups-small-files-prune.service"
-    else
-      "restic-backups-small-files.service";
-
+  # Prune would only be executed on one host, so it has a static healthcheck
+  healthcheckPrune = "https://healthchecks.svc.joannet.casa/ping/fea7ebdd-b6dc-4eb5-b577-39aff3966ad4";
 in
 {
 
-  options.modules.backupSF = {
+  options.modules.backup.small-files = {
     enable =
       mkEnableOption "Enable backup of defined paths to small-files repo";
 
     repository = mkOption {
       type = types.str;
-      default = "/mnt/nfs/restic/small-files";
+      default = "rclone:b2:iifu8Noi-backups/restic/small-files";
     };
 
     passwordFile = mkOption { type = types.path; };
 
-    # TODO discover what paths to backup depending on what services are running on the box
-    # then change this to allow extraPaths
-    paths = mkOption { type = types.listOf types.str; };
+    rcloneConfigFile = mkOption { type = types.path; };
 
     extraBackupArgs = mkOption {
       type = types.listOf types.str;
@@ -47,7 +41,7 @@ in
 
     pruneTime = mkOption {
       type = types.str;
-      default = "*-*-* 02:30:00";
+      default = "Tue *-*-* 02:30:00";
     };
 
     healthcheck = mkOption {
@@ -61,14 +55,24 @@ in
     {
       services.restic.backups.small-files = {
         repository = cfg.repository;
+        rcloneConfigFile = cfg.rcloneConfigFile;
         passwordFile = cfg.passwordFile;
         timerConfig = { OnCalendar = cfg.backupTime; };
+        backupPrepareCommand = "${pkgs.curl}/bin/curl ${cfg.healthcheck}/start";
+        backupCleanupCommand = ''
+          preStartExitStatus=$(systemctl show restic-backups-small-files --property=ExecStartPre | grep -oEi 'status=([[:digit:]]+)' | cut -d '=' -f2)
+          echo "preStartExitStatus=$preStartExitStatus"
+          echo "EXIT_STATUS=$EXIT_STATUS"
+          [ $preStartExitStatus -ne 0 ] && returnStatus=$preStartExitStatus || returnStatus=$EXIT_STATUS
+          ${pkgs.curl}/bin/curl ${cfg.healthcheck}/$returnStatus
+        '';
       };
     }
 
     (mkIf cfg.prune {
       services.restic.backups.small-files-prune = {
         repository = cfg.repository;
+        rcloneConfigFile = cfg.rcloneConfigFile;
         passwordFile = cfg.passwordFile;
         pruneOpts = [
           "--keep-daily 7"
@@ -77,18 +81,13 @@ in
           "--keep-yearly 3"
         ];
         timerConfig = { OnCalendar = cfg.pruneTime; };
-      };
-    })
-
-    (mkIf (cfg.healthcheck != "") {
-      systemd.services.restic-backups-small-files-healthcheck = {
-        enable = true;
-        wantedBy = [ healthcheckAfter ];
-        after = [ healthcheckAfter ];
-        environment = { HEALTHCHECK_ENDPOINT = cfg.healthcheck; };
-        script = ''
-          echo "sending healthcheck to $HEALTHCHECK_ENDPOINT"
-          ${pkgs.curl}/bin/curl -v $HEALTHCHECK_ENDPOINT
+        backupPrepareCommand = "${pkgs.curl}/bin/curl ${healthcheckPrune}/start";
+        backupCleanupCommand = ''
+          preStartExitStatus=$(systemctl show restic-backups-small-files-prune --property=ExecStartPre | grep -oEi 'status=([[:digit:]]+)' | cut -d '=' -f2)
+          echo "preStartExitStatus=$preStartExitStatus"
+          echo "EXIT_STATUS=$EXIT_STATUS"
+          [ $preStartExitStatus -ne 0 ] && returnStatus=$preStartExitStatus || returnStatus=$EXIT_STATUS
+          ${pkgs.curl}/bin/curl ${healthcheckPrune}/$returnStatus
         '';
       };
     })

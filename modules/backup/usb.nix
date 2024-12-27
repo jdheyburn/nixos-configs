@@ -4,57 +4,22 @@ with lib;
 
 let
 
-  cfg = config.modules.backupUSB;
+  cfg = config.modules.backup.usb;
 
-  # TODO refactor into function
-  healthcheckRcloneMediaStartScript =
-    optionalString (cfg.healthcheckRcloneMedia != "") ''
-      echo "sending start healthcheck to ${cfg.healthcheckRcloneMedia}/start"
-      ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneMedia}/start
-    '';
+  healthcheckResticMedia = "https://healthchecks.svc.joannet.casa/ping/ddc2053b-0b28-48ad-9044-ecdcc79446d9";
 
-  healthcheckRcloneMediaFinishScript =
-    optionalString (cfg.healthcheckRcloneMedia != "") ''
-      echo "sending finish healthcheck to ${cfg.healthcheckRcloneMedia}"
-      ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneMedia}
-    '';
-
-  healthcheckRcloneSmallFilesStartScript =
-    optionalString (cfg.healthcheckRcloneSmallFiles != "") ''
-      echo "sending start healthcheck to ${cfg.healthcheckRcloneSmallFiles}/start"
-      ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneSmallFiles}/start
-    '';
-
-  healthcheckRcloneSmallFilesFinishScript =
-    optionalString (cfg.healthcheckRcloneSmallFiles != "") ''
-      echo "sending finish healthcheck to ${cfg.healthcheckRcloneSmallFiles}"
-      ${pkgs.curl}/bin/curl -v ${cfg.healthcheckRcloneSmallFiles}
-    '';
+  healthcheckRcloneMedia =
+    "https://healthchecks.svc.joannet.casa/ping/8f0ec51d-39b8-4853-8f7a-6076eb3ec60d";
 
 in
 {
 
-  options.modules.backupUSB = {
+  options.modules.backup.usb = {
     enable = mkEnableOption "Enable backup of media and rclone to cloud";
-    healthcheckResticMedia = mkOption {
-      type = types.str;
-      default = "";
-    };
-    healthcheckRcloneMedia = mkOption {
-      type = types.str;
-      default = "";
-    };
-    healthcheckRcloneSmallFiles = mkOption {
-      type = types.str;
-      default = "";
-    };
   };
 
-  config = mkIf cfg.enable (mkMerge [
+  config = mkIf cfg.enable
     {
-
-      age.secrets."rclone.conf".file = ../../secrets/rclone.conf.age;
-
       age.secrets."restic-media-password".file =
         ../../secrets/restic-media-password.age;
 
@@ -63,9 +28,9 @@ in
         passwordFile = config.age.secrets."restic-media-password".path;
         pruneOpts = [
           "--keep-daily 30"
-          "--keep-weekly 0"
-          "--keep-monthly 0"
-          "--keep-yearly 0"
+          "--keep-weekly 5"
+          "--keep-monthly 12"
+          "--keep-yearly 3"
         ];
         paths = [
           "/mnt/usb/Backup/media/beets-db"
@@ -74,18 +39,26 @@ in
           "/mnt/usb/Backup/media/vinyl"
         ];
         timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
+        backupPrepareCommand = "${pkgs.curl}/bin/curl ${healthcheckResticMedia}/start";
+        backupCleanupCommand = ''
+          preStartExitStatus=$(systemctl show restic-backups-media --property=ExecStartPre | grep -oEi 'status=([[:digit:]]+)' | cut -d '=' -f2)
+          echo "preStartExitStatus=$preStartExitStatus"
+          echo "EXIT_STATUS=$EXIT_STATUS"
+          [ $preStartExitStatus -ne 0 ] && returnStatus=$preStartExitStatus || returnStatus=$EXIT_STATUS
+          ${pkgs.curl}/bin/curl ${healthcheckResticMedia}/$returnStatus
+        '';
       };
 
+      # Once media has been backed up, rsync to cloud storage
       systemd.services.rclone-media = {
         enable = true;
-        # TODO can I refer to this from output of services.restic.backups.media ?
         wantedBy = [ "restic-backups-media.service" ];
         after = [ "restic-backups-media.service" ];
         environment = {
           RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
         };
         script = ''
-          ${healthcheckRcloneMediaStartScript}
+          ${pkgs.curl}/bin/curl ${healthcheckRcloneMedia}/start
 
           echo "rcloning beets-db -> gdrive:media/beets-db"
           ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/media/beets-db gdrive:media/beets-db --config=$RCLONE_CONF_PATH
@@ -105,39 +78,8 @@ in
           echo "rcloning minio -> b2:minio"
           ${pkgs.rclone}/bin/rclone -v sync minio: b2:iifu8Noi-backups/minio --config=$RCLONE_CONF_PATH
 
-          ${healthcheckRcloneMediaFinishScript}
+          ${pkgs.curl}/bin/curl ${healthcheckRcloneMedia}
         '';
       };
-
-      systemd.services.rclone-small-files = {
-        enable = true;
-        wantedBy = [ "restic-backups-small-files-prune.service" ];
-        after = [ "restic-backups-small-files-prune.service" ];
-        environment = {
-          RCLONE_CONF_PATH = config.age.secrets."rclone.conf".path;
-        };
-        script = ''
-          ${healthcheckRcloneSmallFilesStartScript}
-
-          echo "rclone restic/small-files -> b2:restic/small-files"
-          ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/small-files b2:iifu8Noi-backups/restic/small-files --config=$RCLONE_CONF_PATH
-
-          ${healthcheckRcloneSmallFilesFinishScript}
-        '';
-      };
-    }
-
-    (mkIf (cfg.healthcheckResticMedia != "") {
-      systemd.services.restic-backups-media-healthcheck = {
-        enable = true;
-        wantedBy = [ "restic-backups-media.service" ];
-        after = [ "restic-backups-media.service" ];
-        environment = { HEALTHCHECK_ENDPOINT = cfg.healthcheckResticMedia; };
-        script = ''
-          echo "sending healthcheck to $HEALTHCHECK_ENDPOINT"
-          ${pkgs.curl}/bin/curl -v $HEALTHCHECK_ENDPOINT
-        '';
-      };
-    })
-  ]);
+    };
 }

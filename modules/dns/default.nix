@@ -1,11 +1,21 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, flake-self, pkgs, lib, ... }:
 
 with lib;
 
 let
   cfg = config.modules.dns;
 
-  shouldDNS = service: service ? "dns" && service.dns ? "enable" && service.dns.enable;
+  isEnabled = moduleName: hostName:
+    let
+      parts = splitString "." moduleName;
+      module = builtins.foldl' (acc: part: builtins.getAttr part acc) flake-self.nixosConfigurations."${hostName}".config.modules parts;
+    in
+    module.enable;
+
+  shouldDNS = service:
+    # Only create DNS entries if the host that catalog.service says its running on has it enabled
+    # service.modules is a list of strings that contain paths to check for enabling, see catalog.nix
+    service ? "modules" && (all (x: x) (map (moduleName: isEnabled moduleName service.host.hostName) service.modules));
 
   # Get services which are being served by caddy
   caddy_services = attrValues (filterAttrs
@@ -16,7 +26,7 @@ let
   service_rewrites = map
     (service: {
       domain = "${service.name}.svc.joannet.casa";
-      answer = service.host.ip.private;
+      answer = if service.host.ip ? "private" then service.host.ip.private else service.host.ip.tailscale;
     })
     caddy_services;
   # Add rewrites for any node that has a domain

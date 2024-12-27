@@ -208,6 +208,9 @@ in
       "files.autoSave" = "afterDelay";
       "files.autoSaveDelay" = 1000;
 
+      # Disable the warning when syncing (git push) via GUI
+      "git.confirmSync" = false;
+
       "python.showStartPage" = false;
 
       # Disable warning when built-in terminal wants to load files into editor view

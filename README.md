@@ -11,7 +11,10 @@ A place for me to dump nix configs
 nix run github:serokell/deploy-rs -- -s "."
 
 # per host
-nix run github:serokell/deploy-rs -- -s ".#dennis"
+nix run github:serokell/deploy-rs -- -s ".#dee"
+
+# more explicit parameters
+nix run github:serokell/deploy-rs -- --keep-result --auto-rollback false --magic-rollback false --activation-timeout 3600 -s ".#dee"
 ```
 
 ## Catalog
@@ -26,9 +29,13 @@ Services is a mapping of service name to service attributes, it can accept:
   - The node that runs this service
 - `port`
   - Port this service runs on
-- `dns.enable`
-  - Whether a DNS rewrite entry should be created on the DNS server
-  - i.e. gives the service a `$SERVICE.svc.joannet.casa` hostname
+- `modules`
+  - A list of strings containing the modules to check on the desired host to see if its enabled
+    - e.g. `[ "prometheusStack" "prometheusStack.grafana" ]`
+    - Downstream dependencies resolve to true if both `modules.prometheusStack.enable` and `modules.prometheusStack.grafana.enable` are true
+  - Used to determine whether:
+    - DNS rewrite entry is created on the DNS server
+    - Blackbox exporter should perform healthchecks against it
 - `dashy.section`
   - What section in dashy it should fall under
 - `dashy.description`
@@ -56,14 +63,16 @@ Hosts are defined in `nodes`, which can have these attributes:
   - Private IP address
 - `ip.tailscale`
   - IP address as tailscale sees it
-- `domain`
-  - If the host is on an 'external' domain to the homelab
+- `system`
+  - What system architecture is this host
+  - Also used to determine if it is a nixOS or darwin (macOS) machine
+- `nixosHardware`
+  - Any [nixos-hardware](https://github.com/NixOS/nixos-hardware) flakes that should be included on this host
 - `shouldScrape`
   - If Prometheus should scrape this node for metrics
-  - This is only temporary while I decom the non-NixOS hosts
-- `isNixOS`
-  - Whether this node is on NixOS or not
-  - Infers some properties about the node
+  - This is only temporary while I decom the non-NixOS hosts (TODO)
+- `users`
+  - list of users that should have home-manager configurations enabled for
 
 ## Runbooks
 
@@ -81,6 +90,40 @@ Hosts are defined in `nodes`, which can have these attributes:
 
 3. Update container images
     - [dashy](https://github.com/Lissy93/dashy/releases)
+
+### Adding secrets
+
+Secrets are managed by [agenix](https://github.com/ryantm/agenix).
+
+1. Ensure the host or user you're on has it's public key added to `secrets/secrets.nix`, look in `/etc/ssh/ssh_host_ed25519_key.pub`.
+
+2. cd to `secrets`
+
+3. Execute `nix run github:ryantm/agenix -- -e FILENAME.age`
+
+4. Add the file to git so that flakes can see it
+
+5. Reference the secret where you need it, i.e.:
+
+```nix
+age.secrets."healthchecks-secrets-file" = {
+  file = ../../secrets/healthchecks-secrets-file.age;
+  owner = "healthchecks";
+  group = "healthchecks";
+};
+
+mySecretFile = config.age.secrets."healthchecks-secrets-file".path;
+```
+
+### Setting null sha256
+
+Explicitly setting the sha256 attribute to an empty string will have Nix assume no validation.
+
+It will then error on a hash mismatch, so copy the actual hash and paste it in the empty string.
+
+```nix
+sha256 = "";
+```
 
 ## Tips
 

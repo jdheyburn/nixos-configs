@@ -15,7 +15,7 @@ in
 
     # Additional kube switchers in testing
     kubectx
-    kubie
+    # kubie
 
     # switcher - better kubectl context and namespace switching
     # kubeswitch
@@ -33,22 +33,20 @@ in
     };
     settings = {
       k9s = {
-        ui.enableMouse = true;
+        ui.enableMouse = false;
       };
     };
   };
 
   programs.zsh = {
     shellAliases = {
-      kc = "kubie ctx";
-      kn = "kubie ns";
+      kc = "kubectx";
+      kn = "kubens";
     };
     initExtra = ''
       ${builtins.readFile ./zsh-initExtra-kubectl_aliases.zsh}
     '';
   };
-
-
 
   home.file.".kube/kubie.yaml" = {
     enable = true;

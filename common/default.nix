@@ -48,6 +48,57 @@
     programs.ssh.startAgent = true;
 
     services.tailscale.enable = true;
+    # Below used as a test to see if I could get NFS clients to mount over tailscale
+    # It wasn't needed in the end but keeping it in case I do down the line
+    systemd.timers."tailscale-dispatcher" = {
+      bindsTo = [ "tailscaled.service" ];
+      after = [ "tailscaled.service" ];
+      wantedBy = [ "tailscaled.service" ];
+      timerConfig = {
+        OnBootSec = "0";
+        OnUnitInactiveSec = "10";
+        AccuracySec = "1";
+      };
+    };
+    systemd.services."tailscale-dispatcher" = {
+      requisite = [ "tailscaled.service" ];
+      after = [ "tailscaled.service" ];
+      serviceConfig.Type = "oneshot";
+      script = with pkgs; ''
+        get-state() {
+          if ${systemd}/bin/systemctl is-active --quiet tailscaled.service && [[ $(${tailscale}/bin/tailscale status --peers=false --json=true | ${jq}/bin/jq -r '.Self.Online') = "true" ]]; then
+            current_state="online"
+          else
+            current_state="offline"
+          fi
+        }
+        transition() {
+          if [[ "$current_state" != "$prev_state" ]]; then
+            if [[ "$current_state" = "online" ]]; then
+              ${systemd}/bin/systemctl start tailscale-online.target
+            else
+              ${systemd}/bin/systemctl stop tailscale-online.target
+            fi
+            echo "$current_state" > /tmp/tailscale-state
+          fi
+        }
+        check-state() {
+          get-state
+          if [[ -s /tmp/tailscale-state ]]; then
+            prev_state=$(</tmp/tailscale-state)
+          else
+            prev_state="offline"
+          fi
+          transition
+        }
+        check-state
+      '';
+    };
+    systemd.targets."tailscale-online" = {
+      after = [ "tailscaled.service" ];
+      bindsTo = [ "tailscaled.service" ];
+    };
+
     # Tailscale wants this setting for: "Strict reverse path filtering breaks Tailscale exit node use and some subnet routing setups"
     # If making tailscale optional in future, consider conditionally setting below if enabled
     networking.firewall.checkReversePath = "loose";

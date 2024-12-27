@@ -2,10 +2,10 @@
 
 with lib;
 
-let cfg = config.modules.nfs;
+let cfg = config.modules.nfs-server;
 in {
 
-  options.modules.nfs = { enable = mkEnableOption "Deploy NFS server"; };
+  options.modules.nfs-server = { enable = mkEnableOption "Deploy NFS server"; };
 
   config = mkIf cfg.enable {
 

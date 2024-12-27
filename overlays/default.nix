@@ -12,6 +12,8 @@ in final: prev: {
   # Fix to previous velero version
   velero_1_9_5 = prev.callPackage ./velero { };
 
+  victoriametrics-enterprise = prev.callPackage ./victoriametrics-enterprise { };
+
   # Disabled since AGH has since been updated
   # adguardhome = prev.callPackage ./adguardhome { };
 

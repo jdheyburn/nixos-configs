@@ -2,3 +2,12 @@ prompt:
   disable: true
 behavior:
   validate_namespaces: partial
+configs:
+  include:
+    - ~/.kube/config
+    - ~/.kube/*.yml
+    - ~/.kube/*.yaml
+    - ~/.kube/configs/*.yml
+    - ~/.kube/configs/*.yaml
+    - ~/.kube/kubie/*.yml
+    - ~/.kube/kubie/*.yaml

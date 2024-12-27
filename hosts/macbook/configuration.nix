@@ -29,7 +29,7 @@
   # Cleanup old files
   nix.gc.automatic = true;
   nix.gc.options = "--delete-older-than 30d";
-  nix.settings.auto-optimise-store = true;
+  nix.optimise.automatic = true;
 
   # Show diff after switch - https://gist.github.com/luishfonseca/f183952a77e46ccd6ef7c907ca424517
   system.activationScripts.postUserActivation = {
