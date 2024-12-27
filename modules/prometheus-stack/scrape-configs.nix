@@ -7,7 +7,7 @@ let
   nodeExporterTargets =
     map
       (node:
-        "${node.hostName}.${catalog.homelab.domain.tailscale}"
+        "${node.hostName}.${catalog.domain.tailscale}"
       )
       (attrValues (filterAttrs (node_name: node_def: node_def ? "shouldScrape" && node_def.shouldScrape) catalog.nodes));
 
@@ -110,7 +110,7 @@ let
 
   promtail_targets = map
     (node:
-      "${node.hostName}.${catalog.homelab.domain.tailscale}:${toString catalog.services.promtail.port}"
+      "${node.hostName}.${catalog.domain.tailscale}:${toString catalog.services.promtail.port}"
     )
     nixOSNodes;
 
@@ -158,7 +158,7 @@ in
     job_name = "unifi";
     static_configs = [{
       targets = [
-        "${catalog.services.unifi.host.hostName}.${catalog.homelab.domain.tailscale}:${
+        "${catalog.services.unifi.host.hostName}.${catalog.domain.tailscale}:${
           toString config.services.prometheus.exporters.unpoller.port
         }"
       ];
@@ -218,7 +218,7 @@ in
     job_name = "zfs";
     static_configs = [{
       targets = [
-        "dee.${catalog.homelab.domain.tailscale}:${
+        "dee.${catalog.domain.tailscale}:${
            toString config.services.prometheus.exporters.zfs.port
          }"
       ];
