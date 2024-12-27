@@ -33,9 +33,13 @@ in
 
     services.caddy = {
       enable = true;
-      package = (pkgs.callPackage ./custom-caddy.nix {
+      package = pkgs.caddy.withPlugins {
         plugins = [ "github.com/caddy-dns/cloudflare" ];
-      });
+        hash = "";
+      };
+      # package = (pkgs.callPackage ./custom-caddy.nix {
+      #   plugins = [ "github.com/caddy-dns/cloudflare" ];
+      # });
     };
 
     systemd.services.caddy = {
