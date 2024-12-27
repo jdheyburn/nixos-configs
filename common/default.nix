@@ -1,7 +1,18 @@
 { catalog, config, lib, pkgs, flake-self, ... }:
 
 {
-  options.catalog = catalog;
+  options = {
+    catalog = {
+      domain.base = lib.mkOption {
+        type = lib.types.str;
+        default = catalog.domain.base;
+      };
+      domain.service = lib.mkOption {
+        type = lib.types.str;
+        default = catalog.domain.service;
+      };
+    };
+  };
   config = {
     #############################################################################
     ## General
@@ -13,7 +24,7 @@
 
     boot.tmp.cleanOnBoot = true;
 
-    networking.domain = "joannet.casa";
+    networking.domain = config.catalog.domain.base;
 
     #############################################################################
     ## Locale

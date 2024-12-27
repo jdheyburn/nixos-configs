@@ -4,8 +4,10 @@
 
   tailscale.domain = "bishop-beardie.ts.net";
 
-  homelab.domain.base = "joannet.casa";
-  homelab.domain.service = "svc.${homelab.domain.base}";
+  domain = {
+    base = "joannet.casa";
+    service = "svc.${domain.base}";
+  };
 
   nodesBase = {
     charlie = {
