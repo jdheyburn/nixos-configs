@@ -48,6 +48,7 @@
   modules.lubelogger.enable = true;
   modules.monitoring.enable = true;
   modules.nfs-client.enable = true;
+  modules.paperless.enable = true;
   modules.prometheusStack = {
     enable = true;
     blackbox.enable = true;

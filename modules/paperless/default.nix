@@ -1,8 +1,10 @@
-{ config, catalog, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, ... }:
 
 with lib;
 
-let cfg = config.modules.paperless;
+let
+  cfg = config.modules.paperless;
+  port = catalog.services.paperless.port;
 in {
 
   options.modules.paperless = {
@@ -11,11 +13,11 @@ in {
 
   config = mkIf cfg.enable {
 
-    services.caddy.virtualHosts."paperless.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."paperless.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
       }
-      reverse_proxy localhost:${toString catalog.services.paperless.port}
+      reverse_proxy localhost:${toString port}
     '';
 
     #networking.firewall.allowedTCPPorts =
@@ -24,7 +26,7 @@ in {
     services.paperless = {
       enable = true;
       address = "0.0.0.0";
-      port = catalog.services.paperless.port;
+      port = port;
     };
   };
 }
