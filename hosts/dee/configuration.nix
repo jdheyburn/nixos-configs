@@ -1,4 +1,4 @@
-{ argononed, config, pkgs, lib, ... }: {
+{ argononed, catalog, config, pkgs, lib, ... }: {
 
   imports = [ ./hardware-configuration.nix "${argononed}/OS/nixos" ];
 

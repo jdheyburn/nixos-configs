@@ -25,7 +25,7 @@ in {
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
       }
-      reverse_proxy localhost:${toString port}
+      reverse_proxy localhost:${toString serverPort}
     '';
     services.caddy.virtualHosts."ui.minio.${catalog.domain.service}".extraConfig = ''
       tls {
@@ -37,7 +37,7 @@ in {
     services.minio = {
       enable = true;
       dataDir = [ cfg.dataDir ];
-      listenAddress = ":${toString port}";
+      listenAddress = ":${toString serverPort}";
       consoleAddress = ":${toString consolePort}";
       rootCredentialsFile = config.age.secrets."minio-root-credentials".path;
     };

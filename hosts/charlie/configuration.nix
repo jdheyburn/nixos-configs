@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ catalog, config, lib, pkgs, ... }:
 {
 
   imports = [ ./hardware-configuration.nix ./networking.nix ];
