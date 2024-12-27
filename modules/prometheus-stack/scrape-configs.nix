@@ -7,7 +7,7 @@ let
   nodeExporterTargets =
     map
       (node:
-        "${node.hostName}.${catalog.tailscale.domain}"
+        "${node.hostName}.${catalog.domain.tailscale}"
       )
       (attrValues (filterAttrs (node_name: node_def: node_def ? "shouldScrape" && node_def.shouldScrape) catalog.nodes));
 
@@ -41,7 +41,7 @@ let
     in
     map
       (service:
-        "https://${service.name}.svc.joannet.casa${getPath service};${
+        "https://${service.name}.${catalog.domain.service}${getPath service};${
       getHumanName service
     };internal")
       caddified_services;
@@ -110,7 +110,7 @@ let
 
   promtail_targets = map
     (node:
-      "${node.hostName}.${catalog.tailscale.domain}:${toString catalog.services.promtail.port}"
+      "${node.hostName}.${catalog.domain.tailscale}:${toString catalog.services.promtail.port}"
     )
     nixOSNodes;
 
@@ -158,7 +158,7 @@ in
     job_name = "unifi";
     static_configs = [{
       targets = [
-        "${catalog.services.unifi.host.hostName}.${catalog.tailscale.domain}:${
+        "${catalog.services.unifi.host.hostName}.${catalog.domain.tailscale}:${
           toString config.services.prometheus.exporters.unpoller.port
         }"
       ];
@@ -198,7 +198,7 @@ in
     job_name = "minio";
     metrics_path = "/minio/v2/metrics/cluster";
     scheme = "https";
-    static_configs = [{ targets = [ "minio.svc.joannet.casa" ]; }];
+    static_configs = [{ targets = [ "minio.${catalog.domain.service}" ]; }];
   }
   {
     job_name = "loki";
@@ -218,7 +218,7 @@ in
     job_name = "zfs";
     static_configs = [{
       targets = [
-        "dee.${catalog.tailscale.domain}:${
+        "dee.${catalog.domain.tailscale}:${
            toString config.services.prometheus.exporters.zfs.port
          }"
       ];

@@ -14,7 +14,7 @@ in {
       mode = "0444";
     };
 
-    services.caddy.virtualHosts."victoriametrics.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."victoriametrics.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         # Below required to get TLS to work on non-local hosts (i.e. charlie)

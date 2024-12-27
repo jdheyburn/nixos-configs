@@ -77,7 +77,7 @@
     rcloneConfigFile = config.age.secrets."rclone.conf".path;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     healthcheck =
-      "https://healthchecks.svc.joannet.casa/ping/2d062a25-b297-45c0-a2b3-cdb188802fb8";
+      "https://healthchecks.${catalog.domain.service}/ping/2d062a25-b297-45c0-a2b3-cdb188802fb8";
     # Prune should only be executed on one host
     prune = true;
   };
@@ -95,18 +95,6 @@
   modules.unifi.enable = true;
 
   services.prometheus.exporters.zfs.enable = true;
-
-  # dee does some extra forwarding to non-NixOS hosts, which are to be decommed
-  services.caddy.virtualHosts."proxmox.svc.joannet.casa".extraConfig = ''
-    tls {
-      dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-    }
-    reverse_proxy ${catalog.nodes.pve0.ip.private}:${toString catalog.services.proxmox.port} {
-      transport http {
-        tls_insecure_skip_verify
-      }
-    }
-  '';
 
   nix.buildMachines = [{
     hostName = "charlie";

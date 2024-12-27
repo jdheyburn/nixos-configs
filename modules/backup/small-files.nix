@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, ... }:
 
 with lib;
 
@@ -7,7 +7,7 @@ let
   cfg = config.modules.backup.small-files;
 
   # Prune would only be executed on one host, so it has a static healthcheck
-  healthcheckPrune = "https://healthchecks.svc.joannet.casa/ping/fea7ebdd-b6dc-4eb5-b577-39aff3966ad4";
+  healthcheckPrune = "https://healthchecks.${catalog.domain.service}/ping/fea7ebdd-b6dc-4eb5-b577-39aff3966ad4";
 in
 {
 
