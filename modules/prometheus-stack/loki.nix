@@ -11,7 +11,7 @@ in
 
   config = mkIf (cfg.enable && cfg.loki.enable)
     {
-      services.caddy.virtualHosts."loki.svc.joannet.casa".extraConfig = ''
+      services.caddy.virtualHosts."loki.${catalog.domain.service}".extraConfig = ''
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
           # Below required to get TLS to work on non-local hosts (i.e. charlie)
