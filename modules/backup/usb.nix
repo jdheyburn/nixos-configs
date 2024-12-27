@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, ... }:
 
 with lib;
 
@@ -6,10 +6,10 @@ let
 
   cfg = config.modules.backup.usb;
 
-  healthcheckResticMedia = "https://healthchecks.svc.joannet.casa/ping/ddc2053b-0b28-48ad-9044-ecdcc79446d9";
+  healthcheckResticMedia = "https://healthchecks.${catalog.domain.service}/ping/ddc2053b-0b28-48ad-9044-ecdcc79446d9";
 
   healthcheckRcloneMedia =
-    "https://healthchecks.svc.joannet.casa/ping/8f0ec51d-39b8-4853-8f7a-6076eb3ec60d";
+    "https://healthchecks.${catalog.domain.service}/ping/8f0ec51d-39b8-4853-8f7a-6076eb3ec60d";
 
 in
 {

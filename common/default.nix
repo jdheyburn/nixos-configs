@@ -1,18 +1,6 @@
 { catalog, config, lib, pkgs, flake-self, ... }:
 
 {
-  options = {
-    catalog = {
-      domain.base = lib.mkOption {
-        type = lib.types.str;
-        default = catalog.domain.base;
-      };
-      domain.service = lib.mkOption {
-        type = lib.types.str;
-        default = catalog.domain.service;
-      };
-    };
-  };
   config = {
     #############################################################################
     ## General
@@ -24,7 +12,7 @@
 
     boot.tmp.cleanOnBoot = true;
 
-    networking.domain = config.catalog.domain.base;
+    networking.domain = catalog.domain.base;
 
     #############################################################################
     ## Locale

@@ -25,7 +25,7 @@ let
   # For each service create a list of rewrites
   service_rewrites = map
     (service: {
-      domain = "${service.name}.svc.joannet.casa";
+      domain = "${service.name}.${catalog.domain.service}";
       answer = if service.host.ip ? "private" then service.host.ip.private else service.host.ip.tailscale;
     })
     caddy_services;
@@ -39,6 +39,8 @@ let
     (attrValues (filterAttrs (node_name: node_def: node_def ? "domain") catalog.nodes));
 
   rewrites = service_rewrites ++ host_rewrites;
+
+  port = catalog.services.adguard.port;
 in
 {
 
@@ -46,14 +48,14 @@ in
 
   config = mkIf cfg.enable {
 
-    services.caddy.virtualHosts."adguard.svc.joannet.casa" = {
+    services.caddy.virtualHosts."adguard.${catalog.domain.service}" = {
       # Routing config inspired from below:
       # https://github.com/linuxserver/reverse-proxy-confs/blob/20c5dbdcff92442262ed8907385e477935ea9336/aria2-with-webui.subdomain.conf.sample
       extraConfig = ''
         tls {
           dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         }
-        reverse_proxy localhost:${toString catalog.services.adguard.port}
+        reverse_proxy localhost:${toString port}
       '';
     };
 
@@ -79,7 +81,7 @@ in
       ];
       mutableSettings = false;
       settings = {
-        port = catalog.services.adguard.port;
+        port = port;
         users = [{
           name = "admin";
           password =

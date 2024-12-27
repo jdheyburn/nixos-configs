@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, ... }:
 
 with lib;
 
@@ -10,7 +10,7 @@ in {
 
   config = mkIf cfg.enable {
 
-    services.caddy.virtualHosts."aria2.svc.joannet.casa" = {
+    services.caddy.virtualHosts."aria2.${catalog.domain.service}" = {
       # Routing config inspired from below:
       # https://github.com/linuxserver/reverse-proxy-confs/blob/20c5dbdcff92442262ed8907385e477935ea9336/aria2-with-webui.subdomain.conf.sample
       extraConfig = ''

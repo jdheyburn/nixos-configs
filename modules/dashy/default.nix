@@ -46,7 +46,7 @@ let
           (service: {
             title = service.name;
             description = service.dashy.description;
-            url = "https://${service.name}.svc.joannet.casa";
+            url = "https://${service.name}.${catalog.domain.service}";
             icon = service.dashy.icon;
           })
           services;
@@ -93,24 +93,26 @@ let
       sed -i -e "s/'\!\([a-z_]\+\) \(.*\)'/\!\1 \2/;s/^\!\!/\!/;" $out
     '';
 
+  port = catalog.services.home.port;
+
 in
 {
   options.modules.dashy = { enable = mkEnableOption "enable dashy"; };
 
   config = mkIf cfg.enable {
-    services.caddy.virtualHosts."home.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."home.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         # Below required to get TLS to work on non-local hosts (i.e. charlie)
         resolvers 8.8.8.8
       }
-      reverse_proxy localhost:${toString catalog.services.home.port}
+      reverse_proxy localhost:${toString port}
     '';
 
     virtualisation.oci-containers.containers.dashy = {
       image = "lissy93/dashy:${version}";
       volumes = [ "${configFile}:/app/user-data/conf.yml" ];
-      ports = [ "${toString catalog.services.home.port}:8080" ];
+      ports = [ "${toString port}:8080" ];
     };
   };
 }

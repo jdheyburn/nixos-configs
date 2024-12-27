@@ -7,6 +7,7 @@ let
   dataDir = "/var/lib/lubelogger";
   version = "1.4.1";
   cfg = config.modules.lubelogger;
+  port = catalog.services.lubelogger.port;
 in
 {
   options = {
@@ -16,13 +17,13 @@ in
   };
 
   config = mkIf cfg.enable {
-    services.caddy.virtualHosts."lubelogger.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."lubelogger.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         # Below required to get TLS to work on non-local hosts (i.e. charlie)
         resolvers 8.8.8.8
       }
-      reverse_proxy localhost:${toString catalog.services.lubelogger.port}
+      reverse_proxy localhost:${toString port}
     '';
 
     virtualisation.oci-containers.containers.lubelogger = {
@@ -36,7 +37,7 @@ in
         "${dataDir}/log:/App/log"
         "${dataDir}/keys:/root/.aspnet/DataProtection-Key"
       ];
-      ports = [ "${toString catalog.services.lubelogger.port}:8080" ];
+      ports = [ "${toString port}:8080" ];
       environment = {
         LC_ALL = "en_GB";
         LANG = "en_GB";

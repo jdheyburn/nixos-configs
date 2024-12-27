@@ -19,7 +19,7 @@ in {
       group = "grafana";
     };
 
-    services.caddy.virtualHosts."grafana.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."grafana.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         # Below required to get TLS to work on non-local hosts (i.e. charlie)
@@ -37,7 +37,7 @@ in {
         database.wal = true;
 
         server = {
-          root_url = "https://grafana.svc.joannet.casa";
+          root_url = "https://grafana.${catalog.domain.service}";
           http_addr = "0.0.0.0";
           http_port = catalog.services.grafana.port;
           enable_gzip = true;
