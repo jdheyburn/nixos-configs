@@ -169,7 +169,7 @@
     paperless = {
       host = nodes.charlie;
       port = 28981;
-      dns.enable = false;
+      modules = [ "paperless" ];
     };
 
     portainer = {
