@@ -2,7 +2,11 @@
 # Inspired from https://github.com/jhillyerd/homelab/blob/main/nixos/catalog.nix
 { nixos-hardware }: rec {
 
-  tailscale.domain = "bishop-beardie.ts.net";
+  domain = {
+    base = "joannet.casa";
+    service = "svc.${domain.base}";
+    tailscale = "bishop-beardie.ts.net";
+  };
 
   nodesBase = {
     charlie = {
@@ -160,6 +164,12 @@
       host = nodes.charlie;
       port = 3050;
       modules = [ "backup.obsidian" ];
+    };
+
+    paperless = {
+      host = nodes.charlie;
+      port = 28981;
+      dns.enable = false;
     };
 
     portainer = {

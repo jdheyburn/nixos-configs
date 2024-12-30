@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }: {
+{ catalog, config, lib, pkgs, ... }: {
 
   imports = [ ./hardware-configuration.nix ];
 
@@ -45,7 +45,7 @@
     enable = true;
     passwordFile = config.age.secrets."restic-small-files-password".path;
     healthcheck =
-      "https://healthchecks.svc.joannet.casa/ping/b4f0796c-b0c6-48d3-926e-2f7fdebc4e1b";
+      "https://healthchecks.${catalog.domain.service}/ping/b4f0796c-b0c6-48d3-926e-2f7fdebc4e1b";
   };
 
   modules.caddy.enable = true;

@@ -14,7 +14,7 @@ in
 
   config = mkIf cfg.enable {
 
-    services.caddy.virtualHosts."unifi.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."unifi.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
       }
@@ -45,7 +45,7 @@ in
     services.prometheus.exporters.unpoller = {
       enable = true;
       controllers = [{
-        url = "https://unifi.svc.joannet.casa";
+        url = "https://unifi.${catalog.domain.service}";
         user = "unifipoller";
         pass = config.age.secrets."unifi-poller-password".path;
         save_ids = true;
@@ -56,7 +56,7 @@ in
       }];
 
       loki = {
-        url = "https://loki.svc.joannet.casa";
+        url = "https://loki.${catalog.domain.service}";
         verify_ssl = true;
       };
     };

@@ -28,7 +28,7 @@ in {
       group = "healthchecks";
     };
 
-    services.caddy.virtualHosts."healthchecks.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."healthchecks.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
       }
@@ -40,7 +40,7 @@ in {
       port = catalog.services.healthchecks.port;
 
       settings = {
-        SITE_ROOT = "https://healthchecks.svc.joannet.casa";
+        SITE_ROOT = "https://healthchecks.${catalog.domain.service}";
         SUPERUSER_EMAIL = "jdheyburn@gmail.com";
         SUPERUSER_PASSWORD_FILE =
           config.age.secrets."healthchecks-superuser-password".path;

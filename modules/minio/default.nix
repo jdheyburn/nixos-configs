@@ -2,7 +2,10 @@
 
 with lib;
 
-let cfg = config.modules.minio;
+let
+  cfg = config.modules.minio;
+  serverPort = catalog.services.minio.port;
+  consolePort = catalog.services.minio.consolePort;
 in {
 
   options.modules.minio = {
@@ -18,31 +21,31 @@ in {
     age.secrets."minio-root-credentials".file =
       ../../secrets/minio-root-credentials.age;
 
-    services.caddy.virtualHosts."minio.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."minio.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
       }
-      reverse_proxy localhost:${toString catalog.services.minio.port}
+      reverse_proxy localhost:${toString serverPort}
     '';
-    services.caddy.virtualHosts."ui.minio.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."ui.minio.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
       }
-      reverse_proxy localhost:${toString catalog.services.minio.consolePort}
+      reverse_proxy localhost:${toString consolePort}
     '';
 
     services.minio = {
       enable = true;
       dataDir = [ cfg.dataDir ];
-      listenAddress = ":${toString catalog.services.minio.port}";
-      consoleAddress = ":${toString catalog.services.minio.consolePort}";
+      listenAddress = ":${toString serverPort}";
+      consoleAddress = ":${toString consolePort}";
       rootCredentialsFile = config.age.secrets."minio-root-credentials".path;
     };
 
     systemd.services.minio = {
       environment = {
-        MINIO_BROWSER_REDIRECT_URL = "https://ui.minio.svc.joannet.casa";
-        MINIO_SERVER_URL = "https://minio.svc.joannet.casa";
+        MINIO_BROWSER_REDIRECT_URL = "https://ui.minio.${catalog.domain.service}";
+        MINIO_SERVER_URL = "https://minio.${catalog.domain.service}";
         MINIO_PROMETHEUS_AUTH_TYPE = "public";
       };
 

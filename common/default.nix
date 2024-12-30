@@ -1,4 +1,4 @@
-{ config, lib, pkgs, flake-self, ... }:
+{ catalog, config, lib, pkgs, flake-self, ... }:
 
 {
   config = {
@@ -12,7 +12,7 @@
 
     boot.tmp.cleanOnBoot = true;
 
-    networking.domain = "joannet.casa";
+    networking.domain = catalog.domain.base;
 
     #############################################################################
     ## Locale

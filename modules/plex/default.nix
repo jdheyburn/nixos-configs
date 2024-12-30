@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, ... }:
 
 with lib;
 
@@ -18,7 +18,7 @@ in {
       exclude = [ "/var/lib/plex/Plex Media Server/Cache" ];
     };
 
-    services.caddy.virtualHosts."plex.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."plex.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
       }

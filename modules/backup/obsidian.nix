@@ -6,7 +6,8 @@ let
   version = "v1.7.7-ls40";
   dataDir = "/var/lib/obsidian";
   repoDir = "${dataDir}/repo";
-  healthcheck = "https://healthchecks.svc.joannet.casa/ping/89c48c0a-3075-460e-a02b-3a325335c488";
+  healthcheck = "https://healthchecks.${catalog.domain.service}/ping/89c48c0a-3075-460e-a02b-3a325335c488";
+  port = catalog.services.obsidian.port;
   cfg = config.modules.backup.obsidian;
 in
 {
@@ -17,13 +18,13 @@ in
   };
 
   config = mkIf cfg.enable {
-    services.caddy.virtualHosts."obsidian.svc.joannet.casa".extraConfig = ''
+    services.caddy.virtualHosts."obsidian.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         # Below required to get TLS to work on non-local hosts (i.e. charlie)
         resolvers 8.8.8.8
       }
-      reverse_proxy localhost:${toString catalog.services.obsidian.port}
+      reverse_proxy localhost:${toString port}
     '';
 
     age.secrets."obsidian-environment-file".file = ../../secrets/obsidian-environment-file.age;
@@ -31,9 +32,9 @@ in
     virtualisation.oci-containers.containers.obsidian = {
       image = "lscr.io/linuxserver/obsidian:${version}";
       volumes = [ "${dataDir}/config:/config" "${repoDir}:/repo" ];
-      ports = [ "${toString catalog.services.obsidian.port}:${toString catalog.services.obsidian.port}" ];
+      ports = [ "${toString port}:${toString port}" ];
       environment = {
-        CUSTOM_PORT = toString catalog.services.obsidian.port;
+        CUSTOM_PORT = toString port;
         PUID = "1000";
         PGUID = "100";
         TZ = "Europe/London";

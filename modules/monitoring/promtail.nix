@@ -24,7 +24,7 @@ in {
           grpc_listen_port = 0;
         };
         positions = { filename = "/tmp/positions.yaml"; };
-        clients = [{ url = "https://loki.svc.joannet.casa/loki/api/v1/push"; }];
+        clients = [{ url = "https://loki.${catalog.domain.service}/loki/api/v1/push"; }];
         scrape_configs = [{
           job_name = "journal";
           journal = {

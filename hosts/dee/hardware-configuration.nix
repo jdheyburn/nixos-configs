@@ -4,7 +4,6 @@
   hardware.raspberry-pi."4".fkms-3d.enable = true;
   hardware.raspberry-pi."4".dwc2.enable = false;
 
-  boot.kernelPackages = pkgs.linuxPackages_rpi4;
   boot.kernelParams = [
     "usb-storage.quirks=174c:1156:u"
     "8250.nr_uarts=1"
@@ -14,7 +13,7 @@
   ];
 
   boot.initrd.availableKernelModules =
-    [ "xhci_pci" "usbhid" "uas" "usb_storage" "vc4" ];
+    [ "xhci_pci" "uas" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ catalog, config, lib, pkgs, ... }:
 {
 
   imports = [ ./hardware-configuration.nix ./networking.nix ];
@@ -40,7 +40,7 @@
       rcloneConfigFile = config.age.secrets."rclone.conf".path;
       passwordFile = config.age.secrets."restic-small-files-password".path;
       healthcheck =
-        "https://healthchecks.svc.joannet.casa/ping/92e823bb-17ff-4d94-8a41-fcad88fb3b21";
+        "https://healthchecks.${catalog.domain.service}/ping/92e823bb-17ff-4d94-8a41-fcad88fb3b21";
     };
   };
   modules.caddy.enable = true;
@@ -48,6 +48,7 @@
   modules.lubelogger.enable = true;
   modules.monitoring.enable = true;
   modules.nfs-client.enable = true;
+  modules.paperless.enable = true;
   modules.prometheusStack = {
     enable = true;
     blackbox.enable = true;

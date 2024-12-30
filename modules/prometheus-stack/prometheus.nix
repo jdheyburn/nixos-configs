@@ -1,7 +1,7 @@
 { catalog, config, pkgs, lib }: {
   enable = config.modules.prometheusStack.prometheus.enable;
   port = catalog.services.prometheus.port;
-  webExternalUrl = "https://prometheus.svc.joannet.casa";
+  webExternalUrl = "https://prometheus.${catalog.domain.service}";
 
   # Thanos stores long term metrics
   retentionTime = "1d";
