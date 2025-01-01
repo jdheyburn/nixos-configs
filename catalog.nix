@@ -166,6 +166,12 @@
       modules = [ "backup.obsidian" ];
     };
 
+    paperless = {
+      host = nodes.charlie;
+      port = 28981;
+      modules = [ "paperless" ];
+    };
+
     portainer = {
       host = nodes.frank;
       port = 9000;

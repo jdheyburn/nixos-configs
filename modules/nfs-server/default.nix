@@ -26,7 +26,7 @@ in {
 
     services.nfs.server.enable = true;
     services.nfs.server.exports = ''
-      /mnt/nfs *(rw,insecure,no_root_squash,anonuid=1000,anongid=100)
+      /mnt/nfs *(rw,insecure,all_squash,anonuid=1000,anongid=100)
     '';
 
     #services.nfs.server.exports = ''
