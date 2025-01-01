@@ -22,7 +22,7 @@ in
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
         # Below required to get TLS to work on non-local hosts (i.e. charlie)
-        resolvers 8.8.8.8
+        resolvers 1.1.1.1
       }
       reverse_proxy localhost:${toString port}
     '';
