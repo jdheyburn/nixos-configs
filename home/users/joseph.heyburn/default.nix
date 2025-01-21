@@ -28,6 +28,11 @@ in
     source = ./hyper/hyper.js;
   };
 
+  home.file.".config/ghostty/config" = {
+    enable = true;
+    source = ./ghostty/config;
+  };
+
   home.packages = with pkgs; [
     awscli2
 

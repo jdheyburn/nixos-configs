@@ -204,6 +204,31 @@ function exec-pod() {
     kubectl exec -it $1 -- sh
 }
 
+# Loop over each values.yaml file and retrieve the value for the given key if it is available
+function get-values() {
+    local app=$1
+    if [ -z $app ]; then
+        echo "ERR: app not provided, usage:"
+        echo "  get-values APP KEY"
+        return 1
+    fi
+
+    local key=$2
+    if [ -z $key ]; then
+        echo "ERR: key not provided, usage:"
+        echo "  get-values APP KEY"
+        return 1
+    fi
+
+    for file in apps/$app/values/**/values.yaml; do
+        local value=$(yq $key $file)
+        if [ $value != "null" ]; then
+            echo $file
+            echo $value
+        fi
+    done
+}
+
 # HeadPhones
 function hp() {
     local id="94-db-56-84-69-49"
