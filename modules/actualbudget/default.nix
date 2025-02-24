@@ -11,7 +11,7 @@ let
 
 in
 {
-  imports = [ ../../pkgs/actual.nix ];
+  # imports = [ ../../pkgs/actual.nix ];
   options.modules.actualbudget = {
     enable = mkEnableOption "enable actual budget";
   };
@@ -25,7 +25,7 @@ in
       reverse_proxy localhost:${toString port}
     '';
 
-    services.actual.enable = true;
-    services.actual.port = port;
+    # services.actual.enable = true;
+    # services.actual.port = port;
   };
 }

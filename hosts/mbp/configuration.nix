@@ -1,7 +1,7 @@
 { lib, pkgs, ... }: {
 
   imports = [
-    ./work.nix
+    # ./work.nix
   ];
 
   # Required in newer nix-darwin
@@ -20,7 +20,7 @@
   ids.uids.nixbld = 300;
 
   nix.package = pkgs.nix;
-  nix.settings.trusted-users = [ "root" "joseph.heyburn" ];
+  nix.settings.trusted-users = [ "root" "jdheyburn" ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
@@ -42,8 +42,8 @@
   programs.zsh.enable = true;
 
   # TODO this should be pulled from nodes.NODE.users
-  users.users."joseph.heyburn" = {
-    home = "/Users/joseph.heyburn";
+  users.users."jdheyburn" = {
+    home = "/Users/jdheyburn";
   };
 
   # Does not install homebrew, follow the install instructions for this: https://brew.sh
