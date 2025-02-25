@@ -49,8 +49,7 @@
         catalog = import ./catalog.nix { inherit nixos-hardware; };
 
         # Modules to import to hosts
-        ## Common modules to apply to everything
-        common = [ ./common agenix.nixosModules.default ];
+        common = [ ./hosts/nixos/common agenix.nixosModules.default ];
 
         ## Modules under ./modules
         nixosModules = builtins.listToAttrs (map
@@ -147,7 +146,9 @@
           (node:
             let
               modules = [
-                (./hosts + "/${node.hostName}/configuration.nix")
+                # Top level common that should be applied to all Darwin
+                ./hosts/darwin/common
+                (./hosts/darwin + "/${node.hostName}/configuration.nix")
               ];
             in
             {
@@ -160,14 +161,15 @@
         nixosConfigurations = builtins.listToAttrs (map
           (node:
             let
-              modules =
-                # Top level common that should be applied to all Nix
-                common
-                ++ [
-                  # Imports my own nixOS mdules
+              modules = [
+                  # Top level common that should be applied to all NixOS
+                  ./hosts/nixos/common
+                  # agenix
+                  agenix.nixosModules.default
+                  # Imports my own nixOS modules
                   { imports = builtins.attrValues nixosModules; }
                   # Host level configuration
-                  (./hosts + "/${node.hostName}/configuration.nix")
+                  (./hosts/nixos + "/${node.hostName}/configuration.nix")
                 ] ++ nixpkgs.lib.optional (node ? "nixosHardware") node.nixosHardware;
             in
             {

@@ -16,5 +16,4 @@
   homebrew.taps = [
     "predatorray/brew"
   ];
-
 }

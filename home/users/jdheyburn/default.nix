@@ -9,7 +9,8 @@ let
 in
 {
   home.username = "jdheyburn";
-  home.homeDirectory = "/Users/jdheyburn";
+  # TODO a better way of declaring this
+  home.homeDirectory = if builtins.elem pkgs.system [ "aarch64-darwin" ] then "/Users/jdheyburn" else "/home/jdheyburn";
 
   home.packages = with pkgs; [
     awscli2

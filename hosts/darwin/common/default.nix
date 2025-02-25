@@ -1,28 +1,11 @@
 { lib, pkgs, ... }: {
 
-  imports = [
-    # ./work.nix
-  ];
-
   # Required in newer nix-darwin
   system.stateVersion = 4;
-  # The default Nix build user ID range has been adjusted for
-  # compatibility with macOS Sequoia 15. Your _nixbld1 user currently has
-  # UID 301 rather than the new default of 351.
-
-  # You can automatically migrate the users with the following command:
-
-  #     curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- repair sequoia --move-existing-users
-
-  # If you have no intention of upgrading to macOS Sequoia 15, or already
-  # have a custom UID range that you know is compatible with Sequoia, you
-  # can disable this check by setting:
-  #ids.uids.nixbld = 300;
 
   # Determinate uses its own daemon to manage the Nix installation that conflicts with nix-darwin's native Nix management
   nix.enable = false;
   nix.package = pkgs.nix;
-  nix.settings.trusted-users = [ "root" "jdheyburn" ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
@@ -46,11 +29,6 @@
   # Needs to be duplicated here, even though it is defined in home-manager too
   programs.zsh.enable = true;
 
-  # TODO this should be pulled from nodes.NODE.users
-  users.users."jdheyburn" = {
-    home = "/Users/jdheyburn";
-  };
-
   # Does not install homebrew, follow the install instructions for this: https://brew.sh
   homebrew.enable = true;
   homebrew.brews = [
@@ -73,7 +51,6 @@
     # Tiling tool
     "rectangle"
     "spotify"
-    "steam"
     "todoist"
     "vlc"
     "whatsapp"
@@ -85,6 +62,22 @@
 
   # macos system settings
   system.defaults = {
+    CustomUserPreferences = {
+      "com.apple.symbolichotkeys" = {
+        AppleSymbolicHotKeys = {
+          # Disable 'Cmd + Space' for Spotlight Search
+          "64" = {
+            enabled = false;
+          };
+          # Disable 'Cmd + Alt + Space' for Finder search window
+          "65" = {
+            # Set to false to disable
+            enabled = true;
+          };
+        };
+      };
+    };
+
     dock = {
       autohide = true;
       autohide-delay = 1.0;
