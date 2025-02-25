@@ -17,8 +17,10 @@
   # If you have no intention of upgrading to macOS Sequoia 15, or already
   # have a custom UID range that you know is compatible with Sequoia, you
   # can disable this check by setting:
-  ids.uids.nixbld = 300;
+  #ids.uids.nixbld = 300;
 
+  # Determinate uses its own daemon to manage the Nix installation that conflicts with nix-darwin's native Nix management
+  nix.enable = false;
   nix.package = pkgs.nix;
   nix.settings.trusted-users = [ "root" "jdheyburn" ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -30,9 +32,12 @@
   nix.optimise.automatic = true;
 
   # Show diff after switch - https://gist.github.com/luishfonseca/f183952a77e46ccd6ef7c907ca424517
+  # Fresh systems won't have /run/current-system
   system.activationScripts.postUserActivation = {
     text = ''
-      ${pkgs.nvd}/bin/nvd --nix-bin-dir=${pkgs.nix}/bin diff /run/current-system "$systemConfig"
+      if [ -d /run/current-system ]; then
+        ${pkgs.nvd}/bin/nvd --nix-bin-dir=${pkgs.nix}/bin diff /run/current-system "$systemConfig"
+      fi
     '';
   } // lib.optionalAttrs pkgs.stdenv.isLinux {
     supportsDryActivation = true;
