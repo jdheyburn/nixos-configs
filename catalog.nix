@@ -54,6 +54,14 @@
       users = [ users."joseph.heyburn" ];
     };
 
+    mbp = {
+      ip.private = "192.168.1.250";
+      # Could either be Apple Silicon or Intel arch
+      system = "aarch64-darwin";
+      shouldScrape = false;
+      users = [ users.jdheyburn ];
+    };
+
     paddys = {
       ip.private = "192.168.1.20";
       ip.tailscale = "100.107.150.109";

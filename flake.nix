@@ -48,10 +48,6 @@
         inherit (flake-utils.lib) eachSystemMap system;
         catalog = import ./catalog.nix { inherit nixos-hardware; };
 
-        # Modules to import to hosts
-        ## Common modules to apply to everything
-        common = [ ./common agenix.nixosModules.default ];
-
         ## Modules under ./modules
         nixosModules = builtins.listToAttrs (map
           (module: {
@@ -59,6 +55,14 @@
             value = import (./modules + "/${module}");
           })
           (builtins.attrNames (builtins.readDir ./modules)));
+
+        ## Modules under ./home/modules
+        homeModules = builtins.listToAttrs (map
+          (module: {
+            name = module;
+            value = import (./home/modules + "/${module}");
+          })
+          (builtins.attrNames (builtins.readDir ./home/modules)));
 
         ## home-manager modules and users
         homeFeatures = system: users:
@@ -80,6 +84,8 @@
         mkUserImports = user: [
           catppuccin.homeManagerModules.catppuccin
           ./home/common
+          # Imports my own nixOS modules
+          { imports = builtins.attrValues homeModules; }
           (./home/users + "/${user}")
         ];
 
@@ -135,8 +141,7 @@
             name = user.name;
             value = home-manager.lib.homeManagerConfiguration {
               pkgs = nixpkgs.legacyPackages."x86_64-linux";
-              # TODO roles shouldn't be appended here, should be defined similar to modules
-              modules = (mkUserImports user.name) ++ [ ./home/roles/desktop ];
+              modules = (mkUserImports user.name);
             };
           })
           # Currently hardcoded to jdheyburn, for paddys
@@ -147,7 +152,9 @@
           (node:
             let
               modules = [
-                (./hosts + "/${node.hostName}/configuration.nix")
+                # Top level common that should be applied to all Darwin
+                ./hosts/darwin/common
+                (./hosts/darwin + "/${node.hostName}/configuration.nix")
               ];
             in
             {
@@ -160,14 +167,15 @@
         nixosConfigurations = builtins.listToAttrs (map
           (node:
             let
-              modules =
-                # Top level common that should be applied to all Nix
-                common
-                ++ [
-                  # Imports my own nixOS mdules
+              modules = [
+                  # Top level common that should be applied to all NixOS
+                  ./hosts/nixos/common
+                  # agenix
+                  agenix.nixosModules.default
+                  # Imports my own nixOS modules
                   { imports = builtins.attrValues nixosModules; }
                   # Host level configuration
-                  (./hosts + "/${node.hostName}/configuration.nix")
+                  (./hosts/nixos + "/${node.hostName}/configuration.nix")
                 ] ++ nixpkgs.lib.optional (node ? "nixosHardware") node.nixosHardware;
             in
             {

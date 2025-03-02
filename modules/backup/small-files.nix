@@ -24,11 +24,6 @@ in
 
     rcloneConfigFile = mkOption { type = types.path; };
 
-    extraBackupArgs = mkOption {
-      type = types.listOf types.str;
-      default = [ ];
-    };
-
     backupTime = mkOption {
       type = types.str;
       default = "*-*-* 02:00:00";
@@ -46,9 +41,7 @@ in
 
     healthcheck = mkOption {
       type = types.str;
-      default = "";
     };
-
   };
 
   config = mkIf cfg.enable (mkMerge [

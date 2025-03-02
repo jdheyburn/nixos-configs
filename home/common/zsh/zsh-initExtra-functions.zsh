@@ -222,10 +222,13 @@ function get-values() {
 
     for file in apps/$app/values/**/values.yaml; do
         local value=$(yq $key $file)
-        if [ $value != "null" ]; then
-            echo $file
-            echo $value
+        if [ $value = "null" ]; then
+            continue
         fi
+
+        echo $file
+        echo $value
+        echo
     done
 }
 
