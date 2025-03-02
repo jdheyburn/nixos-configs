@@ -27,7 +27,7 @@ in
       reverse_proxy localhost:${toString port}
     '';
 
-    age.secrets."obsidian-environment-file".file = ../../secrets/obsidian-environment-file.age;
+    age.secrets."obsidian-environment-file".file = ../../../secrets/obsidian-environment-file.age;
 
     virtualisation.oci-containers.containers.obsidian = {
       image = "lscr.io/linuxserver/obsidian:${version}";
@@ -45,7 +45,7 @@ in
       ];
     };
 
-    age.secrets."restic-obsidian-password".file = ../../secrets/restic-obsidian-password.age;
+    age.secrets."restic-obsidian-password".file = ../../../secrets/restic-obsidian-password.age;
 
     services.restic.backups.obsidian = {
       initialize = true;

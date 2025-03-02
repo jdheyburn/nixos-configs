@@ -21,7 +21,7 @@ in
   config = mkIf cfg.enable
     {
       age.secrets."restic-media-password".file =
-        ../../secrets/restic-media-password.age;
+        ../../../secrets/restic-media-password.age;
 
       services.restic.backups.media = {
         repository = "/mnt/nfs/restic/media";

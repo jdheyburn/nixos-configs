@@ -39,7 +39,7 @@
   ###############################################################################
 
   age.secrets."restic-small-files-password".file =
-    ../../secrets/restic-small-files-password.age;
+    ../../../secrets/restic-small-files-password.age;
 
   modules.backup.small-files = {
     enable = true;

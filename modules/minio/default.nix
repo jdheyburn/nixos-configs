@@ -19,7 +19,7 @@ in {
   config = mkIf cfg.enable {
 
     age.secrets."minio-root-credentials".file =
-      ../../secrets/minio-root-credentials.age;
+      ../../../secrets/minio-root-credentials.age;
 
     services.caddy.virtualHosts."minio.${catalog.domain.service}".extraConfig = ''
       tls {

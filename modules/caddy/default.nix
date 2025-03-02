@@ -29,7 +29,7 @@ in
     ];
 
     age.secrets."caddy-environment-file".file =
-      ../../secrets/caddy-environment-file.age;
+      ../../../secrets/caddy-environment-file.age;
 
     services.caddy = {
       enable = true;

@@ -9,12 +9,12 @@ in {
   config = mkIf (cfg.enable && cfg.grafana.enable) {
 
     age.secrets."grafana-admin-password" = {
-      file = ../../secrets/grafana-admin-password.age;
+      file = ../../../secrets/grafana-admin-password.age;
       owner = "grafana";
       group = "grafana";
     };
     age.secrets."smtp-password" = {
-      file = ../../secrets/smtp-password.age;
+      file = ../../../secrets/smtp-password.age;
       owner = "grafana";
       group = "grafana";
     };

@@ -11,19 +11,19 @@ in {
   config = mkIf cfg.enable {
 
     age.secrets."healthchecks-secrets-file" = {
-      file = ../../secrets/healthchecks-secrets-file.age;
+      file = ../../../secrets/healthchecks-secrets-file.age;
       owner = "healthchecks";
       group = "healthchecks";
     };
 
     age.secrets."healthchecks-smtp-password" = {
-      file = ../../secrets/healthchecks-smtp-password.age;
+      file = ../../../secrets/healthchecks-smtp-password.age;
       owner = "healthchecks";
       group = "healthchecks";
     };
 
     age.secrets."healthchecks-superuser-password" = {
-      file = ../../secrets/healthchecks-superuser-password.age;
+      file = ../../../secrets/healthchecks-superuser-password.age;
       owner = "healthchecks";
       group = "healthchecks";
     };
