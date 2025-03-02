@@ -9,7 +9,7 @@ in {
 
   config = mkIf (cfg.enable && cfg.victoriametrics.enable) {
     age.secrets."victoriametrics-license" = {
-      file = ../../../secrets/victoriametrics-license.age;
+      file = ../../secrets/victoriametrics-license.age;
       # victoriametrics systemd runs as DynamicUser
       mode = "0444";
     };

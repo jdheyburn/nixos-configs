@@ -29,7 +29,7 @@ in {
     users.users.jdheyburn.extraGroups = [ "aria2" ];
 
     age.secrets."aria2-password".file =
-      ../../../secrets/aria2-password.age;
+      ../../secrets/aria2-password.age;
 
     services.aria2 = {
       enable = true;

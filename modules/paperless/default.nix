@@ -23,7 +23,7 @@ in
       reverse_proxy localhost:${toString port}
     '';
 
-    age.secrets."paperless-password".file = ../../../secrets/paperless-password.age;
+    age.secrets."paperless-password".file = ../../secrets/paperless-password.age;
 
     services.paperless = {
       enable = true;

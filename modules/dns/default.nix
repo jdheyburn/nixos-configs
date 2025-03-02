@@ -71,7 +71,7 @@ in
       ];
     };
 
-    age.secrets."adguard-password".file = ../../../secrets/adguard-password.age;
+    age.secrets."adguard-password".file = ../../secrets/adguard-password.age;
 
     services.adguardhome = {
       enable = true;
