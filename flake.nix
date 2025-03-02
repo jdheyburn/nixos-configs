@@ -48,9 +48,6 @@
         inherit (flake-utils.lib) eachSystemMap system;
         catalog = import ./catalog.nix { inherit nixos-hardware; };
 
-        # Modules to import to hosts
-        common = [ ./hosts/nixos/common agenix.nixosModules.default ];
-
         ## Modules under ./modules
         nixosModules = builtins.listToAttrs (map
           (module: {
@@ -58,6 +55,14 @@
             value = import (./modules + "/${module}");
           })
           (builtins.attrNames (builtins.readDir ./modules)));
+
+        ## Modules under ./home/modules
+        homeModules = builtins.listToAttrs (map
+          (module: {
+            name = module;
+            value = import (./home/modules + "/${module}");
+          })
+          (builtins.attrNames (builtins.readDir ./home/modules)));
 
         ## home-manager modules and users
         homeFeatures = system: users:
@@ -79,6 +84,8 @@
         mkUserImports = user: [
           catppuccin.homeManagerModules.catppuccin
           ./home/common
+          # Imports my own nixOS modules
+          { imports = builtins.attrValues homeModules; }
           (./home/users + "/${user}")
         ];
 

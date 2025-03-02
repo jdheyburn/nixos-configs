@@ -1,3 +1,6 @@
+# Only being used by home-manager standalone installations, such as 
+# jdheyburn on paddys - soon to be deprecated
+
 { pkgs, ... }:
 
 let
@@ -7,11 +10,6 @@ let
   };
 in
 {
-  home.packages = with pkgs; [
-    #  mullvad-vpn
-  ];
-
-  # SSH client related stuff here, I only want this on paddys (laptop)
   services.ssh-agent.enable = true;
   programs.ssh = {
     enable = true;

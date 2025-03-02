@@ -14,10 +14,37 @@
   home.stateVersion = "22.05";
 
   home.packages = with pkgs; [
+    awscli2
+    
     delta
     diff-so-fancy
     dyff
+
+    # better find commmand - search for files matching a name
+    fd
+
+    jq
+    yq
+
+    # Simple DNS client
+    q
+
+    # rg - Search for strings in files
+    ripgrep
+
+    # data parsing, in testing
+    miller
+
+    tldr
+
+    wget
   ];
+
+  # hyper.js styling
+  home.file.".hyper.js" = {
+    enable = true;
+    source = ./hyper/hyper.js;
+  };
 
   # Permit non-free software
   nixpkgs.config.allowUnfree = true;
