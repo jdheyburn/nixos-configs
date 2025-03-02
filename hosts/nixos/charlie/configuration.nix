@@ -28,7 +28,7 @@
   # TODO these secrets should be defined in the module
   age.secrets."restic-small-files-password".file =
     ../../../secrets/restic-small-files-password.age;
-  age.secrets."rclone.conf".file = ../../../../secrets/rclone.conf.age;
+  age.secrets."rclone.conf".file = ../../../secrets/rclone.conf.age;
 
   modules.backup = {
     obsidian = {
