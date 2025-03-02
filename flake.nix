@@ -141,8 +141,7 @@
             name = user.name;
             value = home-manager.lib.homeManagerConfiguration {
               pkgs = nixpkgs.legacyPackages."x86_64-linux";
-              # TODO roles shouldn't be appended here, should be defined similar to modules
-              modules = (mkUserImports user.name) ++ [ ./home/roles/desktop ];
+              modules = (mkUserImports user.name);
             };
           })
           # Currently hardcoded to jdheyburn, for paddys
