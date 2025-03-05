@@ -56,6 +56,8 @@ Services is a mapping of service name to service attributes, it can accept:
   - VM on a Proxmox hypervisor
 - macbook
   - MBP with nix-darwin
+- mbp
+  - my own MBP for home
 
 Hosts are defined in `nodes`, which can have these attributes:
 

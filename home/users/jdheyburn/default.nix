@@ -20,6 +20,7 @@ in
     (python311.withPackages python-packages)
   ];
 
+  # TODO below should only be enabled on paddys or mbp
   modules.ssh-client.enable = true;
   modules.vscode.enable = true;
 }

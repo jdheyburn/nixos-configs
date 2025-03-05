@@ -17,7 +17,7 @@ in {
     programs.ssh = {
       enable = true;
       matchBlocks = {
-        # TODO be dynamic 
+        # TODO be dynamic, don't create session for self
         charlie = {
           extraOptions = tmuxSettings;
         };
@@ -47,6 +47,9 @@ in {
         };
         "github.com" = {
           user = "git";
+          extraOptions = {
+            IdentityFile = "~/.ssh/id_ed25519";
+          };
         };
       };
     };

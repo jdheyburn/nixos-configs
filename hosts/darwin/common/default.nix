@@ -60,6 +60,12 @@
   # Allow sudo using fingerprint authentication
   security.pam.enableSudoTouchIdAuth = true;
 
+  # Don't require a restart after applying macOS system settings
+  # in order to activate them
+  system.activationScripts.postUserActivation.text = ''
+    /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+  '';
+
   # macos system settings
   system.defaults = {
     CustomUserPreferences = {
