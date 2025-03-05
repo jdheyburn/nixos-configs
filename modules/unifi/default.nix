@@ -31,7 +31,7 @@ in
       [ config.services.prometheus.exporters.unpoller.port 8443 ];
 
     age.secrets."unifi-poller-password".file =
-      ../../../secrets/unifi-poller-password.age;
+      ../../secrets/unifi-poller-password.age;
     age.secrets."unifi-poller-password".owner =
       config.services.prometheus.exporters.unpoller.user;
 

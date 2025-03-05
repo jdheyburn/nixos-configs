@@ -14,7 +14,7 @@ in
   home.homeDirectory = if builtins.elem pkgs.system [ "aarch64-darwin" ] then "/Users/jdheyburn" else "/home/jdheyburn";
 
   home.packages = with pkgs; [
-    discord
+    #discord
 
     # Installs Python, and the defined packages
     (python311.withPackages python-packages)
