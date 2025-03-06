@@ -14,13 +14,16 @@
   nix.gc.options = "--delete-older-than 30d";
   nix.optimise.automatic = true;
 
-  # Show diff after switch - https://gist.github.com/luishfonseca/f183952a77e46ccd6ef7c907ca424517
-  # Fresh systems won't have /run/current-system
   system.activationScripts.postUserActivation = {
     text = ''
+      # Show diff after switch - https://gist.github.com/luishfonseca/f183952a77e46ccd6ef7c907ca424517
+      # Fresh systems won't have /run/current-system
       if [ -d /run/current-system ]; then
         ${pkgs.nvd}/bin/nvd --nix-bin-dir=${pkgs.nix}/bin diff /run/current-system "$systemConfig"
       fi
+
+      # Activate new macOS settings immediately,
+      /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
     '';
   } // lib.optionalAttrs pkgs.stdenv.isLinux {
     supportsDryActivation = true;
@@ -59,12 +62,6 @@
 
   # Allow sudo using fingerprint authentication
   security.pam.enableSudoTouchIdAuth = true;
-
-  # Don't require a restart after applying macOS system settings
-  # in order to activate them
-  system.activationScripts.postUserActivation.text = ''
-    /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-  '';
 
   # macos system settings
   system.defaults = {
