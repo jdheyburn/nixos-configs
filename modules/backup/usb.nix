@@ -28,9 +28,6 @@ in
         passwordFile = config.age.secrets."restic-media-password".path;
         pruneOpts = [
           "--keep-daily 30"
-          "--keep-weekly 5"
-          "--keep-monthly 12"
-          "--keep-yearly 3"
         ];
         paths = [
           "/mnt/usb/Backup/media/beets-db"

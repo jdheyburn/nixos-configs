@@ -5,17 +5,15 @@ let
   dee =
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILWCdUOSth7y3Mt5Qu0uI1qav+VerC1s7xC0p6O6L1l5";
 
-  dennis =
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDL0adtqBxktlaeesYq+C0a9Wu2196VGKoC4CA2mnTf0";
-
   mac = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHSbn8NGbcOm56ZIFfGBteYHErrlZbLAl0agBPPq0ZJO";
 
-  servers = [ charlie dee dennis mac ];
+  servers = [ charlie dee mac ];
 
   jdheyburn = [
+    # Not sure what below is
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIozTzNnp+KQAwlMUdJuIcvuQmM+Dz5wlB7H15Qx3iZT"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC0kg1FOtTN0y3Dpigb6OyPiMtvcPHTfWJXLeO6yyzUp jdheyburn@dennis"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIZdFaYhR7tRI5KyV3XG+jWb0CAT86QYdleQZCVBjUSY jdheyburn@paddys.joannet.casa"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEWeXT9AHOdW+DO8vWnx/QnYBPb79wK0ep4V9cX+vOtB jdheyburn@mbp"
   ];
   users = jdheyburn;
 

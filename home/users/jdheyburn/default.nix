@@ -14,12 +14,13 @@ in
   home.homeDirectory = if builtins.elem pkgs.system [ "aarch64-darwin" ] then "/Users/jdheyburn" else "/home/jdheyburn";
 
   home.packages = with pkgs; [
-    discord
+    #discord
 
     # Installs Python, and the defined packages
     (python311.withPackages python-packages)
   ];
 
+  # TODO below should only be enabled on paddys or mbp
   modules.ssh-client.enable = true;
   modules.vscode.enable = true;
 }
