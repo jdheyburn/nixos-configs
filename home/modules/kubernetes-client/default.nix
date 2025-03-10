@@ -5,10 +5,10 @@
 with lib;
 
 let
-  cfg = config.modules.kubernetes;
+  cfg = config.modules.kubernetes-client;
   kubectl_1_25_4 = pkgs.callPackage ./kubectl/kubectl.nix { };
 in {
-  options.modules.kubernetes = { enable = mkEnableOption "Kubernetes client tools"; };
+  options.modules.kubernetes-client = { enable = mkEnableOption "Kubernetes client tools"; };
 
   config = mkIf cfg.enable {
     home.packages = with pkgs; [

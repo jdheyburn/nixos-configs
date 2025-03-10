@@ -4,7 +4,7 @@
   system.stateVersion = 4;
 
   # Determinate uses its own daemon to manage the Nix installation that conflicts with nix-darwin's native Nix management
-  nix.enable = false;
+  nix.enable = true;
   nix.package = pkgs.nix;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
@@ -61,7 +61,7 @@
   homebrew.taps = [ ];
 
   # Allow sudo using fingerprint authentication
-  security.pam.enableSudoTouchIdAuth = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
 
   # macos system settings
   system.defaults = {
