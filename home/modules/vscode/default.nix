@@ -86,6 +86,12 @@ in {
             version = "1.280.1421";
             sha256 = "sha256-DfIyCod0IVIhjwBYwqtctDA9V116T974O6wa3tPOrmo=";
           }
+          {
+            name = "copilot-chat";
+            publisher = "GitHub";
+            version = "0.25.0";
+            sha256 = "sha256-rureag8PaZwEME41EdaDMIVnYN17CqBhu9Pa5SuWRKU=";
+          }
           # Python language support with extension access points for IntelliSense (Pylance), Debugging (Python Debugger), linting, formatting, refactoring, unit tests, and more.
           # JDH: Overrides the one defined in the previous list because of sha mismatch
           {
@@ -150,6 +156,8 @@ in {
 
           # Disable the warning when syncing (git push) via GUI
           "git.confirmSync" = false;
+
+          "github.copilot.selectedCompletionModel" = "gpt-4o-copilot";
 
           "python.showStartPage" = false;
 
