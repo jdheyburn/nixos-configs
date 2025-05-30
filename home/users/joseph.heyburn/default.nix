@@ -30,7 +30,7 @@ in
 
     discord
 
-    obsidian
+    # obsidian
 
     # Installs Python, and the defined packages
     (python311.withPackages python-packages)
