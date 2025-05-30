@@ -15,7 +15,7 @@
   # If you have no intention of upgrading to macOS Sequoia 15, or already
   # have a custom UID range that you know is compatible with Sequoia, you
   # can disable this check by setting:
-  ids.uids.nixbld = 300;
+  ids.uids.nixbld = 350;
 
   nix.settings.trusted-users = [ "root" "joseph.heyburn" ];
 
