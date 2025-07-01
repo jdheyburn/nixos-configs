@@ -49,6 +49,10 @@ in {
           # Nix language support for Visual Studio Code.
           jnoortheen.nix-ide
 
+          
+          github.copilot
+          github.copilot-chat
+
           # Rich Go language support
           golang.go
 
@@ -56,8 +60,7 @@ in {
           ms-azuretools.vscode-docker
 
           # IntelliSense (Pylance), Linting, Debugging (multi-threaded, remote), Jupyter Notebooks, code formatting, refactoring, unit tests, and more.
-          # Commented out as its unable to be built due to failing sha256
-          # ms-python.python
+          ms-python.python
 
           # Material Design Icons for Visual Studio Code
           # pkief.material-icon-theme
@@ -80,26 +83,18 @@ in {
         # Install other extension from the marketplace that aren't in nixpkgs
         ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
           # AI pair programmer tool that helps you write code faster and smarter.
-          {
-            name = "copilot";
-            publisher = "GitHub";
-            version = "1.280.1421";
-            sha256 = "sha256-DfIyCod0IVIhjwBYwqtctDA9V116T974O6wa3tPOrmo=";
-          }
-          {
-            name = "copilot-chat";
-            publisher = "GitHub";
-            version = "0.25.0";
-            sha256 = "sha256-rureag8PaZwEME41EdaDMIVnYN17CqBhu9Pa5SuWRKU=";
-          }
-          # Python language support with extension access points for IntelliSense (Pylance), Debugging (Python Debugger), linting, formatting, refactoring, unit tests, and more.
-          # JDH: Overrides the one defined in the previous list because of sha mismatch
-          {
-            name = "python";
-            publisher = "ms-python";
-            version = "2025.3.2025031001";
-            sha256 = "sha256-uYz0WgFqbLohCEmT8ewYgvlFrVLuZr9OAiKnrbNup7U=";
-          }
+          # {
+          #   name = "copilot";
+          #   publisher = "GitHub";
+          #   version = "1.338.1652";
+          #   sha256 = "sha256-VdyZ6sOAV24XxN0JdbePOI7Tz6nNEgrKxagtiHrpMlI=";
+          # }
+          # {
+          #   name = "copilot-chat";
+          #   publisher = "GitHub";
+          #   version = "0.29.2025062705";
+          #   sha256 = "sha256-jZiv6j3ZhSOnIZTzmVJ7Er90TjfY0SgpS4rcI6Mx/KI=";
+          # }
         ];
 
         globalSnippets = {
@@ -160,6 +155,8 @@ in {
           "github.copilot.selectedCompletionModel" = "gpt-4o-copilot";
 
           "python.showStartPage" = false;
+
+          "redhat.telemetry.enabled" = false;
 
           # Disable warning when built-in terminal wants to load files into editor view
           "security.promptForLocalFileProtocolHandling" = false;

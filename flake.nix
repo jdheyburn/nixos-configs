@@ -31,9 +31,10 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-25-05.url = "github:nixos/nixpkgs/release-25.05";
 
     nixpkgs.url = "github:numtide/nixpkgs-unfree";
-    nixpkgs.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    nixpkgs.inputs.nixpkgs.follows = "nixpkgs-25-05";
   };
 
   outputs =
@@ -65,7 +66,7 @@
           (builtins.attrNames (builtins.readDir ./home/modules)));
 
         ## home-manager modules and users
-        homeFeatures = system: users:
+        homeFeatures = hostname: system: users:
           let
             homeManager =
               if (isDarwin system) then
@@ -77,19 +78,25 @@
           in
           [
             homeManager
-            (mkHomeManager ((map (user: user.name) users) ++ additionalUsers))
+            (mkHomeManager hostname ((map (user: user.name) users) ++ additionalUsers))
           ];
         # End of modules
 
-        mkUserImports = user: [
-          catppuccin.homeManagerModules.catppuccin
+        mkUserImports = user: hostname: [
+          catppuccin.homeModules.catppuccin
           ./home/common
-          # Imports my own nixOS modules
+          # Imports my own home-manager modules
           { imports = builtins.attrValues homeModules; }
+          # User specific config
           (./home/users + "/${user}")
+          # Host specific config for the user, if it exists
+          (if (builtins.pathExists (./home/users + "/${user}/hosts/${hostname}")) then
+            ./home/users + "/${user}/hosts/${hostname}"
+          else
+            null)
         ];
 
-        mkHomeManager = usernames: {
+        mkHomeManager = hostname: usernames: {
           # Fixes https://github.com/divnix/digga/issues/30
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
@@ -99,7 +106,13 @@
               username: {
                 name = username;
                 value = {
-                  imports = mkUserImports username;
+                  imports = mkUserImports username hostname;
+                  home.username = username;
+                  # Apparently not required, appears to be managed by nixos
+                  #  error: The option `home-manager.users.jdheyburn.home.homeDirectory' has conflicting definition values:
+                  #   - In `<unknown-file>': "/foo/baz"
+                  #   - In `/nix/store/5cd4f9xx6l75pg2a2jl1c0av4gq9kcf8-source/nixos/common.nix': "/Users/jdheyburn"
+                  # home.homeDirectory = if isDarwin system then "/Users/${username}" else "/home/${username}";
                 };
               }
             )
@@ -108,8 +121,10 @@
         };
 
         # Platform agnostic function for creating a system
-        mkSystem = system: users: extraModules:
+        mkSystem = hostname: system: users: extraModules:
           let
+            # users is a list of user objects, need to get the first one's name
+            primaryUser = builtins.head (builtins.map (user: user.name) users);
             systemManager =
               if (isDarwin system) then
                 darwin.lib.darwinSystem
@@ -119,12 +134,12 @@
           systemManager {
             inherit system;
             specialArgs = {
-              inherit catalog;
+              inherit catalog primaryUser;
               flake-self = self;
             } // inputs;
             modules =
               # Imports home-manager
-              (homeFeatures system users)
+              (homeFeatures hostname system users)
               ++ extraModules;
           };
 
@@ -159,7 +174,7 @@
             in
             {
               name = node.hostName;
-              value = mkSystem node.system node.users modules;
+              value = mkSystem node.hostName node.system node.users modules;
             })
           darwinNodes);
 
@@ -180,7 +195,7 @@
             in
             {
               name = node.hostName;
-              value = mkSystem node.system node.users modules;
+              value = mkSystem node.hostName node.system node.users modules;
             })
           nixOSNodes);
 

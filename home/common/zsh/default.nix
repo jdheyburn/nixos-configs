@@ -42,12 +42,12 @@
     };
 
     # This is executed before plugins such as oh-my-zsh are called
-    initExtraBeforeCompInit = ''
-      # Stops escaping URL characters, slow copy-paste, etc.
+    initContent = lib.mkOrder 550 ''
+      # Migrated from initExtraBeforeCompInit
+      ## Stops escaping URL characters, slow copy-paste, etc.
       DISABLE_MAGIC_FUNCTIONS=true
-    '';
 
-    initExtra = ''
+      # Migrated from initExtra
       ${builtins.readFile ./zsh-initExtra-functions.zsh}
       ${builtins.readFile ./zsh-initExtra-misc.zsh}
     '';
