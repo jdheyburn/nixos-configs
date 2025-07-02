@@ -83,19 +83,20 @@
           ];
         # End of modules
 
-        mkUserImports = user: hostname: [
-          catppuccin.homeModules.catppuccin
-          ./home/common
-          # Imports my own home-manager modules
-          { imports = builtins.attrValues homeModules; }
-          # User specific config
-          (./home/users + "/${user}")
-          # Host specific config for the user, if it exists
-          (if (builtins.pathExists (./home/users + "/${user}/hosts/${hostname}")) then
-            ./home/users + "/${user}/hosts/${hostname}"
-          else
-            null)
-        ];
+        # Creates a list of imports for a given user, and hostname specific configs for the user if they exist
+        mkUserImports = user: hostname: 
+          let
+            baseImports = [
+              catppuccin.homeModules.catppuccin
+              ./home/common
+              # Imports my own home-manager modules
+              { imports = builtins.attrValues homeModules; }
+              # User specific config
+              (./home/users + "/${user}")
+            ];
+            hostSpecificPath = ./home/users + "/${user}/hosts/${hostname}";
+          in
+          baseImports ++ (if (builtins.pathExists hostSpecificPath) then [ hostSpecificPath ] else []);
 
         mkHomeManager = hostname: usernames: {
           # Fixes https://github.com/divnix/digga/issues/30

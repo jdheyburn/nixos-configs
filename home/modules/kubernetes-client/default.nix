@@ -48,7 +48,8 @@ in {
         kc = "kubectx";
         kn = "kubens";
       };
-      initExtra = ''
+      initContent = ''
+        # Migrated from initExtra
         ${builtins.readFile ./zsh-initExtra-kubectl_aliases.zsh}
       '';
     };
