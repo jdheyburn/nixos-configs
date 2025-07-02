@@ -18,7 +18,8 @@
 
     catppuccin.url = "github:catppuccin/nix";
 
-    darwin.url = "github:lnl7/nix-darwin";
+    # darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
+    darwin.url = "github:nix-darwin/nix-darwin";
     darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     deploy-rs.url = "github:serokell/deploy-rs";
@@ -31,10 +32,10 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-25-05.url = "github:nixos/nixpkgs/release-25.05";
+    # nixpkgs-25-05.url = "github:nixos/nixpkgs/release-25.05";
 
     nixpkgs.url = "github:numtide/nixpkgs-unfree";
-    nixpkgs.inputs.nixpkgs.follows = "nixpkgs-25-05";
+    nixpkgs.inputs.nixpkgs.follows = "nixpkgs-unstable";
   };
 
   outputs =
