@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }: {
+{ lib, pkgs, primaryUser, ... }: {
 
   # Required in newer nix-darwin
   system.stateVersion = 4;
@@ -10,24 +10,25 @@
   nixpkgs.config.allowUnfree = true;
 
   # Cleanup old files
-  nix.gc.automatic = true;
+  nix.gc.automatic = false;
   nix.gc.options = "--delete-older-than 30d";
-  nix.optimise.automatic = true;
+  nix.optimise.automatic = false;
 
-  system.activationScripts.postUserActivation = {
-    text = ''
-      # Show diff after switch - https://gist.github.com/luishfonseca/f183952a77e46ccd6ef7c907ca424517
-      # Fresh systems won't have /run/current-system
-      if [ -d /run/current-system ]; then
-        ${pkgs.nvd}/bin/nvd --nix-bin-dir=${pkgs.nix}/bin diff /run/current-system "$systemConfig"
-      fi
+  # Below option has been removed from nix-darwin, keeping it here for reference
+  # system.activationScripts.postUserActivation = {
+  #   text = ''
+  #     # Show diff after switch - https://gist.github.com/luishfonseca/f183952a77e46ccd6ef7c907ca424517
+  #     # Fresh systems won't have /run/current-system
+  #     if [ -d /run/current-system ]; then
+  #       ${pkgs.nvd}/bin/nvd --nix-bin-dir=${pkgs.nix}/bin diff /run/current-system "$systemConfig"
+  #     fi
 
-      # Activate new macOS settings immediately,
-      /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
-    '';
-  } // lib.optionalAttrs pkgs.stdenv.isLinux {
-    supportsDryActivation = true;
-  };
+  #     # Activate new macOS settings immediately,
+  #     /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+  #   '';
+  # } // lib.optionalAttrs pkgs.stdenv.isLinux {
+  #   supportsDryActivation = true;
+  # };
 
   # Needs to be duplicated here, even though it is defined in home-manager too
   programs.zsh.enable = true;
@@ -61,9 +62,10 @@
   homebrew.taps = [ ];
 
   # Allow sudo using fingerprint authentication
-  security.pam.enableSudoTouchIdAuth = true;
+  security.pam.services.sudo_local.touchIdAuth = true;
 
   # macos system settings
+  system.primaryUser = primaryUser;
   system.defaults = {
     CustomUserPreferences = {
       "com.apple.symbolichotkeys" = {

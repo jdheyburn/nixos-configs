@@ -1,10 +1,10 @@
 { config, pkgs, ... }:
 let
 
-  terraform_1_5_2 = pkgs.mkTerraform {
-    version = "1.5.2";
-    hash = "sha256-Ri2nWLjPPBINXyPIQSbnd1L+t7QLgXiTOgqX8Dk/rXg=";
-    vendorHash = "sha256-tfCfJj39VP+P4qhJTpEIAi4XB+6VYtVKkV/bTrtnFA0=";
+  terraform_1_11_3 = pkgs.mkTerraform {
+    version = "1.11.3";
+    hash = "sha256-th2VaFlvRKvL0ZEcAGU9eJui+k5dTaPGtLB2u9Q/vxg=";
+    vendorHash = "sha256-Tz01h3VITbvyEAfT8sfU7ghHd+vlCBVsMTTQS96jp7c=";
   };
 
   # TODO should be pulled from overlays but it's not, so redeclaring here
@@ -30,7 +30,7 @@ in
 
     discord
 
-    obsidian
+    # obsidian
 
     # Installs Python, and the defined packages
     (python311.withPackages python-packages)
@@ -38,7 +38,7 @@ in
     # Secrets management
     sops_3_7_3
 
-    terraform_1_5_2
+    terraform_1_11_3
     terraform-docs
 
     # Interfacing with Velero on K8s
