@@ -27,7 +27,7 @@ in
 
       services.restic.backups.media = {
         repository = "rclone:b2:iifu8Noi-backups/restic/media";
-        rcloneConfigFile = config.rcloneConfigFile;
+        rcloneConfigFile = cfg.rcloneConfigFile;
         passwordFile = config.age.secrets."restic-media-password".path;
         pruneOpts = [
           "--keep-daily 30"
