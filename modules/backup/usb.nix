@@ -16,6 +16,8 @@ in
 
   options.modules.backup.usb = {
     enable = mkEnableOption "Enable backup of media and rclone to cloud";
+
+    rcloneConfigFile = mkOption { type = types.path; };
   };
 
   config = mkIf cfg.enable
@@ -24,7 +26,8 @@ in
         ../../secrets/restic-media-password.age;
 
       services.restic.backups.media = {
-        repository = "/mnt/nfs/restic/media";
+        repository = "rclone:b2:iifu8Noi-backups/restic/media";
+        rcloneConfigFile = cfg.rcloneConfigFile;
         passwordFile = config.age.secrets."restic-media-password".path;
         pruneOpts = [
           "--keep-daily 30"
@@ -68,9 +71,6 @@ in
 
           echo "rcloning vinyl -> gdrive:media/vinyl"
           ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/media/vinyl gdrive:media/vinyl --config=$RCLONE_CONF_PATH
-
-          echo "rcloning restic/media -> b2:restic/media"
-          ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/restic/media b2:iifu8Noi-backups/restic/media --config=$RCLONE_CONF_PATH
 
           echo "rcloning minio -> b2:minio"
           ${pkgs.rclone}/bin/rclone -v sync minio: b2:iifu8Noi-backups/minio --config=$RCLONE_CONF_PATH

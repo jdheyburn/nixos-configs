@@ -82,7 +82,10 @@
     prune = true;
   };
 
-  modules.backup.usb.enable = true;
+  modules.backup.usb = {
+    enable = true;
+    rcloneConfigFile = config.age.secrets."rclone.conf".path;
+  };
   modules.caddy.enable = true;
   modules.dns.enable = true;
   modules.healthchecks.enable = true;
