@@ -29,5 +29,9 @@
     "steam"
   ];
 
+  environment.systemPackages = with pkgs; [
+    rclone
+  ];
+
   services.tailscale.enable = true;
 }
