@@ -88,6 +88,12 @@
           };
         };
       };
+      NSGlobalDomain = {
+        NSUserKeyEquivalents = {
+          # Disable Cmd+M minimize shortcut by reassigning it to something harmless
+          Minimize = "@~^\\Uf70f";
+        };
+      };
     };
 
     dock = {
