@@ -127,6 +127,23 @@ It will then error on a hash mismatch, so copy the actual hash and paste it in t
 sha256 = "";
 ```
 
+## Manual macOS settings
+
+There are some settings which as of writing are not configurable in nix-darwin. The list below keeps a track of what they are:
+
+- Enable Mission Control shortcuts
+  - Keyboard -> Keyboard shortcuts -> Mission Control -> Check all
+- Reduce motion
+  - Accessibility -> Display -> Check `Reduce motion`
+- Mission Control settings
+  - No Space rearranging
+    - Desktop & Dock -> Mission Control -> Uncheck `Automatically rearrange Spaces based on most recent use`
+  - Desktop & Dock -> Mission Control -> Uncheck `When switching to an application, switch to a Space with open windows for the application`
+- Don't use the weird Apple quotes
+  - Keyboard -> Input Sources -> Change `For (double|single) quotes`
+- Turn off keyboard backlight after inactvity
+  - Keyboard -> Turn keyboard backlight off after inactivity -> `After 1 Minute`
+
 ## Tips
 
 - [Go here](https://discourse.nixos.org/t/what-is-the-latest-best-practice-to-prefetch-the-hash/22103/4) for how blank hashes are structured
