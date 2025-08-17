@@ -40,7 +40,7 @@
     };
 
     mac = {
-      ip.tailscale = "100.125.40.20";
+      ip.tailscale = "100.101.44.99";
       system = "x86_64-linux";
       shouldScrape = true;
       users = [ users.jdheyburn ];
