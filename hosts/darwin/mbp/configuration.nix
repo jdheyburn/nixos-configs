@@ -34,4 +34,6 @@
   ];
 
   services.tailscale.enable = true;
+
+  modules.window-tiling.enable = true;
 }
