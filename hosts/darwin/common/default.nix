@@ -47,7 +47,7 @@
     "firefox"
     "focusrite-control"
     "hyper"
-    "logi-options-plus"
+    # "logi-options-plus"
     # Spotlight replacement
     # It does a good job of finding Apps installed by Nix
     "raycast"

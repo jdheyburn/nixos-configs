@@ -8,7 +8,7 @@
   ];
 
   homebrew.casks = [
-    "docker"
+    # "docker"
     "sdm"
     "viscosity"
   ];
