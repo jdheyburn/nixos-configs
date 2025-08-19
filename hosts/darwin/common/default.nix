@@ -92,6 +92,7 @@
         NSUserKeyEquivalents = {
           # Disable Cmd+M minimize shortcut by reassigning it to something harmless
           Minimize = "@~^\\Uf70f";
+          Minimise = "@~^\\Uf70f";
         };
       };
     };
@@ -100,6 +101,12 @@
       autohide = true;
       autohide-delay = 1.0;
       orientation = "left";
+
+      # Disable hot corners (1 = disabled)
+      wvous-tl-corner = 1;
+      wvous-bl-corner = 1;
+      wvous-tr-corner = 1;
+      wvous-br-corner = 1;
     };
 
     finder = {

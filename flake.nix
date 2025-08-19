@@ -58,6 +58,14 @@
           })
           (builtins.attrNames (builtins.readDir ./modules)));
 
+        ## Modules under ./modules-darwin
+        darwinModules = builtins.listToAttrs (map
+          (module: {
+            name = module;
+            value = import (./modules-darwin + "/${module}");
+          })
+          (builtins.attrNames (builtins.readDir ./modules-darwin)));
+
         ## Modules under ./home/modules
         homeModules = builtins.listToAttrs (map
           (module: {
@@ -172,6 +180,8 @@
                 # Top level common that should be applied to all Darwin
                 ./hosts/darwin/common
                 (./hosts/darwin + "/${node.hostName}/configuration.nix")
+                # Imports my own darwin modules
+                { imports = builtins.attrValues darwinModules; }
               ];
             in
             {
