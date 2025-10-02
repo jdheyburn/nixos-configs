@@ -1,4 +1,14 @@
-{ config, pkgs, lib, ... }: {
+{ config, pkgs, lib, ... }:
+let
+  # Declare Python packages that should be available in the global python
+  # https://nixos.wiki/wiki/Python
+  python-packages = ps: with ps; [
+    requests
+    uv
+    virtualenv
+  ];
+in
+{
 
   imports = [
     ./cli
@@ -15,16 +25,22 @@
 
   home.packages = with pkgs; [
     awscli2
-    
+
+    # diff tools
     delta
     diff-so-fancy
     dyff
+
+    devenv
 
     # better find commmand - search for files matching a name
     fd
 
     jq
     yq
+
+    # Installs Python, and the defined packages
+    (python311.withPackages python-packages)
 
     # Simple DNS client
     q
@@ -51,6 +67,16 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  programs = {
+    direnv = {
+      enable = true;
+      enableZshIntegration = true;
+      nix-direnv.enable = true;
+    };
+
+    zsh.enable = true;
+  };
 
   # https://nix.catppuccin.com/options/home-manager-options.html
   catppuccin = {
