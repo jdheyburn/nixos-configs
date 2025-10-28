@@ -6,6 +6,7 @@ let
     requests
     uv
     virtualenv
+    yt-dlp
   ];
 in
 {
