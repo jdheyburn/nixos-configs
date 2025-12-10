@@ -36,8 +36,10 @@ in
       };
 
       extraConfig = ''
+        yabai -m rule --add app="^1Password$" manage=off
         yabai -m rule --add app="^Calculator$" manage=off
         yabai -m rule --add app="^System Settings$" manage=off
+        yabai -m rule --add app="^TextEdit$" manage=off
       '';
 
       # extraConfig = ''
