@@ -9,14 +9,6 @@ let
 
   # TODO should be pulled from overlays but it's not, so redeclaring here
   velero_1_9_5 = pkgs.callPackage ./velero { };
-  sops_3_7_3 = pkgs.callPackage ./sops { };
-
-  # Declare Python packages that should be available in the global python
-  # https://nixos.wiki/wiki/Python
-  python-packages = ps: with ps; [
-    requests
-    virtualenv
-  ];
 in
 {
 
@@ -32,11 +24,8 @@ in
 
     # obsidian
 
-    # Installs Python, and the defined packages
-    (python311.withPackages python-packages)
-
     # Secrets management
-    sops_3_7_3
+    sops
 
     terraform_1_11_3
     terraform-docs

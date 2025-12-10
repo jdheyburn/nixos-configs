@@ -30,14 +30,30 @@ in {
 
     programs.k9s = {
       enable = true;
-      aliases.aliases = {
+      aliases = {
         p = "pods";
         dp = "deployments";
         dep = "deployments";
         np = "networkpolicies";
+        # Namespace must be hardcoded
+        redis = "pod redis redis-component=server";
+      };
+      views = {
+        redis = {
+          sortColumn = "NAME:asc";
+          columns = [
+            "NAME"
+            "PF"
+            "READY"
+            "RESTARTS"
+            "NODE"
+            "AGE"
+          ];
+        };
       };
       settings = {
         k9s = {
+          readOnly = true;
           ui.enableMouse = false;
         };
       };
