@@ -95,7 +95,7 @@
   modules.navidrome.enable = false;
   modules.nfs-server.enable = true;
   modules.plex.enable = true;
-  modules.unifi.enable = true;
+  modules.unifi.enable = false;
 
   services.prometheus.exporters.zfs.enable = true;
 
