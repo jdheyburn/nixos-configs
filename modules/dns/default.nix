@@ -27,6 +27,7 @@ let
     (service: {
       domain = "${service.name}.${catalog.domain.service}";
       answer = if service.host.ip ? "private" then service.host.ip.private else service.host.ip.tailscale;
+      enabled = true;
     })
     caddy_services;
   # Add rewrites for any node that has a domain
@@ -35,6 +36,7 @@ let
     (node: {
       domain = "${node.hostName}.joannet.casa";
       answer = node.ip.tailscale;
+      enabled = true;
     })
     (attrValues (filterAttrs (node_name: node_def: node_def ? "domain") catalog.nodes));
 
