@@ -1,4 +1,4 @@
-{ catalog, config, flake-self, pkgs, lib, ... }:
+{ catalog, config, flake-self, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -9,7 +9,7 @@ in {
 
   config = mkIf (cfg.enable && cfg.victoriametrics.enable) {
     age.secrets."victoriametrics-license" = {
-      file = ../../secrets/victoriametrics-license.age;
+      file = utils.secrets.file "victoriametrics-license";
       # victoriametrics systemd runs as DynamicUser
       mode = "0444";
     };

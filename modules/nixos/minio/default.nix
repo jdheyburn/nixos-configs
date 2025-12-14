@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -19,7 +19,7 @@ in {
   config = mkIf cfg.enable {
 
     age.secrets."minio-root-credentials".file =
-      ../../secrets/minio-root-credentials.age;
+      utils.secrets.file "minio-root-credentials";
 
     services.caddy.virtualHosts."minio.${catalog.domain.service}".extraConfig = ''
       tls {

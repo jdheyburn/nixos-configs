@@ -109,7 +109,7 @@ Secrets are managed by [agenix](https://github.com/ryantm/agenix).
 
 ```nix
 age.secrets."healthchecks-secrets-file" = {
-  file = ../../secrets/healthchecks-secrets-file.age;
+  file = secretsPath + "/healthchecks-secrets-file.age";
   owner = "healthchecks";
   group = "healthchecks";
 };
