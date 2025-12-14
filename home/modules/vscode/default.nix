@@ -26,7 +26,6 @@ in {
 
           # catppuccin theme
           catppuccin.catppuccin-vsc
-          catppuccin.catppuccin-vsc-icons
 
           # Markdown linting and style checking for Visual Studio Code
           davidanson.vscode-markdownlint

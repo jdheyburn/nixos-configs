@@ -18,9 +18,8 @@
 
     catppuccin.url = "github:catppuccin/nix";
 
-    # darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
-    darwin.url = "github:nix-darwin/nix-darwin";
-    #darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     deploy-rs.url = "github:serokell/deploy-rs";
 
@@ -28,18 +27,10 @@
 
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    #home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-    #nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # Below should work for plex on dee
-    #nixpkgs.url = "github:NixOS/nixpkgs/300f2d4247f566ea719fba8682e3da057f79c943";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    # nixpkgs-25-05.url = "github:nixos/nixpkgs/release-25.05";
-
-    #nixpkgs.url = "github:numtide/nixpkgs-unfree";
-    #nixpkgs.inputs.nixpkgs.follows = "nixpkgs-unstable";
   };
 
   outputs =

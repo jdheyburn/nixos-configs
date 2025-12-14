@@ -2,9 +2,12 @@
 
   programs.git = {
     enable = true;
-    userName = "Joseph Heyburn";
-    userEmail = "jdheyburn@gmail.com";
-    extraConfig = {
+    settings = {
+      user = {
+        name = "Joseph Heyburn";
+        email = "jdheyburn@gmail.com";
+      };
+
       # Configs related to delta as a differ
       blame.pager = "${pkgs.delta}/bin/delta";
       core.pager = "${pkgs.delta}/bin/delta";
@@ -28,6 +31,7 @@
       "url \"git@github.com:\"".insteadOf = "https://github.com/";
     };
   };
+  
   programs.zsh.oh-my-zsh.plugins = [ "git" ];
 
   programs.gh = {
