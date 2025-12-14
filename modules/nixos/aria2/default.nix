@@ -14,9 +14,7 @@ in {
       # Routing config inspired from below:
       # https://github.com/linuxserver/reverse-proxy-confs/blob/20c5dbdcff92442262ed8907385e477935ea9336/aria2-with-webui.subdomain.conf.sample
       extraConfig = ''
-        tls {
-          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-        }
+        ${utils.caddy.cloudflareTLS false}
         reverse_proxy /jsonrpc localhost:${toString config.services.aria2.settings.rpc-listen-port}
         file_server {
           root ${pkgs.ariang}/share/ariang

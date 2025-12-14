@@ -18,14 +18,8 @@ in
   };
 
   config = mkIf cfg.enable {
-    services.caddy.virtualHosts."obsidian.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-        # Below required to get TLS to work on non-local hosts (i.e. charlie)
-        resolvers 1.1.1.1
-      }
-      reverse_proxy localhost:${toString port}
-    '';
+    services.caddy.virtualHosts."obsidian.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost { port = port; };
 
     age.secrets."obsidian-environment-file".file = utils.secrets.file "obsidian-environment-file";
 

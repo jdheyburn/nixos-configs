@@ -14,14 +14,10 @@ in {
       mode = "0444";
     };
 
-    services.caddy.virtualHosts."victoriametrics.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-        # Below required to get TLS to work on non-local hosts (i.e. charlie)
-        resolvers 1.1.1.1
-      }
-      reverse_proxy localhost:${toString catalog.services.victoriametrics.port}
-    '';
+    services.caddy.virtualHosts."victoriametrics.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost {
+        port = catalog.services.victoriametrics.port;
+      };
 
     services.victoriametrics = {
       enable = true;

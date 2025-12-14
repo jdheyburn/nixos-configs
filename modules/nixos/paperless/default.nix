@@ -15,13 +15,8 @@ in
 
   config = mkIf cfg.enable {
 
-    services.caddy.virtualHosts."paperless.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-        resolvers 1.1.1.1
-      }
-      reverse_proxy localhost:${toString port}
-    '';
+    services.caddy.virtualHosts."paperless.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost { port = port; };
 
     age.secrets."paperless-password".file = utils.secrets.file "paperless-password";
 

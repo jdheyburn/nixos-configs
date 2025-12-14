@@ -19,14 +19,10 @@ in {
       group = "grafana";
     };
 
-    services.caddy.virtualHosts."grafana.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-        # Below required to get TLS to work on non-local hosts (i.e. charlie)
-        resolvers 1.1.1.1
-      }
-      reverse_proxy localhost:${toString catalog.services.grafana.port}
-    '';
+    services.caddy.virtualHosts."grafana.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost {
+        port = catalog.services.grafana.port;
+      };
 
     services.grafana = {
       enable = true;

@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -100,14 +100,8 @@ in
   options.modules.dashy = { enable = mkEnableOption "enable dashy"; };
 
   config = mkIf cfg.enable {
-    services.caddy.virtualHosts."home.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-        # Below required to get TLS to work on non-local hosts (i.e. charlie)
-        resolvers 1.1.1.1
-      }
-      reverse_proxy localhost:${toString port}
-    '';
+    services.caddy.virtualHosts."home.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost { port = port; };
 
     virtualisation.oci-containers.containers.dashy = {
       image = "lissy93/dashy:${version}";

@@ -21,18 +21,17 @@ in {
     age.secrets."minio-root-credentials".file =
       utils.secrets.file "minio-root-credentials";
 
-    services.caddy.virtualHosts."minio.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-      }
-      reverse_proxy localhost:${toString serverPort}
-    '';
-    services.caddy.virtualHosts."ui.minio.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-      }
-      reverse_proxy localhost:${toString consolePort}
-    '';
+    services.caddy.virtualHosts."minio.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost {
+        port = serverPort;
+        resolvers = false;
+      };
+    
+    services.caddy.virtualHosts."ui.minio.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost {
+        port = consolePort;
+        resolvers = false;
+      };
 
     services.minio = {
       enable = true;
