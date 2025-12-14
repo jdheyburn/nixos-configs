@@ -18,24 +18,19 @@
 
     catppuccin.url = "github:catppuccin/nix";
 
-    # darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.05";
-    darwin.url = "github:nix-darwin/nix-darwin";
-    darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     deploy-rs.url = "github:serokell/deploy-rs";
 
     flake-utils.url = "github:numtide/flake-utils";
 
-    home-manager.url = "github:nix-community/home-manager";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # nixpkgs-25-05.url = "github:nixos/nixpkgs/release-25.05";
-
-    nixpkgs.url = "github:numtide/nixpkgs-unfree";
-    nixpkgs.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
   };
 
   outputs =
@@ -221,6 +216,7 @@
                 path = deploy-rs.lib.${node.system}.activate.nixos
                   self.nixosConfigurations.${node.hostName};
                 sshOpts = [ "-o" "IdentitiesOnly=yes" ];
+                activationTimeout = 600;
               };
             };
           })

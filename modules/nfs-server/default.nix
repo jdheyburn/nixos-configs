@@ -37,7 +37,7 @@ in {
     services.samba = {
       enable = false;
       openFirewall = true;
-      shares = {
+      settings = {
         usb = {
           path = "/mnt/nfs";
           writeable = "yes";
