@@ -3,8 +3,10 @@
 with lib;
 
 let
-
+  dataDir = "/var/lib/unifi";
   cfg = config.modules.unifi;
+  port = catalog.services.unifi.port;
+  version = "10.0.162-ls110";
 in
 {
 
@@ -14,11 +16,19 @@ in
 
   config = mkIf cfg.enable {
 
+    users.groups.unifi = { };
+    users.users.unifi = {
+      group = "unifi";
+      isSystemUser = true;
+      description = "Unifi controller user";
+      home = dataDir;
+    };
+
     services.caddy.virtualHosts."unifi.${catalog.domain.service}".extraConfig = ''
       tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
       }
-      reverse_proxy localhost:${toString catalog.services.unifi.port} {
+      reverse_proxy localhost:${toString port} {
         transport http {
           tls_insecure_skip_verify
         }
@@ -36,10 +46,55 @@ in
       config.services.prometheus.exporters.unpoller.user;
 
     services.unifi = {
-      enable = true;
+      enable = false;
       unifiPackage = pkgs.unifi;
       mongodbPackage = pkgs.mongodb-7_0;
       openFirewall = true;
+    };
+
+    virtualisation.oci-containers.containers = {
+      unifi = {
+        enable = false;
+        image = "lscr.io/linuxserver/unifi-network-application:${version}";
+        volumes = [ "/var/lib/unifi:/config" ];
+        ports = [
+          "${toString port}:8080"
+          "8443:8443/tcp"
+          "3478:3478/udp"
+          "10001:10001/udp"
+          "1900:1900/udp"
+          "8843:8843/tcp"
+          "8880:8880/tcp"
+          "6789:6789/tcp"
+          "5514:5514/udp"
+        ];
+
+        dependsOn = [ "unifi-db" ];
+      };
+      unifi-db = {
+        enable = true;
+        image = "docker.io/mongo:8.2.2";
+
+        ports = [
+          "27017:27017/tcp"
+        ];
+
+        volumes = [
+          "${dataDir}/db:/data/db"
+        ];
+
+        environment = {
+          TZ = "Europe/London";
+          PUID = config.users.users.unifi.uid;
+          PGUID = config.users.users.unifi.gid;
+          MONGO_INITDB_ROOT_USERNAME = "root";
+          MONGO_INITDB_ROOT_PASSWORD = "\${MONGO_INITDB_ROOT_PASSWORD}";
+          MONGO_USER = "unifi";
+          MONGO_PASS = "\${MONGO_PASS}";
+          MONGO_DBNAME = "unifi";
+          MONGO_AUTHSOURCE = "admin";
+        };
+      };
     };
 
     services.prometheus.exporters.unpoller = {
