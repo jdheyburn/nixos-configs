@@ -5,6 +5,19 @@ with lib;
 let
   cfg = config.modules.beets;
   
+  # Import beetcamp package
+  beetcamp = pkgs.callPackage ../../../pkgs/beetcamp.nix { };
+  
+  # Create custom beets with plugins
+  beetsWithPlugins = pkgs.python3Packages.beets.override {
+    pluginOverrides = {
+      bandcamp = {
+        enable = true;
+        propagatedBuildInputs = [ beetcamp ];
+      };
+    };
+  };
+  
   # Create wrapper script that calls the real beet binary
   beet-wrapper = pkgs.writeScriptBin "beet" ''
     #!${pkgs.python3}/bin/python3
@@ -16,8 +29,8 @@ let
     import itertools
     from typing import List
 
-    # Use the beet from nixpkgs
-    _BEET = "${pkgs.beets}/bin/beet"
+    # Use the custom beets with plugins
+    _BEET = "${beetsWithPlugins}/bin/beet"
 
     # Config directory will be set by Nix module
     _CONFIG_DIR = pathlib.Path.home() / ".config" / "beets"
