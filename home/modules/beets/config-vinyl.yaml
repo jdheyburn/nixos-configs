@@ -1,0 +1,42 @@
+plugins: edit discogs inline info badfiles missing embedart fetchart bandcamp lastgenre #beatport 
+
+# Where to store the imported music files, and the db location for tracking
+directory: /private/shares/nfs/Backup/media/vinyl
+library: /private/shares/nfs/Backup/media/beets-db/beets-vinyl.db
+
+import:
+   move: no
+   copy: yes
+   timid: yes
+
+
+# How to store the files in directory
+paths:
+    default: $albumartist/$album%aunique{}/%if{$multidisc,CD$disc/}$track $artist - $title
+    comp: Compilations/$album%aunique{}/%if{$multidisc,CD$disc/}$track $artist - $title
+    singleton: Singles/$artist - $title
+
+# Custom fields we can refer to in paths
+# multidisc - if album has more than one CD then group by that CD within the album
+item_fields:
+    multidisc: 1 if disctotal > 1 and media == 'CD' else 0
+
+#match:
+#    preferred:
+        #media: ['CD']
+
+# Newer released media should use the original year it was released
+original_date: yes
+
+# Speedy
+threaded: yes
+
+fetchart: 
+    cover_names: cover
+    minwidth: 500
+    store_source: yes
+
+# Disable musicbrainz
+#musicbrainz:
+#    host: localhost:6000
+
