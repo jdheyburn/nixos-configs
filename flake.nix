@@ -52,21 +52,21 @@
         inherit (flake-utils.lib) eachSystemMap system;
         catalog = import ./catalog.nix { inherit nixos-hardware; };
 
-        ## Modules under ./modules
+        ## Modules under ./modules/nixos
         nixosModules = builtins.listToAttrs (map
           (module: {
             name = module;
-            value = import (./modules + "/${module}");
+            value = import (./modules/nixos + "/${module}");
           })
-          (builtins.attrNames (builtins.readDir ./modules)));
+          (builtins.attrNames (builtins.readDir ./modules/nixos)));
 
-        ## Modules under ./modules-darwin
+        ## Modules under ./modules/darwin
         darwinModules = builtins.listToAttrs (map
           (module: {
             name = module;
-            value = import (./modules-darwin + "/${module}");
+            value = import (./modules/darwin + "/${module}");
           })
-          (builtins.attrNames (builtins.readDir ./modules-darwin)));
+          (builtins.attrNames (builtins.readDir ./modules/darwin)));
 
         ## Modules under ./home/modules
         homeModules = builtins.listToAttrs (map
