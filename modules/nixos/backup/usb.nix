@@ -34,9 +34,7 @@ in
         ];
         paths = [
           "/mnt/usb/Backup/media/beets-db"
-          "/mnt/usb/Backup/media/lossless"
           "/mnt/usb/Backup/media/music"
-          "/mnt/usb/Backup/media/vinyl"
         ];
         timerConfig = { OnCalendar = "*-*-* 02:00:00"; };
         backupPrepareCommand = "${pkgs.curl}/bin/curl ${healthcheckResticMedia}/start";
@@ -65,12 +63,6 @@ in
 
           echo "rcloning music -> gdrive:media/music"
           ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/media/music gdrive:media/music --config=$RCLONE_CONF_PATH
-
-          echo "rcloning lossless -> gdrive:media/lossless"
-          ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/media/lossless gdrive:media/lossless --config=$RCLONE_CONF_PATH
-
-          echo "rcloning vinyl -> gdrive:media/vinyl"
-          ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/media/vinyl gdrive:media/vinyl --config=$RCLONE_CONF_PATH
 
           echo "rcloning minio -> b2:minio"
           ${pkgs.rclone}/bin/rclone -v sync minio: b2:iifu8Noi-backups/minio --config=$RCLONE_CONF_PATH
