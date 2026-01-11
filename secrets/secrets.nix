@@ -36,7 +36,8 @@ in
   "rclone.conf.age".publicKeys = default;
   "thanos-objstore-config.age".publicKeys = default;
   "smtp-password.age".publicKeys = default;
+  "unifi-environment-file.age".publicKeys = default;
+  "unifi-db-environment-file.age".publicKeys = default;
   "unifi-poller-password.age".publicKeys = default;
   "victoriametrics-license.age".publicKeys = default;
 }
-
