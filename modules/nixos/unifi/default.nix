@@ -63,7 +63,7 @@ in
     };
 
     age.secrets."unifi-environment-file".file = utils.secrets.file "unifi-environment-file";
-    age.secrets."unifi-db-environment-file".file = utils.secrets.file "unifi-db-password";
+    age.secrets."unifi-db-environment-file".file = utils.secrets.file "unifi-db-environment-file";
 
     virtualisation.oci-containers.containers = {
       unifi = {
