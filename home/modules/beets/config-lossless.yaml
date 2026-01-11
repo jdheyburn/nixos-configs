@@ -1,8 +1,8 @@
 plugins: edit discogs inline info badfiles missing embedart fetchart bandcamp lastgenre #beatport 
 
 # Where to store the imported music files, and the db location for tracking
-directory: /private/shares/nfs/Backup/media/lossless
-library: /private/shares/nfs/Backup/media/beets-db/beets-lossless.db
+directory: /mnt/nfs/Backup/media/lossless
+library: /mnt/nfs/Backup/media/beets-db/beets-lossless.db
 
 import:
    move: no
