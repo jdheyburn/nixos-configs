@@ -41,7 +41,7 @@ in
     yq
 
     # Installs Python, and the defined packages
-    (python311.withPackages python-packages)
+    (python3.withPackages python-packages)
 
     # Simple DNS client
     q
