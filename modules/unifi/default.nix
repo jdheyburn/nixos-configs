@@ -7,6 +7,7 @@ let
   cfg = config.modules.unifi;
   port = catalog.services.unifi.port;
   version = "10.0.162-ls110";
+  initDbScript = pkgs.writeShellScript "init-mongo.sh" (builtins.readFile ./init-mongo.sh);
 in
 {
 
@@ -35,10 +36,19 @@ in
       }
     '';
 
-    # If doing a fresh install then you may need to open 8443
-    # temporarily before you can close it out again
     networking.firewall.allowedTCPPorts =
-      [ config.services.prometheus.exporters.unpoller.port 8443 ];
+      [
+        config.services.prometheus.exporters.unpoller.port
+        config.services.unifi.port
+        8443
+      ];
+
+    networking.firewall.allowedUDPPorts = [
+      3478 # UDP port used for STUN
+      10001 # UDP port used for device discovery
+      1900 # UDP port used for Simple Service Discovery Protocol (SSDP)
+      5514 # UDP port used for syslog
+    ];
 
     age.secrets."unifi-poller-password".file =
       ../../secrets/unifi-poller-password.age;
@@ -51,6 +61,9 @@ in
       mongodbPackage = pkgs.mongodb-7_0;
       openFirewall = true;
     };
+
+    age.secrets."unifi-environment-file".file = ../../secrets/unifi-environment-file.age;
+    age.secrets."unifi-db-environment-file".file = ../../secrets/unifi-db-password.age;
 
     virtualisation.oci-containers.containers = {
       unifi = {
@@ -70,6 +83,22 @@ in
         ];
 
         dependsOn = [ "unifi-db" ];
+
+        environment = {
+          TZ = "Europe/London";
+          PUID = config.users.users.unifi.uid;
+          PGUID = config.users.users.unifi.gid;
+          MONGO_USER = "unifi";
+          MONGO_HOST = "unifi-db";
+          MONGO_PORT = "27017";
+          MONGO_DBNAME = "unifi";
+          MONGO_AUTHSOURCE = "admin";
+        };
+
+        environmentFiles = [
+          config.age.secrets."unifi-environment-file".path
+          config.age.secrets."unifi-db-environment-file".path
+        ];
       };
       unifi-db = {
         enable = true;
@@ -81,6 +110,7 @@ in
 
         volumes = [
           "${dataDir}/db:/data/db"
+          "${initDbScript}:/docker-entrypoint-initdb.d/init-db.sh:ro"
         ];
 
         environment = {
@@ -88,12 +118,13 @@ in
           PUID = config.users.users.unifi.uid;
           PGUID = config.users.users.unifi.gid;
           MONGO_INITDB_ROOT_USERNAME = "root";
-          MONGO_INITDB_ROOT_PASSWORD = "\${MONGO_INITDB_ROOT_PASSWORD}";
           MONGO_USER = "unifi";
-          MONGO_PASS = "\${MONGO_PASS}";
           MONGO_DBNAME = "unifi";
           MONGO_AUTHSOURCE = "admin";
         };
+
+        # Sets MONGO_INITDB_ROOT_PASSWORD and MONGO_PASS
+        environmentFiles = [ config.age.secrets."unifi-db-environment-file".path ];
       };
     };
 
