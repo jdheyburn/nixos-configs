@@ -18,6 +18,7 @@ let
     };
   };
   
+  # TODO remove this wrapper after confirmed I don't need it post-migration
   # Create wrapper script that calls the real beet binary
   beet-wrapper = pkgs.writeScriptBin "beet" ''
     #!${pkgs.python3}/bin/python3
