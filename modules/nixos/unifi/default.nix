@@ -25,16 +25,16 @@ in
       home = dataDir;
     };
 
-    services.caddy.virtualHosts."unifi.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-      }
-      reverse_proxy localhost:${toString port} {
-        transport http {
-          tls_insecure_skip_verify
-        }
-      }
-    '';
+    services.caddy.virtualHosts."unifi.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost {
+        port = port;
+        resolvers = false;
+        extraProxyConfig = ''
+          transport http {
+            tls_insecure_skip_verify
+          }
+        '';
+      };
 
     networking.firewall.allowedTCPPorts =
       [

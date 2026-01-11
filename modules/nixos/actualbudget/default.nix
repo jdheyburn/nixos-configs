@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, utils, ... }:
 
 
 
@@ -18,12 +18,11 @@ in
 
   config = mkIf cfg.enable {
 
-    services.caddy.virtualHosts."actual.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-      }
-      reverse_proxy localhost:${toString port}
-    '';
+    services.caddy.virtualHosts."actual.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost {
+        port = port;
+        resolvers = false;
+      };
 
     # services.actual.enable = true;
     # services.actual.port = port;

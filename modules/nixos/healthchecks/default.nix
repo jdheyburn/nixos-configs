@@ -10,30 +10,20 @@ in {
 
   config = mkIf cfg.enable {
 
-    age.secrets."healthchecks-secrets-file" = {
-      file = utils.secrets.file "healthchecks-secrets-file";
-      owner = "healthchecks";
-      group = "healthchecks";
-    };
+    age.secrets."healthchecks-secrets-file" =
+      utils.secrets.mkOwnedSecret "healthchecks-secrets-file" "healthchecks" "healthchecks";
 
-    age.secrets."healthchecks-smtp-password" = {
-      file = utils.secrets.file "healthchecks-smtp-password";
-      owner = "healthchecks";
-      group = "healthchecks";
-    };
+    age.secrets."healthchecks-smtp-password" =
+      utils.secrets.mkOwnedSecret "healthchecks-smtp-password" "healthchecks" "healthchecks";
 
-    age.secrets."healthchecks-superuser-password" = {
-      file = utils.secrets.file "healthchecks-superuser-password";
-      owner = "healthchecks";
-      group = "healthchecks";
-    };
+    age.secrets."healthchecks-superuser-password" =
+      utils.secrets.mkOwnedSecret "healthchecks-superuser-password" "healthchecks" "healthchecks";
 
-    services.caddy.virtualHosts."healthchecks.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-      }
-      reverse_proxy localhost:${toString catalog.services.healthchecks.port}
-    '';
+    services.caddy.virtualHosts."healthchecks.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost {
+        port = catalog.services.healthchecks.port;
+        resolvers = false;
+      };
 
     services.healthchecks = {
       enable = true;

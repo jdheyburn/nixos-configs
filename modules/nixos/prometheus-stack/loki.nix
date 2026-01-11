@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -11,14 +11,10 @@ in
 
   config = mkIf (cfg.enable && cfg.loki.enable)
     {
-      services.caddy.virtualHosts."loki.${catalog.domain.service}".extraConfig = ''
-        tls {
-          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-          # Below required to get TLS to work on non-local hosts (i.e. charlie)
-          resolvers 1.1.1.1
-        }
-        reverse_proxy localhost:${toString catalog.services.loki.port}
-      '';
+      services.caddy.virtualHosts."loki.${catalog.domain.service}".extraConfig =
+        utils.caddy.mkServiceVHost {
+          port = catalog.services.loki.port;
+        };
 
       services.loki = {
         enable = true;

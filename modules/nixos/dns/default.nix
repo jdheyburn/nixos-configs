@@ -53,12 +53,10 @@ in
     services.caddy.virtualHosts."adguard.${catalog.domain.service}" = {
       # Routing config inspired from below:
       # https://github.com/linuxserver/reverse-proxy-confs/blob/20c5dbdcff92442262ed8907385e477935ea9336/aria2-with-webui.subdomain.conf.sample
-      extraConfig = ''
-        tls {
-          dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-        }
-        reverse_proxy localhost:${toString port}
-      '';
+      extraConfig = utils.caddy.mkServiceVHost {
+        port = port;
+        resolvers = false;
+      };
     };
 
     users.users.jdheyburn.extraGroups = [ "adguardhome" ];

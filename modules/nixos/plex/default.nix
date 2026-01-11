@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -18,12 +18,11 @@ in {
       exclude = [ "/var/lib/plex/Plex Media Server/Cache" ];
     };
 
-    services.caddy.virtualHosts."plex.${catalog.domain.service}".extraConfig = ''
-      tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-      }
-      reverse_proxy localhost:32400
-    '';
+    services.caddy.virtualHosts."plex.${catalog.domain.service}".extraConfig =
+      utils.caddy.mkServiceVHost {
+        port = 32400;
+        resolvers = false;
+      };
 
     services.plex = {
       enable = true;
