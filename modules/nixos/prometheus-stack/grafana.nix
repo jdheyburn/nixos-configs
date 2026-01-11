@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -9,12 +9,12 @@ in {
   config = mkIf (cfg.enable && cfg.grafana.enable) {
 
     age.secrets."grafana-admin-password" = {
-      file = ../../secrets/grafana-admin-password.age;
+      file = utils.secrets.file "grafana-admin-password";
       owner = "grafana";
       group = "grafana";
     };
     age.secrets."smtp-password" = {
-      file = ../../secrets/smtp-password.age;
+      file = utils.secrets.file "smtp-password";
       owner = "grafana";
       group = "grafana";
     };

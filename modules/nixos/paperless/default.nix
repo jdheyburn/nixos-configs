@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -23,7 +23,7 @@ in
       reverse_proxy localhost:${toString port}
     '';
 
-    age.secrets."paperless-password".file = ../../secrets/paperless-password.age;
+    age.secrets."paperless-password".file = utils.secrets.file "paperless-password";
 
     services.paperless = {
       enable = true;

@@ -1,4 +1,4 @@
-{ catalog, config, flake-self, pkgs, lib, ... }:
+{ catalog, config, flake-self, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -73,7 +73,7 @@ in
       ];
     };
 
-    age.secrets."adguard-password".file = ../../secrets/adguard-password.age;
+    age.secrets."adguard-password".file = utils.secrets.file "adguard-password";
 
     services.adguardhome = {
       enable = true;

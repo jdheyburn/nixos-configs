@@ -146,7 +146,7 @@
           systemManager {
             inherit system;
             specialArgs = {
-              inherit catalog primaryUser;
+              inherit catalog primaryUser utils;
               flake-self = self;
             } // inputs;
             modules =
@@ -154,6 +154,11 @@
               (homeFeatures hostname system users)
               ++ extraModules;
           };
+        
+        utils = import ./lib/utils {
+          inherit lib pkgs;
+          secretsPath = ./secrets;
+        };
 
         darwinNodes = (nixpkgs.lib.attrValues (nixpkgs.lib.filterAttrs (node_name: node_def: node_def ? "system" && isDarwin node_def.system) catalog.nodes));
         nixOSNodes = (nixpkgs.lib.attrValues (nixpkgs.lib.filterAttrs (node_name: node_def: node_def ? "system" && isNixOS node_def.system) catalog.nodes));

@@ -1,4 +1,4 @@
-{ config, catalog, pkgs, lib, ... }:
+{ config, catalog, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -51,7 +51,7 @@ in
     ];
 
     age.secrets."unifi-poller-password".file =
-      ../../secrets/unifi-poller-password.age;
+      utils.secrets.file "unifi-poller-password";
     age.secrets."unifi-poller-password".owner =
       config.services.prometheus.exporters.unpoller.user;
 
@@ -62,8 +62,8 @@ in
       openFirewall = true;
     };
 
-    age.secrets."unifi-environment-file".file = ../../secrets/unifi-environment-file.age;
-    age.secrets."unifi-db-environment-file".file = ../../secrets/unifi-db-password.age;
+    age.secrets."unifi-environment-file".file = utils.secrets.file "unifi-environment-file";
+    age.secrets."unifi-db-environment-file".file = utils.secrets.file "unifi-db-environment-file";
 
     virtualisation.oci-containers.containers = {
       unifi = {

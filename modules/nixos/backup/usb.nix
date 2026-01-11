@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -23,7 +23,7 @@ in
   config = mkIf cfg.enable
     {
       age.secrets."restic-media-password".file =
-        ../../secrets/restic-media-password.age;
+        utils.secrets.file "restic-media-password";
 
       services.restic.backups.media = {
         repository = "rclone:b2:iifu8Noi-backups/restic/media";

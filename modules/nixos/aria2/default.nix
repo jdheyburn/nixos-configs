@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -29,7 +29,7 @@ in {
     users.users.jdheyburn.extraGroups = [ "aria2" ];
 
     age.secrets."aria2-password".file =
-      ../../secrets/aria2-password.age;
+      utils.secrets.file "aria2-password";
 
     services.aria2 = {
       enable = true;

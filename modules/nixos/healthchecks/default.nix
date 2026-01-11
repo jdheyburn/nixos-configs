@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, ... }:
+{ catalog, config, pkgs, lib, utils, ... }:
 
 with lib;
 
@@ -11,19 +11,19 @@ in {
   config = mkIf cfg.enable {
 
     age.secrets."healthchecks-secrets-file" = {
-      file = ../../secrets/healthchecks-secrets-file.age;
+      file = utils.secrets.file "healthchecks-secrets-file";
       owner = "healthchecks";
       group = "healthchecks";
     };
 
     age.secrets."healthchecks-smtp-password" = {
-      file = ../../secrets/healthchecks-smtp-password.age;
+      file = utils.secrets.file "healthchecks-smtp-password";
       owner = "healthchecks";
       group = "healthchecks";
     };
 
     age.secrets."healthchecks-superuser-password" = {
-      file = ../../secrets/healthchecks-superuser-password.age;
+      file = utils.secrets.file "healthchecks-superuser-password";
       owner = "healthchecks";
       group = "healthchecks";
     };
