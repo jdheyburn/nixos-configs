@@ -1,4 +1,4 @@
-# lib/default.nix
+# lib/utils/default.nix
 { lib, pkgs, secretsPath }:
 rec {
   secrets = rec {
