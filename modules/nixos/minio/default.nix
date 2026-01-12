@@ -26,6 +26,7 @@ in {
         port = serverPort;
         resolvers = false;
       };
+    
     services.caddy.virtualHosts."ui.minio.${catalog.domain.service}".extraConfig =
       utils.caddy.mkServiceVHost {
         port = consolePort;
