@@ -1,5 +1,5 @@
 # Inspiration from https://github.com/firecat53/nixos/blob/52269c82a1195d70a4209d75ed8cf774234510ca/hosts/homeserver/services/lubelogger.nix#L7
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -18,7 +18,7 @@ in
 
   config = mkIf cfg.enable {
     services.caddy.virtualHosts."lubelogger.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost { port = port; };
+      myUtils.caddy.mkServiceVHost { port = port; };
 
     virtualisation.oci-containers.containers.lubelogger = {
       image = "ghcr.io/hargata/lubelogger:v${version}";

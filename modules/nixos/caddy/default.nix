@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -29,7 +29,7 @@ in
     ];
 
     age.secrets."caddy-environment-file".file =
-      utils.secrets.file "caddy-environment-file";
+      myUtils.secrets.file "caddy-environment-file";
 
     services.caddy = {
       enable = true;

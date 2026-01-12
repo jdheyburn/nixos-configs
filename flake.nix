@@ -144,7 +144,7 @@
           systemManager {
             inherit system;
             specialArgs = {
-              inherit catalog primaryUser utils;
+              inherit catalog primaryUser myUtils;
               flake-self = self;
             } // inputs;
             modules =
@@ -153,7 +153,7 @@
               ++ extraModules;
           };
         
-        utils = import ./lib/utils {
+        myUtils = import ./lib/utils {
           inherit lib pkgs;
           secretsPath = ./secrets;
         };

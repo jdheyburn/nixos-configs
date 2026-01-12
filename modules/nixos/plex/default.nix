@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -19,7 +19,7 @@ in {
     };
 
     services.caddy.virtualHosts."plex.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost {
+      myUtils.caddy.mkServiceVHost {
         port = 32400;
         resolvers = false;
       };

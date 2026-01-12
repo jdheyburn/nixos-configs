@@ -1,4 +1,4 @@
-{ catalog, config, flake-self, pkgs, lib, utils, ... }:
+{ catalog, config, flake-self, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -53,7 +53,7 @@ in
     services.caddy.virtualHosts."adguard.${catalog.domain.service}" = {
       # Routing config inspired from below:
       # https://github.com/linuxserver/reverse-proxy-confs/blob/20c5dbdcff92442262ed8907385e477935ea9336/aria2-with-webui.subdomain.conf.sample
-      extraConfig = utils.caddy.mkServiceVHost {
+      extraConfig = myUtils.caddy.mkServiceVHost {
         port = port;
         resolvers = false;
       };
@@ -71,7 +71,7 @@ in
       ];
     };
 
-    age.secrets."adguard-password".file = utils.secrets.file "adguard-password";
+    age.secrets."adguard-password".file = myUtils.secrets.file "adguard-password";
 
     services.adguardhome = {
       enable = true;

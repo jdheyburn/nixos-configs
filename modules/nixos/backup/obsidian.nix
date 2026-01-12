@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -19,9 +19,9 @@ in
 
   config = mkIf cfg.enable {
     services.caddy.virtualHosts."obsidian.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost { port = port; };
+      myUtils.caddy.mkServiceVHost { port = port; };
 
-    age.secrets."obsidian-environment-file".file = utils.secrets.file "obsidian-environment-file";
+    age.secrets."obsidian-environment-file".file = myUtils.secrets.file "obsidian-environment-file";
 
     virtualisation.oci-containers.containers.obsidian = {
       image = "lscr.io/linuxserver/obsidian:${version}";
@@ -39,7 +39,7 @@ in
       ];
     };
 
-    age.secrets."restic-obsidian-password".file = utils.secrets.file "restic-obsidian-password";
+    age.secrets."restic-obsidian-password".file = myUtils.secrets.file "restic-obsidian-password";
 
     services.restic.backups.obsidian = {
       initialize = true;

@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -11,16 +11,16 @@ in {
   config = mkIf cfg.enable {
 
     age.secrets."healthchecks-secrets-file" =
-      utils.secrets.mkOwnedSecret "healthchecks-secrets-file" "healthchecks" "healthchecks";
+      myUtils.secrets.mkOwnedSecret "healthchecks-secrets-file" "healthchecks" "healthchecks";
 
     age.secrets."healthchecks-smtp-password" =
-      utils.secrets.mkOwnedSecret "healthchecks-smtp-password" "healthchecks" "healthchecks";
+      myUtils.secrets.mkOwnedSecret "healthchecks-smtp-password" "healthchecks" "healthchecks";
 
     age.secrets."healthchecks-superuser-password" =
-      utils.secrets.mkOwnedSecret "healthchecks-superuser-password" "healthchecks" "healthchecks";
+      myUtils.secrets.mkOwnedSecret "healthchecks-superuser-password" "healthchecks" "healthchecks";
 
     services.caddy.virtualHosts."healthchecks.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost {
+      myUtils.caddy.mkServiceVHost {
         port = catalog.services.healthchecks.port;
         resolvers = false;
       };

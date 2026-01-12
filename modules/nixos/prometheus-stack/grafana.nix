@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -9,18 +9,18 @@ in {
   config = mkIf (cfg.enable && cfg.grafana.enable) {
 
     age.secrets."grafana-admin-password" = {
-      file = utils.secrets.file "grafana-admin-password";
+      file = myUtils.secrets.file "grafana-admin-password";
       owner = "grafana";
       group = "grafana";
     };
     age.secrets."smtp-password" = {
-      file = utils.secrets.file "smtp-password";
+      file = myUtils.secrets.file "smtp-password";
       owner = "grafana";
       group = "grafana";
     };
 
     services.caddy.virtualHosts."grafana.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost {
+      myUtils.caddy.mkServiceVHost {
         port = catalog.services.grafana.port;
       };
 

@@ -1,4 +1,4 @@
-{ catalog, config, lib, pkgs, utils, ... }:
+{ catalog, config, lib, pkgs, myUtils, ... }:
 {
 
   imports = [ ./hardware-configuration.nix ./networking.nix ];
@@ -28,8 +28,8 @@
 
   # TODO these secrets should be defined in the module
   age.secrets."restic-small-files-password".file =
-    utils.secrets.file "restic-small-files-password";
-  age.secrets."rclone.conf".file = utils.secrets.file "rclone.conf";
+    myUtils.secrets.file "restic-small-files-password";
+  age.secrets."rclone.conf".file = myUtils.secrets.file "rclone.conf";
 
   modules.backup = {
     obsidian = {

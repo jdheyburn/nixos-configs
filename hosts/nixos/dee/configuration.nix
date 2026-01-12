@@ -1,4 +1,4 @@
-{ argononed, catalog, config, pkgs, lib, utils, ... }: {
+{ argononed, catalog, config, pkgs, lib, myUtils, ... }: {
 
   imports = [ ./hardware-configuration.nix "${argononed}/OS/nixos" ];
 
@@ -67,8 +67,8 @@
   #############################################################################
 
   age.secrets."restic-small-files-password".file =
-    utils.secrets.file "restic-small-files-password";
-  age.secrets."rclone.conf".file = utils.secrets.file "rclone.conf";
+    myUtils.secrets.file "restic-small-files-password";
+  age.secrets."rclone.conf".file = myUtils.secrets.file "rclone.conf";
 
   modules.actualbudget.enable = false;
   modules.aria2.enable = true;

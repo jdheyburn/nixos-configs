@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 
 
@@ -19,7 +19,7 @@ in
   config = mkIf cfg.enable {
 
     services.caddy.virtualHosts."actual.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost {
+      myUtils.caddy.mkServiceVHost {
         port = port;
         resolvers = false;
       };

@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -16,9 +16,9 @@ in
   config = mkIf cfg.enable {
 
     services.caddy.virtualHosts."paperless.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost { port = port; };
+      myUtils.caddy.mkServiceVHost { port = port; };
 
-    age.secrets."paperless-password".file = utils.secrets.file "paperless-password";
+    age.secrets."paperless-password".file = myUtils.secrets.file "paperless-password";
 
     services.paperless = {
       enable = true;
