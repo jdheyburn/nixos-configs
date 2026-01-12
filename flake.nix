@@ -154,7 +154,7 @@
           };
         
         myUtils = import ./lib/utils {
-          inherit lib pkgs;
+          lib = nixpkgs.lib;
           secretsPath = ./secrets;
         };
 
