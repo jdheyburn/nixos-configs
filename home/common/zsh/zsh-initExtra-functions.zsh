@@ -114,8 +114,6 @@ function modify-aws-instance-type() {
     return 0
 }
 
-
-
 # For the given hostname, output the IPs and the AZs they are in
 function get-az-ips-for-hostname() {
     local hostname=$1
@@ -182,7 +180,7 @@ function get-redis-on-node() {
         return 1
     fi
 
-    for pod in $(kubectl get pods --no-headers -o custom-columns=":metadata.name"  --field-selector spec.nodeName=$node); do
+    for pod in $(kubectl get pods --no-headers -o custom-columns=":metadata.name" --field-selector spec.nodeName=$node); do
         role=$(kubectl exec -it $pod -c redis -- sh -c 'redis-cli --no-auth-warning -a $AUTH role | grep -E "(master|slave)"')
         echo "$pod - $role"
     done
@@ -292,6 +290,16 @@ function diff() {
 # GitTop: navigate to root of git repo  - https://blog.meain.io/2023/navigating-around-in-shell/#navigating-to-project-root
 function gt() {
     cd "$(git rev-parse --show-toplevel 2>/dev/null)"
+}
+
+# Wrapper to reset terminal mouse mode after tmux exits
+# Fixes garbage output (mouse escape sequences) when tmux crashes or exits uncleanly
+function tmux() {
+    command tmux "$@"
+    local ret=$?
+    # Reset mouse tracking modes (basic, button-event, any-event, SGR extended)
+    printf '\e[?1000l\e[?1002l\e[?1003l\e[?1006l' 2>/dev/null
+    return $ret
 }
 
 # Third-party functions
