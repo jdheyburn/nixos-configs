@@ -2,6 +2,19 @@ inputs:
 let inherit inputs;
 in final: prev: {
 
+  # Disable flaky BPD tests in beets that fail with _queue.Empty timeout errors
+  # See: https://github.com/beetbox/beets/issues/5765
+  python3 = prev.python3.override {
+    packageOverrides = pyFinal: pyPrev: {
+      beets = pyPrev.beets.overridePythonAttrs (old: {
+        disabledTests = (old.disabledTests or [ ]) ++ [
+          "BPDPlaybackTest"
+        ];
+      });
+    };
+  };
+  python3Packages = final.python3.pkgs;
+
   # to allow for creation of superuser, and use of EMAIL_HOST_PASSWORD_FILE variable
   healthchecks = prev.callPackage ./healthchecks { };
 
