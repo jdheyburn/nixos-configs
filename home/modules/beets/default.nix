@@ -8,11 +8,20 @@ let
   # Import beetcamp package for Bandcamp integration
   beetcamp = pkgs.callPackage ../../../pkgs/beetcamp.nix { };
   
-  # Create beets with beetcamp plugin using a Python environment
-  beetsWithBeetcamp = pkgs.python3.withPackages (ps: [
+  # Create a Python environment with beets and beetcamp for the PYTHONPATH
+  beetsEnv = pkgs.python3.withPackages (ps: [
     ps.beets
     beetcamp
   ]);
+  
+  # Create a wrapped beets that uses the environment but only exposes the beet binary
+  # This avoids conflicts with other Python environments in home.packages
+  beetsWrapped = pkgs.runCommand "beets-wrapped" {
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+  } ''
+    mkdir -p $out/bin
+    makeWrapper ${beetsEnv}/bin/beet $out/bin/beet
+  '';
 
 in {
   options.modules.beets = { 
@@ -20,10 +29,10 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Use home-manager's programs.beets with our custom package
+    # Use home-manager's programs.beets with our wrapped package
     programs.beets = {
       enable = true;
-      package = beetsWithBeetcamp;
+      package = beetsWrapped;
     };
 
     # Install additional config files for multi-library support
