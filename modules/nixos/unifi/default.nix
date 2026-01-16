@@ -1,4 +1,4 @@
-{ config, catalog, pkgs, lib, utils, ... }:
+{ config, catalog, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -26,7 +26,7 @@ in
     };
 
     services.caddy.virtualHosts."unifi.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost {
+      myUtils.caddy.mkServiceVHost {
         port = port;
         resolvers = false;
         extraProxyConfig = ''
@@ -51,7 +51,7 @@ in
     ];
 
     age.secrets."unifi-poller-password".file =
-      utils.secrets.file "unifi-poller-password";
+      myUtils.secrets.file "unifi-poller-password";
     age.secrets."unifi-poller-password".owner =
       config.services.prometheus.exporters.unpoller.user;
 
@@ -62,8 +62,8 @@ in
       openFirewall = true;
     };
 
-    age.secrets."unifi-environment-file".file = utils.secrets.file "unifi-environment-file";
-    age.secrets."unifi-db-environment-file".file = utils.secrets.file "unifi-db-environment-file";
+    age.secrets."unifi-environment-file".file = myUtils.secrets.file "unifi-environment-file";
+    age.secrets."unifi-db-environment-file".file = myUtils.secrets.file "unifi-db-environment-file";
 
     virtualisation.oci-containers.containers = {
       unifi = {

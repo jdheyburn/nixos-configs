@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -14,7 +14,7 @@ in {
       # Routing config inspired from below:
       # https://github.com/linuxserver/reverse-proxy-confs/blob/20c5dbdcff92442262ed8907385e477935ea9336/aria2-with-webui.subdomain.conf.sample
       extraConfig = ''
-        ${utils.caddy.cloudflareTLS false}
+        ${myUtils.caddy.cloudflareTLS false}
         reverse_proxy /jsonrpc localhost:${toString config.services.aria2.settings.rpc-listen-port}
         file_server {
           root ${pkgs.ariang}/share/ariang
@@ -27,7 +27,7 @@ in {
     users.users.jdheyburn.extraGroups = [ "aria2" ];
 
     age.secrets."aria2-password".file =
-      utils.secrets.file "aria2-password";
+      myUtils.secrets.file "aria2-password";
 
     services.aria2 = {
       enable = true;

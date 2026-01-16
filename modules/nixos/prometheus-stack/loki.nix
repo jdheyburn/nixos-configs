@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -12,7 +12,7 @@ in
   config = mkIf (cfg.enable && cfg.loki.enable)
     {
       services.caddy.virtualHosts."loki.${catalog.domain.service}".extraConfig =
-        utils.caddy.mkServiceVHost {
+        myUtils.caddy.mkServiceVHost {
           port = catalog.services.loki.port;
         };
 

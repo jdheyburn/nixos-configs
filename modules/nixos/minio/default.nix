@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -19,16 +19,16 @@ in {
   config = mkIf cfg.enable {
 
     age.secrets."minio-root-credentials".file =
-      utils.secrets.file "minio-root-credentials";
+      myUtils.secrets.file "minio-root-credentials";
 
     services.caddy.virtualHosts."minio.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost {
+      myUtils.caddy.mkServiceVHost {
         port = serverPort;
         resolvers = false;
       };
     
     services.caddy.virtualHosts."ui.minio.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost {
+      myUtils.caddy.mkServiceVHost {
         port = consolePort;
         resolvers = false;
       };

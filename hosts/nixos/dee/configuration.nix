@@ -1,4 +1,4 @@
-{ argononed, catalog, config, pkgs, lib, utils, ... }: {
+{ argononed, catalog, config, pkgs, lib, myUtils, ... }: {
 
   imports = [ ./hardware-configuration.nix "${argononed}/OS/nixos" ];
 
@@ -67,8 +67,8 @@
   #############################################################################
 
   age.secrets."restic-small-files-password".file =
-    utils.secrets.file "restic-small-files-password";
-  age.secrets."rclone.conf".file = utils.secrets.file "rclone.conf";
+    myUtils.secrets.file "restic-small-files-password";
+  age.secrets."rclone.conf".file = myUtils.secrets.file "rclone.conf";
 
   modules.actualbudget.enable = false;
   modules.aria2.enable = true;
@@ -98,17 +98,5 @@
   modules.unifi.enable = false;
 
   services.prometheus.exporters.zfs.enable = true;
-
-  nix.buildMachines = [{
-    hostName = "charlie";
-    systems = [ "aarch64-linux" ];
-    maxJobs = 1;
-    speedFactor = 2;
-    mandatoryFeatures = [ ];
-  }];
-  nix.distributedBuilds = true;
-  nix.extraOptions = ''
-    builders-use-substitutes = true
-  '';
 }
 

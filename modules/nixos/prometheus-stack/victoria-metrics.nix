@@ -1,4 +1,4 @@
-{ catalog, config, flake-self, pkgs, lib, utils, ... }:
+{ catalog, config, flake-self, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -9,13 +9,13 @@ in {
 
   config = mkIf (cfg.enable && cfg.victoriametrics.enable) {
     age.secrets."victoriametrics-license" = {
-      file = utils.secrets.file "victoriametrics-license";
+      file = myUtils.secrets.file "victoriametrics-license";
       # victoriametrics systemd runs as DynamicUser
       mode = "0444";
     };
 
     services.caddy.virtualHosts."victoriametrics.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost {
+      myUtils.caddy.mkServiceVHost {
         port = catalog.services.victoriametrics.port;
       };
 

@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, utils, ... }:
+{ catalog, config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -7,7 +7,7 @@ let
 
   cfg = config.modules.dashy;
 
-  # TODO extract to utils.toYAML
+  # TODO extract to myUtils.toYAML
   format = pkgs.formats.yaml { };
 
   # Start to build the elements in sections, this is then used to discover in catalog.services
@@ -101,7 +101,7 @@ in
 
   config = mkIf cfg.enable {
     services.caddy.virtualHosts."home.${catalog.domain.service}".extraConfig =
-      utils.caddy.mkServiceVHost { port = port; };
+      myUtils.caddy.mkServiceVHost { port = port; };
 
     virtualisation.oci-containers.containers.dashy = {
       image = "lissy93/dashy:${version}";

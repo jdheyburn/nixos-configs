@@ -5,7 +5,9 @@
   beets,
 }:
 
-python3.pkgs.buildPythonApplication rec {
+# Use buildPythonPackage (not Application) so it integrates as a library
+# that beets can discover as a plugin
+python3.pkgs.buildPythonPackage rec {
   pname = "beetcamp";
   version = "0.23.0";
   pyproject = true;
@@ -40,7 +42,6 @@ python3.pkgs.buildPythonApplication rec {
     changelog = "https://github.com/snejus/beetcamp/blob/${src.rev}/CHANGELOG.md";
     license = lib.licenses.gpl2Only;
     maintainers = [ ];
-    mainProgram = "beetcamp";
   };
 }
 

@@ -1,4 +1,4 @@
-{ catalog, config, lib, pkgs, utils, ... }: {
+{ catalog, config, lib, pkgs, myUtils, ... }: {
 
   imports = [ ./hardware-configuration.nix ];
 
@@ -39,7 +39,7 @@
   ###############################################################################
 
   age.secrets."restic-small-files-password".file =
-    utils.secrets.file "restic-small-files-password";
+    myUtils.secrets.file "restic-small-files-password";
 
   modules.backup.small-files = {
     enable = true;
