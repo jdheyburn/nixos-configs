@@ -34,6 +34,7 @@ in
   programs.direnv.enable = true;
 
   programs.go.enable = true;
+  programs.zsh.sessionVariables.NODE_EXTRA_CA_CERTS = "/Users/joseph.heyburn/.node-certs/ZscalerRootCertificate.pem";
 
   modules.kubernetes-client.enable = true;
   modules.vscode.enable = true;

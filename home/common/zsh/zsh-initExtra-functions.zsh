@@ -1,3 +1,12 @@
+# Fallback for zoxide's __zoxide_z when running in non-interactive shells
+# (e.g., IDE terminals, AI coding assistants) where zoxide init doesn't run.
+# This gets overwritten by zoxide's real function in interactive shells.
+if ! type __zoxide_z &>/dev/null; then
+    function __zoxide_z() {
+        builtin cd "$@"
+    }
+fi
+
 # GitCommitMsg - adds the JIRA ticketed branch named to the commit message
 unalias gcmsg # remove the existing gcmsg
 function gcmsg() {
@@ -180,7 +189,7 @@ function get-redis-on-node() {
         return 1
     fi
 
-    for pod in $(kubectl get pods --no-headers -o custom-columns=":metadata.name" --field-selector spec.nodeName=$node); do
+    for pod in $(kubectl get pods --no-headers -o custom-columns=":metadata.name" --field-selector spec.nodeName=$node -l redis-component!=sentinel); do
         role=$(kubectl exec -it $pod -c redis -- sh -c 'redis-cli --no-auth-warning -a $AUTH role | grep -E "(master|slave)"')
         echo "$pod - $role"
     done
