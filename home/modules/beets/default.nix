@@ -29,25 +29,13 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Use home-manager's programs.beets with our wrapped package
     programs.beets = {
       enable = true;
       package = beetsWrapped;
     };
 
-    # Install additional config files for multi-library support
-    # Use with: beet -c ~/.config/beets/config-music.yaml <command>
-    home.file.".config/beets/config-music.yaml" = {
+    home.file.".config/beets/config.yaml" = {
       source = ./config-music.yaml;
-    };
-
-    home.file.".config/beets/config-vinyl.yaml" = {
-      source = ./config-vinyl.yaml;
-    };
-
-    home.file.".config/beets/config-lossless.yaml" = {
-      source = ./config-lossless.yaml;
     };
   };
 }
-
