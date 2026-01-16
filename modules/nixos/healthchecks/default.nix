@@ -27,6 +27,7 @@ in {
 
     services.healthchecks = {
       enable = true;
+      package = pkgs.callPackage ./override.nix { };
       port = catalog.services.healthchecks.port;
 
       settings = {
@@ -56,4 +57,3 @@ in {
     '';
   };
 }
-
