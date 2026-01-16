@@ -11,7 +11,6 @@ let
 
 in
 {
-  # imports = [ ../../pkgs/actual.nix ];
   options.modules.actualbudget = {
     enable = mkEnableOption "enable actual budget";
   };
@@ -24,7 +23,7 @@ in
         resolvers = false;
       };
 
-    # services.actual.enable = true;
-    # services.actual.port = port;
+    services.actual.enable = true;
+    services.actual.port = port;
   };
 }

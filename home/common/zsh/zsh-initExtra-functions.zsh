@@ -304,6 +304,8 @@ function tmux() {
 
 # Third-party functions
 
+# TODO how to only include if both fzf and fd are installed?
+
 ##### fzf #### (https://github.com/junegunn/fzf)
 
 # Use fd (https://github.com/sharkdp/fd) instead of the default find

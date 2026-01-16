@@ -5,21 +5,7 @@ in final: prev: {
   # to allow for creation of superuser, and use of EMAIL_HOST_PASSWORD_FILE variable
   healthchecks = prev.callPackage ./healthchecks { };
 
-  # to mitigate this issue https://github.com/NixOS/nixpkgs/issues/187904
-  #  plex = prev.callPackage ./plex { };
-  #  plexRaw = prev.callPackage ./plex/raw.nix { };
-
-  # Fix to previous velero version
-  velero_1_9_5 = prev.callPackage ./velero { };
-
   victoriametrics-enterprise = prev.callPackage ./victoriametrics-enterprise { };
-
-  # Disabled since AGH has since been updated
-  # adguardhome = prev.callPackage ./adguardhome { };
-
-  # adguardhome = prev.adguardhome.overrideAttrs (finalAttrs: previousAttrs: {
-  #     version = "0.107.10";
-  # });
 
   # below doesn't work, only above does
   # healthchecks = prev.healthchecks.overrideAttrs (finalAttrs: previousAttrs: {
