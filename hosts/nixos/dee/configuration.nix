@@ -98,17 +98,5 @@
   modules.unifi.enable = false;
 
   services.prometheus.exporters.zfs.enable = true;
-
-  nix.buildMachines = [{
-    hostName = "charlie";
-    systems = [ "aarch64-linux" ];
-    maxJobs = 1;
-    speedFactor = 2;
-    mandatoryFeatures = [ ];
-  }];
-  nix.distributedBuilds = true;
-  nix.extraOptions = ''
-    builders-use-substitutes = true
-  '';
 }
 
