@@ -36,8 +36,6 @@
   homebrew.enable = true;
   homebrew.brews = [
     "blueutil"
-    # Not working for the time being
-    # "ghostty"
     "switchaudio-osx"
   ];
   homebrew.casks = [
@@ -46,6 +44,8 @@
     "audacity"
     "firefox"
     "focusrite-control"
+    # TODO try out home-manager's ghostty
+    "ghostty"
     "hyper"
     # "logi-options-plus"
     # Spotlight replacement

@@ -1,2 +1,5 @@
 
 theme = catppuccin-macchiato
+
+macos-option-as-alt = true
+

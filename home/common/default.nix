@@ -86,4 +86,11 @@ in
     flavor = "macchiato";
   };
 
+  # TODO find a better place for this
+  # 
+  home.file.".config/ghostty/config" = {
+    enable = true;
+    source = ./ghostty/config;
+  };
+
 }
