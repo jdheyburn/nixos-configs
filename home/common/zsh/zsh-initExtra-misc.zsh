@@ -5,6 +5,10 @@ if [ -n "$\{commands[fzf-share]\}" ]; then
   source "$(fzf-share)/completion.zsh"
 fi
 
+# Fix: Disable fzf-tmux integration - it fails to connect to tmux socket on Linux
+# This overrides any FZF_TMUX=1 set by oh-my-zsh fzf plugin or home-manager
+export FZF_TMUX=0
+
 # #region agent log
 # Debug: log FZF and TMUX environment at shell init
 __debug_log_file="/tmp/fzf-tmux-debug.log"
