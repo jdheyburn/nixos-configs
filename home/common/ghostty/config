@@ -3,3 +3,19 @@ theme = catppuccin-macchiato
 
 macos-option-as-alt = true
 
+cursor-style = block
+
+auto-update = off
+
+shell-integration-features = no-cursor
+cursor-style-blink = false
+copy-on-select = clipboard
+
+macos-titlebar-style = tabs
+
+font-family = MesloLGS NF
+font-size = 14
+
+window-padding-x = 12
+window-padding-y = 14
+
