@@ -24,6 +24,6 @@ in
       };
 
     services.actual.enable = true;
-    services.actual.port = port;
+    services.actual.settings.port = port;
   };
 }
