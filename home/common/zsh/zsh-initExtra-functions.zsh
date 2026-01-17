@@ -1,12 +1,3 @@
-# Fallback for zoxide's __zoxide_z when running in non-interactive shells
-# (e.g., IDE terminals, AI coding assistants) where zoxide init doesn't run.
-# This gets overwritten by zoxide's real function in interactive shells.
-if ! type __zoxide_z &>/dev/null; then
-    function __zoxide_z() {
-        builtin cd "$@"
-    }
-fi
-
 # GitCommitMsg - adds the JIRA ticketed branch named to the commit message
 unalias gcmsg # remove the existing gcmsg
 function gcmsg() {
@@ -285,7 +276,7 @@ function squeezeme() {
 
     squeezelite -n macos -d all=info -o $headphones_id &
 }
-
+``
 # Better diff
 function diff() {
 
@@ -309,23 +300,4 @@ function tmux() {
     # Reset mouse tracking modes (basic, button-event, any-event, SGR extended)
     printf '\e[?1000l\e[?1002l\e[?1003l\e[?1006l' 2>/dev/null
     return $ret
-}
-
-# Third-party functions
-
-# TODO how to only include if both fzf and fd are installed?
-
-##### fzf #### (https://github.com/junegunn/fzf)
-
-# Use fd (https://github.com/sharkdp/fd) instead of the default find
-# command for listing path candidates.
-# - The first argument to the function ($1) is the base path to start traversal
-# - See the source code (completion.{bash,zsh}) for the details.
-function _fzf_compgen_path() {
-    fd --hidden --follow --exclude ".git" . "$1"
-}
-
-# Use fd to generate the list for directory completion
-function _fzf_compgen_dir() {
-    fd --type d --hidden --follow --exclude ".git" . "$1"
 }

@@ -71,8 +71,6 @@
           set -g @continuum-restore 'on'
         '';
       }
-      # Integration with fzf
-      { plugin = tmuxPlugins.tmux-fzf; }
       # Allow vim key bindings to move between panes (ctrl+hjkl), also integrate with neovim
       { plugin = tmuxPlugins.vim-tmux-navigator; }
       # Better text copy / clipboard support
