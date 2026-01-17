@@ -304,15 +304,8 @@ function gt() {
 # Wrapper to reset terminal mouse mode after tmux exits
 # Fixes garbage output (mouse escape sequences) when tmux crashes or exits uncleanly
 function tmux() {
-    # #region agent log
-    local __debug_log_file="/tmp/fzf-tmux-debug.log"
-    echo "{\"location\":\"zsh-initExtra-functions.zsh:tmux-wrapper\",\"message\":\"tmux wrapper called\",\"hypothesisId\":\"D\",\"data\":{\"args\":\"$*\",\"TMUX\":\"$TMUX\"},\"timestamp\":$(date +%s000),\"sessionId\":\"debug-session\"}" >>"$__debug_log_file"
-    # #endregion
     command tmux "$@"
     local ret=$?
-    # #region agent log
-    echo "{\"location\":\"zsh-initExtra-functions.zsh:tmux-wrapper-after\",\"message\":\"tmux wrapper completed\",\"hypothesisId\":\"D\",\"data\":{\"exit_code\":\"$ret\"},\"timestamp\":$(date +%s000),\"sessionId\":\"debug-session\"}" >>"$__debug_log_file"
-    # #endregion
     # Reset mouse tracking modes (basic, button-event, any-event, SGR extended)
     printf '\e[?1000l\e[?1002l\e[?1003l\e[?1006l' 2>/dev/null
     return $ret
