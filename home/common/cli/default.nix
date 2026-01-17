@@ -1,6 +1,7 @@
 { config, pkgs, lib, ... }: {
 
   imports = [
+    ./fzf.nix
     ./zoxide.nix
   ];
 
@@ -10,15 +11,6 @@
     # If cat is a global alias then we can pipe to bat
     cat = "${pkgs.bat}/bin/bat";
   };
-
-  # fuzzy finder
-  # better command history lookback
-  programs.fzf = {
-    enable = true;
-    enableZshIntegration = true;
-    tmux = { enableShellIntegration = true; };
-  };
-  programs.zsh.oh-my-zsh.plugins = [ "fzf" ];
 
   # snazzy prompt
   programs.starship = {
