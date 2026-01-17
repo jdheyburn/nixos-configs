@@ -1,5 +1,9 @@
 { config, pkgs, lib, ... }: {
 
+  imports = [
+    ./zoxide.nix
+  ];
+
   # Better cat command
   programs.bat.enable = true;
   programs.zsh.shellGlobalAliases = {
@@ -30,12 +34,5 @@
       ruby.disabled = true;
       time.disabled = false;
     };
-  };
-
-  # Better cd command that let's you type the name of a dir and cd into it
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = config.programs.zsh.enable;
-    options = [ "--cmd cd" ];
   };
 }

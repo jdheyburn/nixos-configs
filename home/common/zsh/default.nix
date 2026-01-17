@@ -25,8 +25,6 @@
     };
 
     shellGlobalAliases = {
-      # If cat is a global alias then we can pipe to bat easily enough
-      cat = "${pkgs.bat}/bin/bat";
       # One character grep
       G = "| grep -i ";
       # Output to yaml then cat it, useful on k8s resources
@@ -56,14 +54,6 @@
       enable = true;
       plugins =
         [ "colored-man-pages" "sudo" ];
-    };
-
-    prezto = {
-      enable = false;
-      tmux = {
-        autoStartRemote = true;
-        defaultSessionName = "joe-test";
-      };
     };
   };
 }

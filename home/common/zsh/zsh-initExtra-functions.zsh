@@ -1,12 +1,3 @@
-# Fallback for zoxide's __zoxide_z when running in non-interactive shells
-# (e.g., IDE terminals, AI coding assistants) where zoxide init doesn't run.
-# This gets overwritten by zoxide's real function in interactive shells.
-if ! type __zoxide_z &>/dev/null; then
-    function __zoxide_z() {
-        builtin cd "$@"
-    }
-fi
-
 # GitCommitMsg - adds the JIRA ticketed branch named to the commit message
 unalias gcmsg # remove the existing gcmsg
 function gcmsg() {
