@@ -2,9 +2,6 @@ inputs:
 let inherit inputs;
 in final: prev: {
 
-  # to allow for creation of superuser, and use of EMAIL_HOST_PASSWORD_FILE variable
-  healthchecks = prev.callPackage ./healthchecks { };
-
   victoriametrics-enterprise = prev.callPackage ./victoriametrics-enterprise { };
 
   # below doesn't work, only above does
