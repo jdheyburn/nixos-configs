@@ -5,10 +5,15 @@
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
-    tmux.enableShellIntegration = true;
+    tmux = {
+      enableShellIntegration = true;
+      # Overlay tmux pane in window
+      shellIntegrationOptions = [ "-p80%,60%" ];
+    };
 
     # Applied to all usages of fzf
     defaultOptions = [
+      "--tmux center"
       "--height 40%"
       "--style full"
       "--layout reverse"
@@ -18,7 +23,9 @@
     # Options passed to Ctrl + R
     historyWidgetOptions = [
       # Preview the command history inline
-      "--preview 'echo {}'"
+      "--preview 'echo {} | sed \\\"s/^ *\\([0-9|*]\\+\\) *//\\\" | ${pkgs.bat}/bin/bat --plain --language=sh --color=always'"
+      "--preview-window down:1:wrap"
+       "--sort"
     ];
 
     # Command passed to Ctrl + T
