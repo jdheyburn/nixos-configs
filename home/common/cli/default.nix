@@ -12,7 +12,9 @@
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
-    tmux = { enableShellIntegration = true; };
+    # Disabled: fzf-tmux fails to connect to tmux socket on Linux, causing
+    # "error connecting to /run/user/1000/tmux-1000/default" and terminal lock
+    tmux.enableShellIntegration = false;
   };
   programs.zsh.oh-my-zsh.plugins = [ "fzf" ];
 
