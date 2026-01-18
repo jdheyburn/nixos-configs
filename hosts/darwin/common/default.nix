@@ -1,7 +1,21 @@
-{ lib, pkgs, primaryUser, config, ... }: {
+{ lib, pkgs, config, users, ... }: {
 
   # Required in newer nix-darwin
   system.stateVersion = 4;
+
+  nix.settings.trusted-users = [ "root" ] ++ (map (user: user.name) users);
+
+  users.users = builtins.listToAttrs (map
+    (user: {
+      name = user.name;
+      value = {
+        home = "/Users/${user.name}";
+      };
+    })
+    users
+  );
+  # Set primaryUser to be the first user in the list
+  system.primaryUser = builtins.head (builtins.map (user: user.name) users);
 
   # Determinate uses its own daemon to manage the Nix installation that conflicts with nix-darwin's native Nix management
   nix.enable = false;
@@ -61,8 +75,6 @@
   # Allow sudo using fingerprint authentication
   security.pam.services.sudo_local.touchIdAuth = true;
 
-  # macos system settings
-  system.primaryUser = primaryUser;
   system.defaults = {
     CustomUserPreferences = {
       "com.apple.symbolichotkeys" = {
