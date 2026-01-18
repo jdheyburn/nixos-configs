@@ -133,8 +133,6 @@
         # Platform agnostic function for creating a system
         mkSystem = hostname: system: users: extraModules:
           let
-            # users is a list of user objects, need to get the first one's name
-            primaryUser = builtins.head (builtins.map (user: user.name) users);
             systemManager =
               if (isDarwin system) then
                 darwin.lib.darwinSystem
@@ -144,7 +142,7 @@
           systemManager {
             inherit system;
             specialArgs = {
-              inherit catalog primaryUser myUtils;
+              inherit catalog myUtils users;
               flake-self = self;
             } // inputs;
             modules =
