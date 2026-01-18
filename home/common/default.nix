@@ -85,5 +85,4 @@ in
     enable = true;
     flavor = "macchiato";
   };
-
 }

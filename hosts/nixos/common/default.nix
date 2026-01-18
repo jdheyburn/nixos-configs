@@ -182,6 +182,7 @@
       bind # Gets dig
       # busybox # Gets nslookup - but disabled since reboot was clashing with systemd, use q instead
       fd # better find commmand - search for files matching a name
+      ghostty.terminfo
       git
       htop
       jq
@@ -192,7 +193,6 @@
       rclone
       ripgrep # silver-searcher but newer
       rsync
-      silver-searcher # exposes ag - used to search strings in files
       sysstat # collection of perf mon tools for linux
       tldr
       unzip

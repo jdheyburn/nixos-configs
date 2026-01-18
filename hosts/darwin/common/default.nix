@@ -36,8 +36,6 @@
   homebrew.enable = true;
   homebrew.brews = [
     "blueutil"
-    # Not working for the time being
-    # "ghostty"
     "switchaudio-osx"
   ];
   homebrew.casks = [
@@ -141,4 +139,6 @@
       pkgs.meslo-lgs-nf
     ];
   };
+
+  modules.ghostty.enable = true;
 }
