@@ -40,10 +40,6 @@ in
         yabai -m rule --add app="^Calculator$" manage=off
         yabai -m rule --add app="^System Settings$" manage=off
         yabai -m rule --add app="^TextEdit$" manage=off
-
-        # Fix ghostty windows halving on new tabs
-        yabai -m signal --add app='^Ghostty$' event=window_created action='yabai -m space --layout bsp'
-        yabai -m signal --add app='^Ghostty$' event=window_destroyed action='yabai -m space --layout bsp'
       '';
 
       # extraConfig = ''

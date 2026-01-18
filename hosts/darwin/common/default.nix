@@ -44,8 +44,6 @@
     "audacity"
     "firefox"
     "focusrite-control"
-    # TODO try out home-manager's ghostty
-    "ghostty"
     "hyper"
     # "logi-options-plus"
     # Spotlight replacement
@@ -141,4 +139,6 @@
       pkgs.meslo-lgs-nf
     ];
   };
+
+  modules.ghostty.enable = true;
 }
