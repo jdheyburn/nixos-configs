@@ -53,7 +53,7 @@ Similarly for modules, I split out hosts by `nix-darwin` and `nixos`. The `commo
 
 I don't have a common set of configs across these two... yet.
 
-## home
+### home
 
 This is where home-manager configs live.
 
