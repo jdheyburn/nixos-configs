@@ -101,21 +101,6 @@ home/users/jdheyburn
 
 Any functions that get declared across the configs go here.
 
-## Deployment
-
-[deploy-rs](https://github.com/serokell/deploy-rs) is used to deploy the configurations.
-
-```bash
-# all hosts
-nix run github:serokell/deploy-rs -- -s "."
-
-# per host
-nix run github:serokell/deploy-rs -- -s ".#dee"
-
-# more explicit parameters
-nix run github:serokell/deploy-rs -- --keep-result --auto-rollback false --magic-rollback false --activation-timeout 3600 -s ".#dee"
-```
-
 ## Catalog
 
 `catalog.nix` is a global state file. The idea is that anything that is shared across nodes is defined here so that they can build their respective configs.
@@ -181,6 +166,21 @@ Hosts are defined in `nodes`, which can have these attributes:
 The idea for these is to specify within the catalog what users should be created on the hosts.
 
 Users are defined as attribute sets, although I don't do anything with this yet.
+
+## Deployment
+
+[deploy-rs](https://github.com/serokell/deploy-rs) is used to deploy the configurations.
+
+```bash
+# all hosts
+nix run github:serokell/deploy-rs -- -s "."
+
+# per host
+nix run github:serokell/deploy-rs -- -s ".#dee"
+
+# more explicit parameters
+nix run github:serokell/deploy-rs -- --keep-result --auto-rollback false --magic-rollback false --activation-timeout 3600 -s ".#dee"
+```
 
 ## Runbooks
 
