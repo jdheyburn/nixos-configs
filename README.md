@@ -1,6 +1,105 @@
 # nixos-configs
 
-A place for me to dump nix configs
+My repository containing my Nix configurations across NixOS, nix-darwin (macOS), and home-manager.
+
+- NixOS is used to configure system parameters on NixOS hosts
+- nix-darwin is used to configure system parameters on the MacBooks I have
+- home-manager is used to configure user level parameters across both NixOS and nix-darwin
+
+This means this repo acts as a monorepo of sorts for all my configs for both system and users, with the goal to keep things DRY.
+
+## Layout
+
+The bulk of the work to coalesce everything together is done in `flake.nix`. See below for a high level on what each directory structure does.
+
+### modules
+
+Modules are what make Nix so awesome, by abstracting away the concrete details of how to configure and deploy a service.
+
+I split my modules based on whether it is meant to be deployed via `nix-darwin` or `nixos`. I may consider adding a section for home-manager modules too.
+
+```text
+modules
+├── darwin
+│   ├── ghostty
+│   └── window-tiling
+├── nixos
+│   ├── actualbudget
+│   ├── aria2
+│   ├── backup
+│   ├── caddy
+# ...
+```
+
+These modules can then be referenced in host configurations.
+
+### hosts
+
+```text
+hosts
+├── darwin
+│   ├── common
+│   ├── macbook
+│   └── mbp
+└── nixos
+    ├── charlie
+    ├── common
+    ├── dee
+    ├── dennis
+    └── mac
+```
+
+Similarly for modules, I split out hosts by `nix-darwin` and `nixos`. The `common` dir in each of them contains configs that get applied to all hosts of that system.
+
+I don't have a common set of configs across these two... yet.
+
+## home
+
+This is where home-manager configs live.
+
+```text
+home
+├── common
+│   ├── cli
+│   ├── default.nix
+│   ├── git
+│   ├── hyper
+│   ├── neovim
+│   ├── tmux
+│   └── zsh
+├── modules
+│   ├── beets
+│   ├── kubernetes-client
+│   ├── ssh-client
+│   └── vscode
+├── profiles
+│   ├── desktop
+│   └── server
+└── users
+    ├── jdheyburn
+    ├── joseph.heyburn
+    └── root
+```
+
+`common` is deployed to all users. This is split out more so such as `git`, `tmux`, etc., so as to keep file lengths reasonable.
+
+`modules` are present here too, as not all the users will want these. For example, not every user needs Kubeernetes CLI stuff.
+
+`profiles` exist here for allocating profiles to hosts that make logical sense. I'm not doing anything with these yet, but the idea is that all GUI modules would be declared in `desktop`.
+
+`users` are where user configs are defined. This has an extra directory to provide configs that should apply only to users on particular hosts.
+
+```text
+home/users/jdheyburn
+├── default.nix
+└── hosts
+    ├── dee
+    └── mbp
+```
+
+### lib
+
+Any functions that get declared across the configs go here.
 
 ## Deployment
 
@@ -19,7 +118,7 @@ nix run github:serokell/deploy-rs -- --keep-result --auto-rollback false --magic
 
 ## Catalog
 
-`catalog.nix` is a global state file of sorts. The idea is that anything that is shared across nodes is defined here so that they can build their respective configs.
+`catalog.nix` is a global state file. The idea is that anything that is shared across nodes is defined here so that they can build their respective configs.
 
 ### Services
 
@@ -47,13 +146,14 @@ Services is a mapping of service name to service attributes, it can accept:
 - `blackbox.path`
   - The path that blackbox healthchecks should use, if it differs from root `/`
 
-## Hosts
+### Hosts
 
 - dee
   - Raspberry Pi 4 4GB
-  - Replaced dee_rpi3
-- dennis
-  - VM on a Proxmox hypervisor
+- charlie
+  - hetzner VPS server
+- mac
+  - hetzner server auction that comes and goes
 - macbook
   - MBP with nix-darwin
 - mbp
@@ -76,6 +176,12 @@ Hosts are defined in `nodes`, which can have these attributes:
 - `users`
   - list of users that should have home-manager configurations enabled for
 
+### Users
+
+The idea for these is to specify within the catalog what users should be created on the hosts.
+
+Users are defined as attribute sets, although I don't do anything with this yet.
+
 ## Runbooks
 
 ### Upgrading to latest versions
@@ -86,12 +192,7 @@ Hosts are defined in `nodes`, which can have these attributes:
     nix flake upgrade
     ```
 
-2. Update overlays
-    - [healthchecks](https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/web-apps/healthchecks/default.nix)
-    - [plex](https://github.com/NixOS/nixpkgs/tree/master/pkgs/servers/plex)
-
-3. Update container images
-    - [dashy](https://github.com/Lissy93/dashy/releases)
+2. Check for anywhere `version` is being hardcoded and update them
 
 ### Adding secrets
 
@@ -149,18 +250,6 @@ There are some settings which as of writing are not configurable in nix-darwin. 
 - [Go here](https://discourse.nixos.org/t/what-is-the-latest-best-practice-to-prefetch-the-hash/22103/4) for how blank hashes are structured
 - If after updating there are complaints about options no longer present, it's likely that they are no longer available, so they need to be removed
 - You can use `nixos-option` to find what options are available, and their specification
-
-## TODO
-
-- Better file structure, look to flake-parts for this
-  - i.e.:
-    - generic Nix settings across all systems
-    - generic NixOS
-    - generic nix-darwin
-    - host-level configs
-    - generic home-manager
-    - generic Linux home-manager
-    - generic macOS home-manager
 
 ## Credits / Inspiration
 

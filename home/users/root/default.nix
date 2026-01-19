@@ -1,6 +1,4 @@
-{ config, pkgs, ... }:
-
-{
+{ config, pkgs, ... }: {
   programs.git = {
     enable = true;
     extraConfig = {
@@ -8,6 +6,4 @@
       safe = { directory = "/etc/nixos"; };
     };
   };
-
 }
-
