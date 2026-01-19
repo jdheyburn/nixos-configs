@@ -89,4 +89,15 @@
   };
 
   programs.zsh.oh-my-zsh.plugins = [ "tmux" ];
+
+  # oh-my-zsh tmux plugin configuration
+  # https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/tmux
+  programs.zsh.sessionVariables = {
+    ZSH_TMUX_AUTONAME_SESSION = "true"; # Name sessions after current directory (for manual tmux commands)
+    ZSH_TMUX_AUTOQUIT = "false";        # Don't exit shell when detaching from tmux
+  };
+
+  programs.zsh.initContent = ''
+    ${builtins.readFile ./zsh-initContent-tmux.zsh}
+  '';
 }
