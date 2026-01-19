@@ -57,12 +57,6 @@ in
     wget
   ];
 
-  # hyper.js styling
-  home.file.".hyper.js" = {
-    enable = true;
-    source = ./hyper/hyper.js;
-  };
-
   # Permit non-free software
   nixpkgs.config.allowUnfree = true;
 
