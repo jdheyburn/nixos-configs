@@ -83,7 +83,7 @@
               else
                 home-manager.nixosModules.home-manager;
             # Only create root user on nixOS machines, I might hate this way of declaring it
-            additionalUsers = nixpkgs.lib.optional (!isDarwin system) "root";
+            additionalUsers = nixpkgs.lib.optional (isNixOS system) "root";
           in
           [
             homeManager
