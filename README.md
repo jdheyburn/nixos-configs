@@ -228,7 +228,26 @@ It will then error on a hash mismatch, so copy the actual hash and paste it in t
 sha256 = "";
 ```
 
-## Manual macOS settings
+## nix-darwin
+
+I manage Nix on macOS with the [Determinate Systems Nix](https://docs.determinate.systems/determinate-nix/) package. This installs `determinate-nixd` on the CLI which is used to manage Nix.
+
+### Upgrading Nix
+
+When I migrated to this package from the old installer on the CLI, these steps were ran to migrate over:
+
+```bash
+# First uninstall the old nix from the profile
+sudo /nix/store/wl4r4z66bx60qq0ci49qgkmj3sv3pcl7-determinate-nix-3.15.1/bin/nix-env --profile /nix/var/nix/profiles/default -e nix
+
+# Now install the new Determinate Nix
+sudo /nix/store/wl4r4z66bx60qq0ci49qgkmj3sv3pcl7-determinate-nix-3.15.1/bin/nix-env --profile /nix/var/nix/profiles/default -i /nix/store/wl4r4z66bx60qq0ci49qgkmj3sv3pcl7-determinate-nix-3.15.1
+
+nix --version
+# nix (Determinate Nix 3.15.1) 2.33.0
+```
+
+### Manual macOS settings
 
 There are some settings which as of writing are not configurable in nix-darwin. The list below keeps a track of what they are:
 
