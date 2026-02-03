@@ -113,7 +113,7 @@ in
       };
       unifi-db = {
         autoStart = true;
-        image = "docker.io/mongo:8.2.2";
+        image = "docker.io/mongo:4.4.18";
 
         # With --network=host, ports are not needed as container uses host networking directly
         # MongoDB listens on 27017
