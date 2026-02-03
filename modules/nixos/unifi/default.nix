@@ -76,7 +76,7 @@ in
 
     virtualisation.oci-containers.containers = {
       unifi = {
-        autoStart = false;
+        autoStart = true;
         image = "lscr.io/linuxserver/unifi-network-application:${version}";
         volumes = [ "/var/lib/unifi:/config" ];
         # With --network=host, ports are not needed as container uses host networking directly
@@ -115,6 +115,9 @@ in
         autoStart = true;
         image = "docker.io/mongo:4.4.18";
 
+        # Run as the host's unifi user to match volume ownership
+        user = "${toString config.users.users.unifi.uid}:${toString config.users.groups.unifi.gid}";
+
         # With --network=host, ports are not needed as container uses host networking directly
         # MongoDB listens on 27017
 
@@ -125,8 +128,6 @@ in
 
         environment = {
           TZ = config.time.timeZone;
-          PUID = toString config.users.users.unifi.uid;
-          PGID = toString config.users.groups.unifi.gid;
           MONGO_INITDB_ROOT_USERNAME = "root";
           MONGO_USER = "unifi";
           MONGO_DBNAME = "unifi";
