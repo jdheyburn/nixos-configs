@@ -67,7 +67,7 @@ in
 
     virtualisation.oci-containers.containers = {
       unifi = {
-        enable = false;
+        autoStart = false;
         image = "lscr.io/linuxserver/unifi-network-application:${version}";
         volumes = [ "/var/lib/unifi:/config" ];
         ports = [
@@ -101,7 +101,7 @@ in
         ];
       };
       unifi-db = {
-        enable = true;
+        autoStart = true;
         image = "docker.io/mongo:8.2.2";
 
         ports = [
