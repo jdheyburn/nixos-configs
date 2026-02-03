@@ -25,6 +25,11 @@ in
       home = dataDir;
     };
 
+    systemd.tmpfiles.rules = [
+      "d ${dataDir} 0770 unifi unifi -"
+      "d ${dataDir}/db 0770 unifi unifi -"
+    ];
+
     services.caddy.virtualHosts."unifi.${catalog.domain.service}".extraConfig =
       myUtils.caddy.mkServiceVHost {
         port = port;
@@ -39,8 +44,12 @@ in
     networking.firewall.allowedTCPPorts =
       [
         config.services.prometheus.exporters.unpoller.port
-        config.services.unifi.port
-        8443
+        8080 # Device inform
+        8443 # Web UI
+        8843 # HTTPS portal
+        8880 # HTTP portal
+        6789 # Mobile speedtest
+        27017 # MongoDB (for host networking)
       ];
 
     networking.firewall.allowedUDPPorts = [
@@ -70,30 +79,32 @@ in
         autoStart = false;
         image = "lscr.io/linuxserver/unifi-network-application:${version}";
         volumes = [ "/var/lib/unifi:/config" ];
-        ports = [
-          "${toString port}:8080"
-          "8443:8443/tcp"
-          "3478:3478/udp"
-          "10001:10001/udp"
-          "1900:1900/udp"
-          "8843:8843/tcp"
-          "8880:8880/tcp"
-          "6789:6789/tcp"
-          "5514:5514/udp"
-        ];
+        # With --network=host, ports are not needed as container uses host networking directly
+        # Keeping for documentation of ports used:
+        # 8080: Device inform
+        # 8443: Web UI (HTTPS)
+        # 3478/udp: STUN
+        # 10001/udp: Device discovery
+        # 1900/udp: SSDP
+        # 8843: HTTPS portal
+        # 8880: HTTP portal
+        # 6789: Mobile speedtest
+        # 5514/udp: Syslog
 
         dependsOn = [ "unifi-db" ];
 
         environment = {
           TZ = "Europe/London";
-          PUID = config.users.users.unifi.uid;
-          PGUID = config.users.users.unifi.gid;
+          PUID = toString config.users.users.unifi.uid;
+          PGID = toString config.users.groups.unifi.gid;
           MONGO_USER = "unifi";
-          MONGO_HOST = "unifi-db";
+          MONGO_HOST = "localhost";
           MONGO_PORT = "27017";
           MONGO_DBNAME = "unifi";
           MONGO_AUTHSOURCE = "admin";
         };
+
+        extraOptions = [ "--network=host" ];
 
         environmentFiles = [
           config.age.secrets."unifi-environment-file".path
@@ -104,9 +115,8 @@ in
         autoStart = true;
         image = "docker.io/mongo:8.2.2";
 
-        ports = [
-          "27017:27017/tcp"
-        ];
+        # With --network=host, ports are not needed as container uses host networking directly
+        # MongoDB listens on 27017
 
         volumes = [
           "${dataDir}/db:/data/db"
@@ -115,13 +125,15 @@ in
 
         environment = {
           TZ = "Europe/London";
-          PUID = config.users.users.unifi.uid;
-          PGUID = config.users.users.unifi.gid;
+          PUID = toString config.users.users.unifi.uid;
+          PGID = toString config.users.groups.unifi.gid;
           MONGO_INITDB_ROOT_USERNAME = "root";
           MONGO_USER = "unifi";
           MONGO_DBNAME = "unifi";
           MONGO_AUTHSOURCE = "admin";
         };
+
+        extraOptions = [ "--network=host" ];
 
         # Sets MONGO_INITDB_ROOT_PASSWORD and MONGO_PASS
         environmentFiles = [ config.age.secrets."unifi-db-environment-file".path ];
@@ -129,7 +141,7 @@ in
     };
 
     services.prometheus.exporters.unpoller = {
-      enable = true;
+      enable = false;
       controllers = [{
         url = "https://unifi.${catalog.domain.service}";
         user = "unifipoller";
