@@ -94,7 +94,7 @@ in
         dependsOn = [ "unifi-db" ];
 
         environment = {
-          TZ = "Europe/London";
+          TZ = config.time.timeZone;
           PUID = toString config.users.users.unifi.uid;
           PGID = toString config.users.groups.unifi.gid;
           MONGO_USER = "unifi";
@@ -124,7 +124,7 @@ in
         ];
 
         environment = {
-          TZ = "Europe/London";
+          TZ = config.time.timeZone;
           PUID = toString config.users.users.unifi.uid;
           PGID = toString config.users.groups.unifi.gid;
           MONGO_INITDB_ROOT_USERNAME = "root";

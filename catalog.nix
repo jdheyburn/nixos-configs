@@ -2,6 +2,8 @@
 # Inspired from https://github.com/jhillyerd/homelab/blob/main/nixos/catalog.nix
 { nixos-hardware }: rec {
 
+  timeZone = "Europe/London";
+
   domain = {
     base = "joannet.casa";
     service = "svc.${domain.base}";
