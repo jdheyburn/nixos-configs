@@ -17,8 +17,11 @@ in
 
   config = mkIf cfg.enable {
 
-    users.groups.unifi = { };
+    users.groups.unifi = {
+      gid = 983;
+    };
     users.users.unifi = {
+      uid = 997;
       group = "unifi";
       isSystemUser = true;
       description = "Unifi controller user";
