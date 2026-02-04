@@ -18,10 +18,13 @@ in
   config = mkIf cfg.enable {
 
     users.groups.unifi = {
+      # Hardcoded to match the gid that it was created with
       gid = 983;
     };
+    # TODO should be pulled in from defaultuser (no hardcoding username)
     users.users.jdheyburn.extraGroups = [ "unifi" ];
     users.users.unifi = {
+      # Hardcoded to match the uid that it was created with
       uid = 997;
       group = "unifi";
       isSystemUser = true;
@@ -35,6 +38,8 @@ in
     ];
 
     # Create podman network for unifi containers to communicate
+    # --disable-dns prevents conflict with host DNS server on port 53
+    # Containers still resolve each other via /etc/hosts entries podman injects
     systemd.services.podman-network-unifi = {
       description = "Create podman network for unifi";
       wantedBy = [ "multi-user.target" ];
@@ -42,7 +47,7 @@ in
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = "${pkgs.podman}/bin/podman network create unifi --ignore";
+        ExecStart = "${pkgs.podman}/bin/podman network create unifi --disable-dns --ignore";
         ExecStop = "${pkgs.podman}/bin/podman network rm -f unifi";
       };
     };
@@ -169,7 +174,7 @@ in
 
     services.restic.backups.small-files = {
       paths = [
-        "/var/lib/unifi/data/backup/autobackup"
+        "${dataDir}/backup/autobackup"
       ];
     };
   };
