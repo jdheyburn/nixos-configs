@@ -30,7 +30,7 @@ in
       settings = {
         PAPERLESS_ADMIN_USER = "jdheyburn";
         PAPERLESS_URL = "https://paperless.${catalog.domain.service}";
-        PAPERLESS_TIME_ZONE = "Europe/London";
+        PAPERLESS_TIME_ZONE = config.time.timeZone;
       };
     };
 

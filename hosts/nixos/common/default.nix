@@ -23,7 +23,7 @@
 
     # Timezone
     services.timesyncd.enable = true;
-    time.timeZone = "Europe/London";
+    time.timeZone = catalog.timeZone;
 
     # Keyboard
     console.keyMap = "uk";

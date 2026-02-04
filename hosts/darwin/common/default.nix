@@ -1,4 +1,4 @@
-{ lib, pkgs, config, users, ... }: {
+{ lib, pkgs, config, users, catalog, ... }: {
 
   # Required in newer nix-darwin
   system.stateVersion = 4;
@@ -143,7 +143,7 @@
     };
   };
 
-  time.timeZone = "Europe/London";
+  time.timeZone = catalog.timeZone;
 
   fonts = {
     packages = [

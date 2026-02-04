@@ -31,7 +31,7 @@ in
         CUSTOM_PORT = toString port;
         PUID = "1000";
         PGUID = "100";
-        TZ = "Europe/London";
+        TZ = config.time.timeZone;
       };
       environmentFiles = [ config.age.secrets."obsidian-environment-file".path ];
       extraOptions = [

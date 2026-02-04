@@ -17,12 +17,37 @@ in
 
   config = mkIf cfg.enable {
 
-    users.groups.unifi = { };
+    users.groups.unifi = {
+      # Hardcoded to match the gid that it was created with
+      gid = 983;
+    };
+    # TODO should be pulled in from defaultuser (no hardcoding username)
+    users.users.jdheyburn.extraGroups = [ "unifi" ];
     users.users.unifi = {
+      # Hardcoded to match the uid that it was created with
+      uid = 997;
       group = "unifi";
       isSystemUser = true;
       description = "Unifi controller user";
       home = dataDir;
+    };
+
+    systemd.tmpfiles.rules = [
+      "d ${dataDir} 0770 unifi unifi -"
+      "d ${dataDir}/db 0770 unifi unifi -"
+    ];
+
+    # Create podman network for unifi containers to communicate
+    systemd.services.podman-network-unifi = {
+      description = "Create podman network for unifi";
+      wantedBy = [ "multi-user.target" ];
+      before = [ "podman-unifi-db.service" "podman-unifi.service" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.podman}/bin/podman network create unifi --ignore";
+        ExecStop = "${pkgs.podman}/bin/podman network rm -f unifi";
+      };
     };
 
     services.caddy.virtualHosts."unifi.${catalog.domain.service}".extraConfig =
@@ -36,17 +61,19 @@ in
         '';
       };
 
-    networking.firewall.allowedTCPPorts =
-      [
-        config.services.prometheus.exporters.unpoller.port
-        config.services.unifi.port
-        8443
-      ];
+    networking.firewall.allowedTCPPorts = [
+      config.services.prometheus.exporters.unpoller.port
+      8080 # Device inform
+      8443 # Web UI
+      8843 # HTTPS portal
+      8880 # HTTP portal
+      6789 # Mobile speedtest
+    ];
 
     networking.firewall.allowedUDPPorts = [
       3478 # UDP port used for STUN
       10001 # UDP port used for device discovery
-      1900 # UDP port used for Simple Service Discovery Protocol (SSDP)
+      # 1900 (SSDP) removed - conflicts with Plex/UPnP
       5514 # UDP port used for syslog
     ];
 
@@ -55,39 +82,33 @@ in
     age.secrets."unifi-poller-password".owner =
       config.services.prometheus.exporters.unpoller.user;
 
-    services.unifi = {
-      enable = false;
-      unifiPackage = pkgs.unifi;
-      mongodbPackage = pkgs.mongodb-7_0;
-      openFirewall = true;
-    };
-
     age.secrets."unifi-environment-file".file = myUtils.secrets.file "unifi-environment-file";
     age.secrets."unifi-db-environment-file".file = myUtils.secrets.file "unifi-db-environment-file";
 
     virtualisation.oci-containers.containers = {
       unifi = {
-        enable = false;
+        autoStart = true;
         image = "lscr.io/linuxserver/unifi-network-application:${version}";
         volumes = [ "/var/lib/unifi:/config" ];
+
         ports = [
-          "${toString port}:8080"
-          "8443:8443/tcp"
-          "3478:3478/udp"
-          "10001:10001/udp"
-          "1900:1900/udp"
-          "8843:8843/tcp"
-          "8880:8880/tcp"
-          "6789:6789/tcp"
-          "5514:5514/udp"
+          "8080:8080"       # Device inform (MUST be 8080:8080)
+          "8443:8443"       # Web UI (HTTPS)
+          "3478:3478/udp"   # STUN
+          "10001:10001/udp" # Device discovery
+          # 1900/udp (SSDP) removed - conflicts with Plex/UPnP, optional anyway
+          "8843:8843"       # HTTPS portal
+          "8880:8880"       # HTTP portal
+          "6789:6789"       # Mobile speedtest
+          "5514:5514/udp"   # Syslog
         ];
 
         dependsOn = [ "unifi-db" ];
 
         environment = {
-          TZ = "Europe/London";
-          PUID = config.users.users.unifi.uid;
-          PGUID = config.users.users.unifi.gid;
+          TZ = config.time.timeZone;
+          PUID = toString config.users.users.unifi.uid;
+          PGID = toString config.users.groups.unifi.gid;
           MONGO_USER = "unifi";
           MONGO_HOST = "unifi-db";
           MONGO_PORT = "27017";
@@ -95,18 +116,20 @@ in
           MONGO_AUTHSOURCE = "admin";
         };
 
+        extraOptions = [ "--network=unifi" ];
+
         environmentFiles = [
           config.age.secrets."unifi-environment-file".path
           config.age.secrets."unifi-db-environment-file".path
         ];
       };
       unifi-db = {
-        enable = true;
-        image = "docker.io/mongo:8.2.2";
+        autoStart = true;
+        # mongo 5.0+ is not supported on Pi 4
+        image = "docker.io/mongo:4.4.18";
 
-        ports = [
-          "27017:27017/tcp"
-        ];
+        # Run as the host's unifi user to match volume ownership
+        user = "${toString config.users.users.unifi.uid}:${toString config.users.groups.unifi.gid}";
 
         volumes = [
           "${dataDir}/db:/data/db"
@@ -114,14 +137,14 @@ in
         ];
 
         environment = {
-          TZ = "Europe/London";
-          PUID = config.users.users.unifi.uid;
-          PGUID = config.users.users.unifi.gid;
+          TZ = config.time.timeZone;
           MONGO_INITDB_ROOT_USERNAME = "root";
           MONGO_USER = "unifi";
           MONGO_DBNAME = "unifi";
           MONGO_AUTHSOURCE = "admin";
         };
+
+        extraOptions = [ "--network=unifi" ];
 
         # Sets MONGO_INITDB_ROOT_PASSWORD and MONGO_PASS
         environmentFiles = [ config.age.secrets."unifi-db-environment-file".path ];
@@ -148,10 +171,8 @@ in
     };
 
     services.restic.backups.small-files = {
-      # WorkingDirectory translates to the stateDir
-      # https://github.com/NixOS/nixpkgs/blob/7eee17a8a5868ecf596bbb8c8beb527253ea8f4d/nixos/modules/services/networking/unifi.nix#L4
       paths = [
-        "/var/lib/unifi/data/backup/autobackup"
+        "${dataDir}/backup/autobackup"
       ];
     };
   };
