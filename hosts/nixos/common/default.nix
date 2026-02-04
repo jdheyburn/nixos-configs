@@ -122,7 +122,7 @@
       description = "Joseph Heyburn";
       isNormalUser = true;
       home = "/home/jdheyburn";
-      extraGroups = [ "networkmanager" "wheel" ];
+      extraGroups = [ "networkmanager" "systemd-journal" "wheel" ];
       hashedPassword =
         "$6$gFv39xwgs6Trun89$0uSAiTKWURlFUk5w4NoxmZXWlCKRamWYbTFdta7LSW1svzAUeuR3FGH2jX4UIcOaaMlLBJfqWLPUXKx1P1gch0";
 

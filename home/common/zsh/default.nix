@@ -20,7 +20,6 @@
       h = "history";
       ls = "${pkgs.eza}/bin/eza";
       mv = "mv -v";
-      nrs = "sudo nixos-rebuild switch";
       venv = "source .venv/bin/activate";
     };
 

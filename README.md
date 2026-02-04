@@ -85,7 +85,12 @@ home
 
 `modules` are present here too, as not all the users will want these. For example, not every user needs Kubeernetes CLI stuff.
 
-`profiles` exist here for allocating profiles to hosts that make logical sense. I'm not doing anything with these yet, but the idea is that all GUI modules would be declared in `desktop`.
+`profiles` are platform-specific configurations that get applied based on user settings in `catalog.nix`. Each user can specify which profiles to use for NixOS and Darwin systems:
+
+- `server` - NixOS-specific aliases and configurations (e.g., `systemctl`, `nixos-rebuild` aliases)
+- `desktop` - Darwin/macOS-specific configurations
+
+Profiles are defined per-user in `catalog.nix` and can be extended with additional profiles as needed.
 
 `users` are where user configs are defined. This has an extra directory to provide configs that should apply only to users on particular hosts.
 
@@ -163,9 +168,19 @@ Hosts are defined in `nodes`, which can have these attributes:
 
 ### Users
 
-The idea for these is to specify within the catalog what users should be created on the hosts.
+Users are defined in `catalog.nix` and specify what home-manager profiles should be applied per platform.
 
-Users are defined as attribute sets, although I don't do anything with this yet.
+```nix
+jdheyburn = {
+  profiles.nixos = [ "server" ];
+  profiles.darwin = [ "desktop" ];
+};
+```
+
+- `profiles.nixos` - List of profiles to apply on NixOS systems
+- `profiles.darwin` - List of profiles to apply on Darwin (macOS) systems
+
+These profiles map to directories in `home/profiles/`. Multiple profiles can be specified and will all be imported.
 
 ## Deployment
 
