@@ -34,6 +34,19 @@ in
       "d ${dataDir}/db 0770 unifi unifi -"
     ];
 
+    # Create podman network for unifi containers to communicate
+    systemd.services.podman-network-unifi = {
+      description = "Create podman network for unifi";
+      wantedBy = [ "multi-user.target" ];
+      before = [ "podman-unifi-db.service" "podman-unifi.service" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.podman}/bin/podman network create unifi --ignore";
+        ExecStop = "${pkgs.podman}/bin/podman network rm -f unifi";
+      };
+    };
+
     services.caddy.virtualHosts."unifi.${catalog.domain.service}".extraConfig =
       myUtils.caddy.mkServiceVHost {
         port = port;
@@ -45,16 +58,14 @@ in
         '';
       };
 
-    networking.firewall.allowedTCPPorts =
-      [
-        config.services.prometheus.exporters.unpoller.port
-        8080 # Device inform
-        8443 # Web UI
-        8843 # HTTPS portal
-        8880 # HTTP portal
-        6789 # Mobile speedtest
-        27017 # MongoDB (for host networking)
-      ];
+    networking.firewall.allowedTCPPorts = [
+      config.services.prometheus.exporters.unpoller.port
+      8080 # Device inform
+      8443 # Web UI
+      8843 # HTTPS portal
+      8880 # HTTP portal
+      6789 # Mobile speedtest
+    ];
 
     networking.firewall.allowedUDPPorts = [
       3478 # UDP port used for STUN
@@ -76,17 +87,18 @@ in
         autoStart = true;
         image = "lscr.io/linuxserver/unifi-network-application:${version}";
         volumes = [ "/var/lib/unifi:/config" ];
-        # With --network=host, ports are not needed as container uses host networking directly
-        # Keeping for documentation of ports used:
-        # 8080: Device inform
-        # 8443: Web UI (HTTPS)
-        # 3478/udp: STUN
-        # 10001/udp: Device discovery
-        # 1900/udp: SSDP
-        # 8843: HTTPS portal
-        # 8880: HTTP portal
-        # 6789: Mobile speedtest
-        # 5514/udp: Syslog
+
+        ports = [
+          "8080:8080"       # Device inform (MUST be 8080:8080)
+          "8443:8443"       # Web UI (HTTPS)
+          "3478:3478/udp"   # STUN
+          "10001:10001/udp" # Device discovery
+          "1900:1900/udp"   # SSDP
+          "8843:8843"       # HTTPS portal
+          "8880:8880"       # HTTP portal
+          "6789:6789"       # Mobile speedtest
+          "5514:5514/udp"   # Syslog
+        ];
 
         dependsOn = [ "unifi-db" ];
 
@@ -95,13 +107,13 @@ in
           PUID = toString config.users.users.unifi.uid;
           PGID = toString config.users.groups.unifi.gid;
           MONGO_USER = "unifi";
-          MONGO_HOST = "localhost";
+          MONGO_HOST = "unifi-db";
           MONGO_PORT = "27017";
           MONGO_DBNAME = "unifi";
           MONGO_AUTHSOURCE = "admin";
         };
 
-        extraOptions = [ "--network=host" ];
+        extraOptions = [ "--network=unifi" ];
 
         environmentFiles = [
           config.age.secrets."unifi-environment-file".path
@@ -116,9 +128,6 @@ in
         # Run as the host's unifi user to match volume ownership
         user = "${toString config.users.users.unifi.uid}:${toString config.users.groups.unifi.gid}";
 
-        # With --network=host, ports are not needed as container uses host networking directly
-        # MongoDB listens on 27017
-
         volumes = [
           "${dataDir}/db:/data/db"
           "${initDbScript}:/docker-entrypoint-initdb.d/init-db.sh:ro"
@@ -132,7 +141,7 @@ in
           MONGO_AUTHSOURCE = "admin";
         };
 
-        extraOptions = [ "--network=host" ];
+        extraOptions = [ "--network=unifi" ];
 
         # Sets MONGO_INITDB_ROOT_PASSWORD and MONGO_PASS
         environmentFiles = [ config.age.secrets."unifi-db-environment-file".path ];
