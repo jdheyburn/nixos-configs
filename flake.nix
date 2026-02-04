@@ -87,16 +87,23 @@
           in
           [
             homeManager
-            (mkHomeManager hostname ((map (user: user.name) users) ++ additionalUsers))
+            (mkHomeManager hostname system ((map (user: user.name) users) ++ additionalUsers))
           ];
         # End of modules
 
         # Creates a list of imports for a given user, and hostname specific configs for the user if they exist
-        mkUserImports = user: hostname: 
+        mkUserImports = user: hostname: system: 
           let
+            # Look up user's profiles from catalog, defaulting to empty list if not defined
+            userProfiles = catalog.users.${user}.profiles or { };
+            profileNames = 
+              if (isNixOS system) then (userProfiles.nixos or [])
+              else (userProfiles.darwin or []);
+            profileImports = map (profile: ./home/profiles + "/${profile}") profileNames;
             baseImports = [
               catppuccin.homeModules.catppuccin
               ./home/common
+            ] ++ profileImports ++ [
               # Imports my own home-manager modules
               { imports = builtins.attrValues homeModules; }
               # User specific config
@@ -106,7 +113,7 @@
           in
           baseImports ++ (if (builtins.pathExists hostSpecificPath) then [ hostSpecificPath ] else []);
 
-        mkHomeManager = hostname: usernames: {
+        mkHomeManager = hostname: system: usernames: {
           # Fixes https://github.com/divnix/digga/issues/30
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
@@ -116,7 +123,7 @@
               username: {
                 name = username;
                 value = {
-                  imports = mkUserImports username hostname;
+                  imports = mkUserImports username hostname system;
                   home.username = username;
                   # Apparently not required, appears to be managed by nixos
                   #  error: The option `home-manager.users.jdheyburn.home.homeDirectory' has conflicting definition values:
@@ -169,7 +176,7 @@
             name = user.name;
             value = home-manager.lib.homeManagerConfiguration {
               pkgs = nixpkgs.legacyPackages."x86_64-linux";
-              modules = (mkUserImports user.name);
+              modules = (mkUserImports user.name null "x86_64-linux");
             };
           })
           # Currently hardcoded to jdheyburn, for paddys

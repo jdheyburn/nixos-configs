@@ -1,4 +1,7 @@
 { pkgs, ... }:
 {
-  # Empty for now
+  programs.zsh.shellAliases = {
+    nrs = "sudo nixos-rebuild switch";
+    systemctl = "sudo systemctl";
+  };
 }

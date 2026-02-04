@@ -264,9 +264,13 @@
     (builtins.attrNames servicesBase));
 
   usersBase = {
-    # Empty for now to allow for future changes
-    jdheyburn = { };
-    "joseph.heyburn" = { };
+    jdheyburn = {
+      profiles.nixos = [ "server" ];
+      profiles.darwin = [ "desktop" ];
+    };
+    "joseph.heyburn" = {
+      profiles.darwin = [ "desktop" ];
+    };
   };
 
   # Enrich usersBase by adding the key as the name - DRY
