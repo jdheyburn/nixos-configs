@@ -20,6 +20,7 @@ in
     users.groups.unifi = {
       gid = 983;
     };
+    users.users.jdheyburn.extraGroups = [ "unifi" ];
     users.users.unifi = {
       uid = 997;
       group = "unifi";
@@ -67,13 +68,6 @@ in
     age.secrets."unifi-poller-password".owner =
       config.services.prometheus.exporters.unpoller.user;
 
-    services.unifi = {
-      enable = false;
-      unifiPackage = pkgs.unifi;
-      mongodbPackage = pkgs.mongodb-7_0;
-      openFirewall = true;
-    };
-
     age.secrets."unifi-environment-file".file = myUtils.secrets.file "unifi-environment-file";
     age.secrets."unifi-db-environment-file".file = myUtils.secrets.file "unifi-db-environment-file";
 
@@ -116,6 +110,7 @@ in
       };
       unifi-db = {
         autoStart = true;
+        # mongo 5.0+ is not supported on Pi 4
         image = "docker.io/mongo:4.4.18";
 
         # Run as the host's unifi user to match volume ownership
@@ -145,7 +140,7 @@ in
     };
 
     services.prometheus.exporters.unpoller = {
-      enable = false;
+      enable = true;
       controllers = [{
         url = "https://unifi.${catalog.domain.service}";
         user = "unifipoller";
@@ -164,8 +159,6 @@ in
     };
 
     services.restic.backups.small-files = {
-      # WorkingDirectory translates to the stateDir
-      # https://github.com/NixOS/nixpkgs/blob/7eee17a8a5868ecf596bbb8c8beb527253ea8f4d/nixos/modules/services/networking/unifi.nix#L4
       paths = [
         "/var/lib/unifi/data/backup/autobackup"
       ];
