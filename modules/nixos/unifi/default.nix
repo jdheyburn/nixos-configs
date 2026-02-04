@@ -75,7 +75,7 @@ in
     networking.firewall.allowedUDPPorts = [
       3478 # UDP port used for STUN
       10001 # UDP port used for device discovery
-      1900 # UDP port used for Simple Service Discovery Protocol (SSDP)
+      # 1900 (SSDP) removed - conflicts with Plex/UPnP
       5514 # UDP port used for syslog
     ];
 
@@ -98,7 +98,7 @@ in
           "8443:8443"       # Web UI (HTTPS)
           "3478:3478/udp"   # STUN
           "10001:10001/udp" # Device discovery
-          "1900:1900/udp"   # SSDP
+          # 1900/udp (SSDP) removed - conflicts with Plex/UPnP, optional anyway
           "8843:8843"       # HTTPS portal
           "8880:8880"       # HTTP portal
           "6789:6789"       # Mobile speedtest
