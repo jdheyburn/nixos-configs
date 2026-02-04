@@ -38,8 +38,6 @@ in
     ];
 
     # Create podman network for unifi containers to communicate
-    # --disable-dns prevents conflict with host DNS server on port 53
-    # Containers still resolve each other via /etc/hosts entries podman injects
     systemd.services.podman-network-unifi = {
       description = "Create podman network for unifi";
       wantedBy = [ "multi-user.target" ];
@@ -47,7 +45,7 @@ in
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = "${pkgs.podman}/bin/podman network create unifi --disable-dns --ignore";
+        ExecStart = "${pkgs.podman}/bin/podman network create unifi --ignore";
         ExecStop = "${pkgs.podman}/bin/podman network rm -f unifi";
       };
     };

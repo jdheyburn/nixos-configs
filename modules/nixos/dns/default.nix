@@ -43,6 +43,15 @@ let
   rewrites = service_rewrites ++ host_rewrites;
 
   port = catalog.services.adguard.port;
+
+  # Get this host's IPs from catalog to bind AdGuard to specific addresses
+  # This prevents binding to podman bridge interfaces (10.89.x.x)
+  thisHost = catalog.nodes.${config.networking.hostName};
+  dnsBindHosts = [
+    "127.0.0.1"
+    thisHost.ip.private
+    thisHost.ip.tailscale
+  ];
 in
 {
 
@@ -88,6 +97,8 @@ in
             "$2a$10$4rSCa07722Xa9G8BXaBTP.HX973a4FiH7HXJ5Go0GIilPuR85KPLi";
         }];
         dns = {
+          # Bind only to known IPs, not podman bridge interfaces
+          bind_hosts = dnsBindHosts;
           edns_client_subnet.enabled = false;
           upstream_dns = [
             "https://dns10.quad9.net/dns-query"
