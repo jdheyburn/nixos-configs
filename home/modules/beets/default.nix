@@ -34,6 +34,7 @@ let
     "info"
     "lastgenre"
     "missing"
+    "musicbrainz"
   ];
 
 in {
