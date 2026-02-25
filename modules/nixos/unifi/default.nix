@@ -6,7 +6,7 @@ let
   dataDir = "/var/lib/unifi";
   cfg = config.modules.unifi;
   port = catalog.services.unifi.port;
-  version = "10.0.162-ls110";
+  version = "10.1.85-ls118";
   initDbScript = pkgs.writeShellScript "init-mongo.sh" (builtins.readFile ./init-mongo.sh);
 in
 {
