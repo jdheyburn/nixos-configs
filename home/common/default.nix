@@ -24,6 +24,12 @@ in
   # changes in each release.
   home.stateVersion = "22.05";
 
+  # TODO unsure if this is working
+  home.sessionPath = [
+    # Claude Code, etc., rely on this being on the path
+    "~/.local/bin"
+  ];
+
   home.packages = with pkgs; [
     awscli2
 

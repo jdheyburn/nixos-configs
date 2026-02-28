@@ -13,4 +13,7 @@ fi
 # https://discourse.nixos.org/t/brew-not-on-path-on-m1-mac/26770/3
 if [[ $(uname) == "Darwin" ]] && [[ $(uname -m) == "arm64" ]]; then
      eval "$(/opt/homebrew/bin/brew shellenv)"
- fi
+fi
+
+# Claude Code, etc., rely on this being on the path
+export PATH="$HOME/.local/bin:$PATH"
