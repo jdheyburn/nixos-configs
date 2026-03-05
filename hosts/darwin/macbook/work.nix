@@ -2,6 +2,7 @@
 { pkgs, ... }: {
 
   homebrew.brews = [
+    "datadog-labs/pack/pup"
     "rbenv"
     "predatorray/brew/kubectl-tmux-exec"
     "kwok"
@@ -14,6 +15,7 @@
   ];
 
   homebrew.taps = [
+    "datadog-labs/pack"
     "predatorray/brew"
   ];
 }
