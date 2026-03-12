@@ -20,6 +20,7 @@ in {
         # I'm not sure what's really needed for what, they're commented out
         # until I then need them
         extensions = with pkgs.vscode-extensions; [
+          anthropic.claude-code
 
           # Nix language support for Visual Studio Code.
           bbenoist.nix
@@ -181,6 +182,9 @@ in {
           # Do not close tabs if you didn't edit them
           "workbench.editor.enablePreview" = false;
           "workbench.startupEditor" = "none";
+
+          "claudeCode.disableLoginPrompt" = true;
+          "claudeCode.preferredLocation"  = "sidebar";
         };
       };
     };

@@ -28,6 +28,8 @@ in
   home.sessionPath = [
     # Claude Code, etc., rely on this being on the path
     "~/.local/bin"
+    # For obsidian-cli
+    "/Applications/Obsidian.app/Contents/MacOS"
   ];
 
   home.packages = with pkgs; [
