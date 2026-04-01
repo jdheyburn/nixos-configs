@@ -14,7 +14,10 @@ in {
     home.packages = with pkgs; [
       # helm
       kubernetes-helm
-      (pkgs.wrapHelm pkgs.kubernetes-helm { plugins = [ pkgs.kubernetes-helmPlugins.helm-secrets ]; })
+      (pkgs.wrapHelm pkgs.kubernetes-helm { plugins = [
+        pkgs.kubernetes-helmPlugins.helm-secrets
+        pkgs.kubernetes-helmPlugins.helm-unittest
+      ]; })
 
       kubectl_1_25_4
 
