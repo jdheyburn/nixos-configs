@@ -1,4 +1,4 @@
-{ config, ... }: {
+{ config, lib, ... }: {
   # Better cd command that let's you type the name of a dir and cd into it
   programs.zoxide = {
     enable = true;
@@ -6,14 +6,14 @@
     options = [ "--cmd cd" ];
   };
 
-  programs.zsh.initContent = ''
-    # Fallback for zoxide's __zoxide_z when running in non-interactive shells
-    # (e.g., IDE terminals, AI coding assistants) where zoxide init doesn't run.
-    # This gets overwritten by zoxide's real function in interactive shells.
-    if ! type __zoxide_z &>/dev/null; then
-        function __zoxide_z() {
-            builtin cd "$@"
-        }
-    fi
+  programs.zsh.initContent = lib.mkAfter ''
+    # Claude Code spawns a fresh shell per command; chpwd_functions can be cleared between
+    # .zshrc init and command execution. Re-register __zoxide_hook if it was lost.
+    function cd() {
+        if (( ''${+functions[__zoxide_hook]} )) && [[ ''${chpwd_functions[(Ie)__zoxide_hook]:-0} -eq 0 ]]; then
+            chpwd_functions+=(__zoxide_hook)
+        fi
+        __zoxide_z "$@"
+    }
   '';
 }
