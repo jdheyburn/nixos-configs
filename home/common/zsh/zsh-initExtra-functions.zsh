@@ -291,3 +291,68 @@ function diff() {
 function gt() {
     cd "$(git rev-parse --show-toplevel 2>/dev/null)"
 }
+
+# worktree-pr: checkout a GitHub PR into an isolated git worktree
+# Usage: worktree-pr <PR-number-or-URL>
+worktree-pr() {
+  local pr_input="$1"
+  local pr_number
+
+  if [[ -z "$pr_input" ]]; then
+    echo "Usage: worktree-pr <PR-number-or-URL>" >&2
+    return 1
+  fi
+
+  # Accept PR number or full GitHub URL
+  if [[ "$pr_input" =~ /pull/([0-9]+) ]]; then
+    pr_number="${match[1]}"
+  else
+    pr_number="$pr_input"
+  fi
+
+  # Derive upstream repo slug (e.g. valkey-io/valkey-operator) from remote
+  local upstream_url
+  upstream_url=$(git remote get-url upstream 2>/dev/null || git remote get-url origin)
+  local upstream_repo
+  upstream_repo=$(echo "$upstream_url" | sed 's|.*github\.com[:/]\(.*\)\.git|\1|')
+
+  # Fetch PR metadata via gh CLI
+  local pr_json
+  pr_json=$(gh pr view "$pr_number" --repo "$upstream_repo" \
+    --json headRefName,headRepositoryOwner,state,mergeCommit) || return 1
+
+  local branch_name owner state merge_commit
+  branch_name=$(echo "$pr_json" | jq -r '.headRefName')
+  owner=$(echo "$pr_json"       | jq -r '.headRepositoryOwner.login')
+  state=$(echo "$pr_json"       | jq -r '.state')
+  merge_commit=$(echo "$pr_json"| jq -r '.mergeCommit.oid // empty')
+
+  local worktree_name="pr-${pr_number}-${branch_name//\//-}"
+  local worktree_path=".worktrees/${worktree_name}"
+
+  if [[ -d "$worktree_path" ]]; then
+    echo "Worktree already exists at ${worktree_path}"
+    return 0
+  fi
+
+  if [[ "$state" == "MERGED" ]]; then
+    git fetch upstream
+    git worktree add "$worktree_path" "$merge_commit"
+    echo "Merged PR — detached HEAD at ${merge_commit:0:7}"
+  else
+    # Add fork remote if it doesn't exist
+    if ! git remote get-url "$owner" &>/dev/null; then
+      local repo_name
+      repo_name=$(basename "$upstream_url" .git)
+      local fork_url="git@github.com:${owner}/${repo_name}.git"
+      echo "Adding remote: ${owner} -> ${fork_url}"
+      git remote add "$owner" "$fork_url"
+    fi
+    git fetch "$owner" "$branch_name"
+    git worktree add "$worktree_path" -b "$worktree_name" "${owner}/${branch_name}"
+    echo "Worktree ready at ${worktree_path}"
+    echo "Push changes back with: git push ${owner} HEAD:${branch_name}"
+  fi
+
+  cd $worktree_path
+}
