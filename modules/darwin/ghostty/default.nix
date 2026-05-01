@@ -16,6 +16,8 @@ let
       # Theme is managed by catppuccin-nix
       # theme = "catppuccin-macchiato";
 
+      clipboard-paste-protection = false;
+
       cursor-style = "block";
       cursor-style-blink = false;
       shell-integration-features = "no-cursor";
