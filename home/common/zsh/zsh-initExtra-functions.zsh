@@ -356,3 +356,110 @@ worktree-pr() {
 
   cd $worktree_path
 }
+
+# worktree-clean: clean up PR worktrees that are no longer needed
+# Usage: worktree-clean [--all] [--merged] [--closed]
+worktree-clean() {
+  local filter_mode="$1"
+  local worktrees_dir=".worktrees"
+
+  if [[ ! -d "$worktrees_dir" ]]; then
+    echo "No worktrees directory found at ${worktrees_dir}"
+    return 0
+  fi
+
+  # Derive upstream repo slug
+  local upstream_url
+  upstream_url=$(git remote get-url upstream 2>/dev/null || git remote get-url origin)
+  local upstream_repo
+  upstream_repo=$(echo "$upstream_url" | sed 's|.*github\.com[:/]\(.*\)\.git|\1|')
+
+  local found_any=0
+  local removed_count=0
+
+  for worktree_path in "$worktrees_dir"/pr-*; do
+    [[ ! -d "$worktree_path" ]] && continue
+
+    local worktree_name=$(basename "$worktree_path")
+
+    # Extract PR number from pr-123-branch-name format
+    if [[ "$worktree_name" =~ ^pr-([0-9]+)- ]]; then
+      local pr_number="${match[1]}"
+    else
+      echo "Skipping ${worktree_name} (unexpected format)"
+      continue
+    fi
+
+    # Fetch PR state
+    local pr_json state
+    pr_json=$(gh pr view "$pr_number" --repo "$upstream_repo" --json state 2>/dev/null)
+
+    if [[ $? -ne 0 ]]; then
+      echo "⚠️  ${worktree_name}: PR #${pr_number} not found (may have been deleted)"
+      found_any=1
+
+      if [[ "$filter_mode" != "--merged" && "$filter_mode" != "--closed" ]]; then
+        echo -n "   Remove this worktree? [y/N] "
+        read response
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+          git worktree remove "$worktree_path" --force
+          echo "   ✓ Removed"
+          ((removed_count++))
+        fi
+      fi
+      continue
+    fi
+
+    state=$(echo "$pr_json" | jq -r '.state')
+
+    local should_prompt=0
+    local status_icon=""
+
+    case "$state" in
+      MERGED)
+        status_icon="✓"
+        [[ -z "$filter_mode" || "$filter_mode" == "--all" || "$filter_mode" == "--merged" ]] && should_prompt=1
+        ;;
+      CLOSED)
+        status_icon="✗"
+        [[ -z "$filter_mode" || "$filter_mode" == "--all" || "$filter_mode" == "--closed" ]] && should_prompt=1
+        ;;
+      OPEN)
+        status_icon="●"
+        [[ "$filter_mode" == "--all" ]] && should_prompt=1
+        ;;
+      *)
+        status_icon="?"
+        ;;
+    esac
+
+    if [[ $should_prompt -eq 1 ]]; then
+      found_any=1
+      echo "${status_icon} ${worktree_name}: PR #${pr_number} (${state})"
+      echo -n "   Remove this worktree? [y/N] "
+      read response
+      if [[ "$response" =~ ^[Yy]$ ]]; then
+        git worktree remove "$worktree_path" --force
+        echo "   ✓ Removed"
+        ((removed_count++))
+      fi
+    fi
+  done
+
+  if [[ $found_any -eq 0 ]]; then
+    if [[ -n "$filter_mode" ]]; then
+      echo "No worktrees found matching filter: ${filter_mode}"
+    else
+      echo "No merged or closed PR worktrees found."
+      echo ""
+      echo "Usage: worktree-clean [--all] [--merged] [--closed]"
+      echo "  (no args)  Show merged & closed PRs only"
+      echo "  --all      Show all PR worktrees including open ones"
+      echo "  --merged   Show only merged PRs"
+      echo "  --closed   Show only closed PRs"
+    fi
+  else
+    echo ""
+    echo "Removed ${removed_count} worktree(s)"
+  fi
+}
