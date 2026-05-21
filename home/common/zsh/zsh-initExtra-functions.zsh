@@ -31,6 +31,21 @@ function mc() {
     cd "$dir"
 }
 
+# Investigation - create a dated investigation directory and cd to it
+function inv() {
+    if [ $# -eq 0 ]; then
+        echo "inv - no title was provided"
+        return 1
+    fi
+
+    local title="${*// /-}"
+    local date=$(date +%Y-%m-%d)
+    local dir="$HOME/tmp/investigations/${date}-${title}"
+
+    mkdir -p "$dir"
+    cd "$dir"
+}
+
 # SearchDirectory - recursive search through the targeted dir for the text in any file
 function sdd() {
     local searchTerm=$1
