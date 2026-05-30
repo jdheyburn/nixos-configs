@@ -3,9 +3,9 @@
 with lib;
 
 let
-  version = "v1.7.7-ls40";
   dataDir = "/var/lib/obsidian";
   repoDir = "${dataDir}/repo";
+  stateDir = "/var/lib/obsidian-headless";
   healthcheck = "https://healthchecks.${catalog.domain.service}/ping/89c48c0a-3075-460e-a02b-3a325335c488";
   port = catalog.services.obsidian.port;
   cfg = config.modules.backup.obsidian;

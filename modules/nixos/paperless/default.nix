@@ -15,6 +15,8 @@ in
 
   config = mkIf cfg.enable {
 
+    users.users.jdheyburn.extraGroups = [ "paperless" ];
+
     services.caddy.virtualHosts."paperless.${catalog.domain.service}".extraConfig =
       myUtils.caddy.mkServiceVHost { port = port; };
 

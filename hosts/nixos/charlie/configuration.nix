@@ -31,10 +31,14 @@
     myUtils.secrets.file "restic-small-files-password";
   age.secrets."rclone.conf".file = myUtils.secrets.file "rclone.conf";
 
+  age.secrets."obsidian-credentials".file = myUtils.secrets.file "obsidian-credentials";
+
   modules.backup = {
     obsidian = {
       enable = true;
       rcloneConfigFile = config.age.secrets."rclone.conf".path;
+      vaultName = ""; # TODO: set to the name or ID of your remote Obsidian vault
+      credentialsFile = config.age.secrets."obsidian-credentials".path;
     };
     small-files = {
       enable = true;
