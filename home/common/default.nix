@@ -63,6 +63,8 @@ in
     tldr
 
     wget
+
+    zstd
   ];
 
   # Permit non-free software
