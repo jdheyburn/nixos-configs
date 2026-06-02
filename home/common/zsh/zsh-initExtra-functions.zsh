@@ -214,7 +214,18 @@ function get-pods-on-node() {
 
 # Exec into a pod - because I can never remember the command for it
 function exec-pod() {
-    kubectl exec -it $1 -- sh
+    local pod=$1
+    shift
+    # Remove the -- separator if present
+    if [[ $# -gt 0 && "$1" == "--" ]]; then
+        shift
+    fi
+
+    if [ $# -eq 0 ]; then
+        kubectl exec -it $pod -- sh
+    else
+        kubectl exec -it $pod -- "$@"
+    fi
 }
 
 # Loop over each values.yaml file and retrieve the value for the given key if it is available
@@ -334,13 +345,14 @@ worktree-pr() {
   # Fetch PR metadata via gh CLI
   local pr_json
   pr_json=$(gh pr view "$pr_number" --repo "$upstream_repo" \
-    --json headRefName,headRepositoryOwner,state,mergeCommit) || return 1
+    --json headRefName,headRepositoryOwner,headRepository,state,mergeCommit) || return 1
 
-  local branch_name owner state merge_commit
+  local branch_name owner state merge_commit fork_name
   branch_name=$(echo "$pr_json" | jq -r '.headRefName')
   owner=$(echo "$pr_json"       | jq -r '.headRepositoryOwner.login')
   state=$(echo "$pr_json"       | jq -r '.state')
   merge_commit=$(echo "$pr_json"| jq -r '.mergeCommit.oid // empty')
+  fork_name=$(echo "$pr_json"   | jq -r '.headRepository.name')
 
   local worktree_name="pr-${pr_number}-${branch_name//\//-}"
   local worktree_path=".worktrees/${worktree_name}"
@@ -357,9 +369,7 @@ worktree-pr() {
   else
     # Add fork remote if it doesn't exist
     if ! git remote get-url "$owner" &>/dev/null; then
-      local repo_name
-      repo_name=$(basename "$upstream_url" .git)
-      local fork_url="git@github.com:${owner}/${repo_name}.git"
+      local fork_url="git@github.com:${owner}/${fork_name}.git"
       echo "Adding remote: ${owner} -> ${fork_url}"
       git remote add "$owner" "$fork_url"
     fi
