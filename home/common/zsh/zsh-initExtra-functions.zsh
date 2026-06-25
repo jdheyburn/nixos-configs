@@ -318,6 +318,44 @@ function gt() {
     cd "$(git rev-parse --show-toplevel 2>/dev/null)"
 }
 
+# worktree-new: create a new branch in an isolated git worktree
+# Usage: worktree-new <branch-name>
+# Examples:
+#   worktree-new feature/add-caching
+#   worktree-new bugfix-123
+worktree-new() {
+  local branch_name="$1"
+
+  if [[ -z "$branch_name" ]]; then
+    echo "Usage: worktree-new <branch-name>" >&2
+    return 1
+  fi
+
+  # Sanitize branch name for directory path
+  local worktree_name="${branch_name//\//-}"
+  local worktree_path=".worktrees/${worktree_name}"
+
+  if [[ -d "$worktree_path" ]]; then
+    echo "Worktree already exists at ${worktree_path}" >&2
+    return 1
+  fi
+
+  # Use local main branch as base
+  local base_branch="main"
+  if ! git rev-parse --verify "$base_branch" &>/dev/null; then
+    echo "Could not find local branch: ${base_branch}" >&2
+    return 1
+  fi
+
+  # Create worktree with new branch
+  git worktree add "$worktree_path" -b "$branch_name" "$base_branch"
+
+  echo "Worktree ready at ${worktree_path}"
+  echo "Branch '${branch_name}' created from local ${base_branch}"
+
+  cd "$worktree_path"
+}
+
 # worktree-pr: checkout a GitHub PR into an isolated git worktree
 # Usage: worktree-pr <PR-number-or-URL>
 worktree-pr() {
