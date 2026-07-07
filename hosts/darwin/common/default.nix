@@ -97,6 +97,10 @@
           };
         };
       };
+      "com.apple.TextEdit" = {
+        # Set TextEdit to Plain Text by default
+        RichText = 0;
+      };
       NSGlobalDomain = {
         NSUserKeyEquivalents = {
           # Disable Cmd+M minimize shortcut by reassigning it to something harmless
@@ -131,6 +135,8 @@
       "com.apple.swipescrolldirection" = false;
       # Set the speed of the cursor on the trackpad
       "com.apple.trackpad.scaling" = 2.0;
+      # Use dark mode
+      AppleInterfaceStyle = "Dark";
     };
 
     ".GlobalPreferences"."com.apple.mouse.scaling" = 7.0;
