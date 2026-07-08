@@ -6,6 +6,8 @@ in
 {
   programs.claude-code = {
     enable = true;
+    # Do not install Claude code
+    package = null;
 
     memory.source = ./CLAUDE.md;
 
