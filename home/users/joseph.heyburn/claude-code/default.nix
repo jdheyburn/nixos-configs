@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, inputs, system, ... }:
 let
   claudeDir = ".claude";
   claudeHome = "${config.home.homeDirectory}/${claudeDir}";
@@ -6,8 +6,7 @@ in
 {
   programs.claude-code = {
     enable = true;
-    # Do not install Claude code
-    package = null;
+    package = inputs.llm-agents.packages.${system}.claude-code;
 
     memory.source = ./CLAUDE.md;
 

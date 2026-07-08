@@ -58,6 +58,7 @@
     "audacity"
     "firefox"
     "focusrite-control"
+    "obsidian"
     # "logi-options-plus"
     # Spotlight replacement
     # It does a good job of finding Apps installed by Nix
