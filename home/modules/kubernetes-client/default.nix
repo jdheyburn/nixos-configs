@@ -6,7 +6,15 @@ with lib;
 
 let
   cfg = config.modules.kubernetes-client;
-  kubectl_1_33_6 = pkgs.callPackage ./kubectl/kubectl.nix { };
+  kubectl_1_33_6 = pkgs.kubectl.overrideAttrs (_: rec {
+    version = "1.33.6";
+    src = pkgs.fetchFromGitHub {
+      owner = "kubernetes";
+      repo = "kubernetes";
+      rev = "v${version}";
+      hash = "sha256-ywmaMRtq/HqkHO4CGspL4AYcn4IbFzAzA0xZRmAgCWE=";
+    };
+  });
 in {
   options.modules.kubernetes-client = { enable = mkEnableOption "Kubernetes client tools"; };
 
