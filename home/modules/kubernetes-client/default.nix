@@ -6,7 +6,7 @@ with lib;
 
 let
   cfg = config.modules.kubernetes-client;
-  kubectl_1_25_4 = pkgs.callPackage ./kubectl/kubectl.nix { };
+  kubectl_1_33_6 = pkgs.callPackage ./kubectl/kubectl.nix { };
 in {
   options.modules.kubernetes-client = { enable = mkEnableOption "Kubernetes client tools"; };
 
@@ -19,7 +19,7 @@ in {
         pkgs.kubernetes-helmPlugins.helm-unittest
       ]; })
 
-      kubectl_1_25_4
+      kubectl_1_33_6
 
       # Additional kube switchers in testing
       kubectx
