@@ -6,11 +6,15 @@
     enable = true;
     viAlias = true;
     vimAlias = true;
+    # These providers aren't needed for the plugins in use; adopt the new
+    # (26.05) defaults explicitly to silence the legacy-default warnings.
+    withRuby = false;
+    withPython3 = false;
     plugins = with pkgs.vimPlugins; [
       # gui for undo tree
-      gundo
+      gundo-vim
       # Integration with tmux for ctrl+hjkl keybindings
-      tmux-navigator
+      vim-tmux-navigator
       # Syntax highlighting for nix files
       vim-nix
       # Save vim sessions, used with tmux-resurrect to bring back unsaved session
@@ -32,7 +36,7 @@
       set smartindent
     '';
 
-    extraLuaConfig = ''
+    initLua = ''
       local M = {}
 
       -- integrate with vim keybindings in tmux for moving across windows

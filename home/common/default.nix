@@ -67,9 +67,6 @@ in
     zstd
   ];
 
-  # Permit non-free software
-  nixpkgs.config.allowUnfree = true;
-
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
@@ -88,5 +85,9 @@ in
     # Enable catppuccin themes whereever supported
     enable = true;
     flavor = "macchiato";
+    # Catppuccin's gemini-cli integration sets the renamed `programs.gemini-cli`
+    # option (now `programs.antigravity-cli`), which emits a deprecation warning.
+    # We don't use gemini-cli, so disable the integration to silence it.
+    gemini-cli.enable = false;
   };
 }

@@ -8,7 +8,7 @@ in
     enable = true;
     package = inputs.llm-agents.packages.${system}.claude-code;
 
-    memory.source = ./CLAUDE.md;
+    context = ./CLAUDE.md;
 
     settings = {
       permissions.allow = [ "Bash(find:*)" ];
