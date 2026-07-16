@@ -6,6 +6,17 @@ let
     hash = "sha256-th2VaFlvRKvL0ZEcAGU9eJui+k5dTaPGtLB2u9Q/vxg=";
     vendorHash = "sha256-Tz01h3VITbvyEAfT8sfU7ghHd+vlCBVsMTTQS96jp7c=";
   };
+
+  sops_3_13_1 = pkgs.sops.overrideAttrs (old: {
+    version = "3.13.1";
+    src = pkgs.fetchFromGitHub {
+      owner = "getsops";
+      repo = "sops";
+      rev = "v3.13.1";
+      hash = "sha256-df3CwJv+sROmikvWZbFGB1OrcSL1svuvFr6WJKYWhDc=";
+    };
+    vendorHash = "sha256-cdaxcNCCHK2Rve96KvmO9lc9gZtgqu6rDeYb2vRvdHw=";
+  });
 in
 {
   imports = [
@@ -21,7 +32,7 @@ in
     # obsidian
 
     # Secrets management
-    sops
+    sops_3_13_1
 
     terraform_1_11_3
     terraform-docs

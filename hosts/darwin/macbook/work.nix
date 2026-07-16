@@ -7,6 +7,7 @@
     "rbenv"
     # TODO make this trusted
     "predatorray/brew/kubectl-tmux-exec"
+    "kind"
     "kwok"
   ];
 
