@@ -88,9 +88,10 @@
   };
   modules.caddy.enable = true;
   modules.dns.enable = true;
-  modules.healthchecks.enable = true;
+  # TODO get healthchecks to build
+  modules.healthchecks.enable = false;
   modules.minio.enable = false;
-  modules.monitoring.enable = true;
+  modules.monitoring.enable = false;
   modules.mopidy.enable = false;
   modules.navidrome.enable = false;
   modules.nfs-server.enable = true;
