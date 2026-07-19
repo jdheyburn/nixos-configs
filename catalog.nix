@@ -243,7 +243,8 @@
     };
 
     unifi = {
-      host = nodes.ucg;
+      host = nodes.dee;
+      backendHost = nodes.ucg;
       port = 80;
       dashy.section = "networks";
       dashy.description = "UniFi controller";
