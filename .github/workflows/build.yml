@@ -2,7 +2,7 @@
 name: build
 on:
   push:
-    branches: [main]
+    branches: [main, dee-rebuild]
 
 jobs:
   build:
@@ -19,5 +19,5 @@ jobs:
 
       - name: Build system closure
         run: |
-          nix build .#nixosConfigurations.pi.config.system.build.toplevel \
+          nix build .#nixosConfigurations.dee.config.system.build.toplevel \
             --print-build-logs
