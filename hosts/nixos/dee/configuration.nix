@@ -86,17 +86,24 @@
     enable = false;
     rcloneConfigFile = config.age.secrets."rclone.conf".path;
   };
-  modules.caddy.enable = false;
-  modules.dns.enable = false;
+  modules.caddy.enable = true;
+  modules.dns.enable = true;
   modules.healthchecks.enable = false;
   modules.minio.enable = false;
   modules.monitoring.enable = false;
   modules.mopidy.enable = false;
   modules.navidrome.enable = false;
-  modules.nfs-server.enable = false;
+  modules.nfs-server.enable = true;
   modules.plex.enable = false;
-  modules.unifi.enable = false;
 
-  services.prometheus.exporters.zfs.enable = true;
+  # Disabled while I don't have ZFS
+  services.prometheus.exporters.zfs.enable = false;
+
+  nix.settings = {
+    substituters = [ "https://jdheyburn-joannet.cachix.org" ];
+    trusted-public-keys = [
+      "jdheyburn-joannet.cachix.org-1:3/hvm/06VN4NXezMYqIFfQKmWnFUQKPWv5BzRBuInoc="
+    ];
+  };
 }
 

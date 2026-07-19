@@ -2,7 +2,7 @@
 name: build
 on:
   push:
-    branches: [main, dee-rebuild]
+    branches: [main]
 
 jobs:
   build:
