@@ -13,7 +13,7 @@ let
   # Any service whose catalog entry lives on this host AND declares a
   # separate backendHost gets an auto-generated reverse proxy vhost.
   proxiedServices = attrValues (filterAttrs
-    (name: svc: svc.host == thisHost && svc ? backendHost)
+    (name: svc: (svc ? host) && (svc ? backendHost) && svc.host == thisHost)
     catalog.services);
 in
 {
