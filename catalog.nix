@@ -22,7 +22,7 @@
       ip.private = "192.168.1.10";
       ip.tailscale = "100.118.73.73";
       system = "aarch64-linux";
-      nixosHardware = nixos-hardware.nixosModules.raspberry-pi-4;
+      # nixosHardware = nixos-hardware.nixosModules.raspberry-pi-4;
       shouldScrape = true;
       users = [ users.jdheyburn ];
     };
