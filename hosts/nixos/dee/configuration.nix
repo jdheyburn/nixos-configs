@@ -88,13 +88,13 @@
   };
   modules.caddy.enable = true;
   modules.dns.enable = true;
-  modules.healthchecks.enable = false;
+  modules.healthchecks.enable = true;
   modules.minio.enable = false;
-  modules.monitoring.enable = false;
+  modules.monitoring.enable = true;
   modules.mopidy.enable = false;
   modules.navidrome.enable = false;
   modules.nfs-server.enable = true;
-  modules.plex.enable = false;
+  modules.plex.enable = true;
 
   # Disabled while I don't have ZFS
   services.prometheus.exporters.zfs.enable = false;
