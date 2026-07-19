@@ -2,16 +2,20 @@
 { pkgs, ... }: {
 
   homebrew.brews = [
+    # TODO make this trusted
     "datadog-labs/pack/pup"
     "rbenv"
+    # TODO make this trusted
     "predatorray/brew/kubectl-tmux-exec"
+    "kind"
     "kwok"
   ];
 
   homebrew.casks = [
-    # "docker"
+    "claude"
+    "docker"
+    "google-drive"
     "sdm"
-    "viscosity"
   ];
 
   homebrew.taps = [
