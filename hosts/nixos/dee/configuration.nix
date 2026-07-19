@@ -31,7 +31,7 @@
   };
 
   services.argonone = {
-    enable = false;
+    enable = true;
     logLevel = 4;
     settings = {
       fanTemp0 = 36;
@@ -41,6 +41,18 @@
       fanTemp2 = 46;
       fanSpeed2 = 80;
       hysteresis = 4;
+    };
+  };
+
+  # Force fan off every time the daemon (re)starts
+  systemd.services.argonone-fan-off = {
+    description = "Force Argon ONE fan off";
+    after = [ "argononed.service" ];
+    requires = [ "argononed.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.argononed}/bin/argonone-cli --off";
     };
   };
 
