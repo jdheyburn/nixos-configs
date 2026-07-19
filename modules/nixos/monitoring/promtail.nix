@@ -17,7 +17,9 @@ in {
     networking.firewall.allowedTCPPorts = [ catalog.services.promtail.port ];
 
     services.promtail = {
-      enable = true;
+      # TODO promtail is EOL
+      # Consider migrating to `grafana-alloy` (`services.alloy.enable`), or, if you are looking for something light-weight, `fluent-bit` (`services.fluent-bit.enable`).
+      enable = false;
       configuration = {
         server = {
           http_listen_port = catalog.services.promtail.port;
