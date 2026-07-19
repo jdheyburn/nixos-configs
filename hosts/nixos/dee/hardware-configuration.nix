@@ -43,6 +43,7 @@
 
   fileSystems."/mnt/usb" = {
     device = "/mnt/nfs";
+    fsType = "none";
     options = [ "bind" ];
   };
 
