@@ -30,19 +30,31 @@
     timerConfig.OnCalendar = [ "*-*-* 06:00:00" ];
   };
 
-  services.argonone = {
-    enable = false;
-    logLevel = 4;
-    settings = {
-      fanTemp0 = 36;
-      fanSpeed0 = 10;
-      fanTemp1 = 41;
-      fanSpeed1 = 50;
-      fanTemp2 = 46;
-      fanSpeed2 = 80;
-      hysteresis = 4;
-    };
-  };
+  # services.argonone = {
+  #   enable = true;
+  #   logLevel = 4;
+  #   settings = {
+  #     fanTemp0 = 36;
+  #     fanSpeed0 = 10;
+  #     fanTemp1 = 41;
+  #     fanSpeed1 = 50;
+  #     fanTemp2 = 46;
+  #     fanSpeed2 = 80;
+  #     hysteresis = 4;
+  #   };
+  # };
+
+  # # Force fan off every time the daemon (re)starts
+  # systemd.services.argonone-fan-off = {
+  #   description = "Force Argon ONE fan off";
+  #   after = [ "argononed.service" ];
+  #   requires = [ "argononed.service" ];
+  #   wantedBy = [ "multi-user.target" ];
+  #   serviceConfig = {
+  #     Type = "oneshot";
+  #     ExecStart = "${pkgs.argononed}/bin/argonone-cli --off";
+  #   };
+  # };
 
   #############################################################################
   ## Package management
@@ -83,20 +95,28 @@
   };
 
   modules.backup.usb = {
-    enable = true;
+    enable = false;
     rcloneConfigFile = config.age.secrets."rclone.conf".path;
   };
   modules.caddy.enable = true;
   modules.dns.enable = true;
-  modules.healthchecks.enable = true;
-  modules.minio.enable = true;
-  modules.monitoring.enable = true;
+  # TODO get healthchecks to build
+  modules.healthchecks.enable = false;
+  modules.minio.enable = false;
+  modules.monitoring.enable = false;
   modules.mopidy.enable = false;
   modules.navidrome.enable = false;
   modules.nfs-server.enable = true;
   modules.plex.enable = true;
-  modules.unifi.enable = true;
 
-  services.prometheus.exporters.zfs.enable = true;
+  # Disabled while I don't have ZFS
+  services.prometheus.exporters.zfs.enable = false;
+
+  nix.settings = {
+    substituters = [ "https://jdheyburn-joannet.cachix.org" ];
+    trusted-public-keys = [
+      "jdheyburn-joannet.cachix.org-1:3/hvm/06VN4NXezMYqIFfQKmWnFUQKPWv5BzRBuInoc="
+    ];
+  };
 }
 

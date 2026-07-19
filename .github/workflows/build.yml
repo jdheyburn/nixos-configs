@@ -1,0 +1,23 @@
+# .github/workflows/build.yml
+name: build
+on:
+  push:
+    branches: [main, dee-rebuild]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm   # native aarch64, public repo
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: jdheyburn-joannet
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+
+      - name: Build system closure
+        run: |
+          nix build .#nixosConfigurations.dee.config.system.build.toplevel \
+            --print-build-logs

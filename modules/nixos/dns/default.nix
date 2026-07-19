@@ -6,11 +6,14 @@ let
   cfg = config.modules.dns;
 
   isEnabled = moduleName: hostName:
-    let
-      parts = splitString "." moduleName;
-      module = builtins.foldl' (acc: part: builtins.getAttr part acc) flake-self.nixosConfigurations."${hostName}".config.modules parts;
-    in
-    module.enable;
+    if !(flake-self.nixosConfigurations ? ${hostName}) then
+      true # Host isn't NixOS-managed (e.g. ucg, a physical router) — assume the service is always running
+    else
+      let
+        parts = splitString "." moduleName;
+        module = builtins.foldl' (acc: part: builtins.getAttr part acc) flake-self.nixosConfigurations."${hostName}".config.modules parts;
+      in
+      module.enable;
 
   shouldDNS = service:
     # Only create DNS entries if the host that catalog.service says its running on has it enabled

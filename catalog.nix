@@ -20,9 +20,9 @@
 
     dee = {
       ip.private = "192.168.1.10";
-      ip.tailscale = "100.127.189.33";
+      ip.tailscale = "100.118.73.73";
       system = "aarch64-linux";
-      nixosHardware = nixos-hardware.nixosModules.raspberry-pi-4;
+      # nixosHardware = nixos-hardware.nixosModules.raspberry-pi-4;
       shouldScrape = true;
       users = [ users.jdheyburn ];
     };
@@ -73,6 +73,12 @@
     pve0 = {
       ip.private = "192.168.1.15";
       ip.tailscale = "100.80.112.68";
+      shouldScrape = false;
+    };
+
+    # Ubiquiti Cloud Gateway
+    ucg = {
+      ip.private = "192.168.1.1";
       shouldScrape = false;
     };
   };
@@ -237,8 +243,8 @@
     };
 
     unifi = {
-      host = nodes.dee;
-      port = 8443;
+      host = nodes.ucg;
+      port = 80;
       dashy.section = "networks";
       dashy.description = "UniFi controller";
       dashy.icon = "hl-unifi-controller";
