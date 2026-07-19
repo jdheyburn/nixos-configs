@@ -245,7 +245,7 @@
     unifi = {
       host = nodes.dee;
       backendHost = nodes.ucg;
-      port = 80;
+      port = 443;
       dashy.section = "networks";
       dashy.description = "UniFi controller";
       dashy.icon = "hl-unifi-controller";

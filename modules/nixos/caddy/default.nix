@@ -52,7 +52,11 @@ in
             tls {
               dns cloudflare {env.CLOUDFLARE_API_TOKEN}
             }
-            reverse_proxy ${svc.backendHost.ip.private}:${toString svc.port}
+            reverse_proxy ${svc.backendHost.ip.private}:${toString svc.port} {
+                transport http {
+                    tls_insecure_skip_verify
+                }
+            }
           '';
         })
         proxiedServices);
