@@ -16,34 +16,35 @@ in {
 
     networking.firewall.allowedTCPPorts = [ catalog.services.promtail.port ];
 
-    services.promtail = {
-      # TODO promtail is EOL
-      # Consider migrating to `grafana-alloy` (`services.alloy.enable`), or, if you are looking for something light-weight, `fluent-bit` (`services.fluent-bit.enable`).
-      enable = false;
-      configuration = {
-        server = {
-          http_listen_port = catalog.services.promtail.port;
-          grpc_listen_port = 0;
-        };
-        positions = { filename = "/tmp/positions.yaml"; };
-        clients = [{ url = "https://loki.${catalog.domain.service}/loki/api/v1/push"; }];
-        scrape_configs = [{
-          job_name = "journal";
-          journal = {
-            max_age = "12h";
-            labels = {
-              job = "systemd-journal";
-              host = "${config.networking.hostName}";
-            };
-          };
-          relabel_configs = [{
-            source_labels = [ "__journal__systemd_unit" ];
-            target_label = "unit";
-          }];
-        }];
-      };
-    };
+    # TODO promtail is EOL
+    # Consider migrating to `grafana-alloy` (`services.alloy.enable`), or, if you are looking for something light-weight, `fluent-bit` (`services.fluent-bit.enable`).
 
-    systemd.services.promtail.serviceConfig.TimeoutStartSec = "5m";
+    # services.promtail = {
+    #   enable = false;
+    #   configuration = {
+    #     server = {
+    #       http_listen_port = catalog.services.promtail.port;
+    #       grpc_listen_port = 0;
+    #     };
+    #     positions = { filename = "/tmp/positions.yaml"; };
+    #     clients = [{ url = "https://loki.${catalog.domain.service}/loki/api/v1/push"; }];
+    #     scrape_configs = [{
+    #       job_name = "journal";
+    #       journal = {
+    #         max_age = "12h";
+    #         labels = {
+    #           job = "systemd-journal";
+    #           host = "${config.networking.hostName}";
+    #         };
+    #       };
+    #       relabel_configs = [{
+    #         source_labels = [ "__journal__systemd_unit" ];
+    #         target_label = "unit";
+    #       }];
+    #     }];
+    #   };
+    # };
+
+    # systemd.services.promtail.serviceConfig.TimeoutStartSec = "5m";
   };
 }
