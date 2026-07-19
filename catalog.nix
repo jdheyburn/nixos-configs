@@ -249,7 +249,8 @@
       dashy.section = "networks";
       dashy.description = "UniFi controller";
       dashy.icon = "hl-unifi-controller";
-      modules = [ "unifi" ];
+      # Caddy is used because it's used to proxy to unfi
+      modules = [ "caddy" ];
     };
 
     victoriametrics = {
