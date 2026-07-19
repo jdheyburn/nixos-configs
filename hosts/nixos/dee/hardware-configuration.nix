@@ -5,10 +5,16 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" ];
+  # boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
+
+  boot.loader.grub.enable = false;
+  boot.loader.generic-extlinux-compatible.enable = true;
+  boot.initrd.availableKernelModules = [ "pcie-brcmstb" "reset-raspberrypi" ];
+  hardware.deviceTree.enable = true;
+  hardware.deviceTree.filter = "bcm2711-rpi-*.dtb";
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/44444444-4444-4444-8888-888888888888";
