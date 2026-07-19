@@ -35,6 +35,17 @@
       fsType = "ext4";
     };
 
+  fileSystems."/mnt/nfs" = {
+    device = "/dev/disk/by-uuid/5bc9d4ef-9379-4381-bfbd-dfe63a0575ea";
+    fsType = "ext4";
+    options = [ "nofail" ];
+  };
+
+  fileSystems."/mnt/usb" = {
+    device = "/mnt/nfs";
+    options = [ "bind" ];
+  };
+
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
