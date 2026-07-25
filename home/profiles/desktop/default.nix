@@ -1,4 +1,6 @@
 { pkgs, ... }:
 {
-  # Empty for now
+  imports = [
+    ./claude-code
+  ];
 }
