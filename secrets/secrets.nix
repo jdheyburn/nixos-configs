@@ -24,6 +24,8 @@ in
   "aria2-password.age".publicKeys = default;
   "caddy-environment-file.age".publicKeys = default;
   "grafana-admin-password.age".publicKeys = default;
+  # Re-enable alongside the declarative Assistant provisioning in grafana.nix.
+  # "grafana-assistant-access-token.age".publicKeys = default;
   "grafana-secret-key.age".publicKeys = default;
   "healthchecks-secrets-file.age".publicKeys = default;
   "healthchecks-smtp-password.age".publicKeys = default;

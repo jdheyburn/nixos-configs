@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, myUtils, ... }:
+{ catalog, config, options, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -8,8 +8,7 @@ let
   # Grafana Assistant (self-managed). Not packaged in nixpkgs, so we build it
   # from the official signed release zip. The backend binary (gpx_dash) is a
   # statically linked Go binary, so no patchelf is needed and Grafana's plugin
-  # signature stays valid. Connect it to Grafana Cloud via the plugin UI once
-  # after deploy ("Connect to Grafana Cloud"); the token persists in the DB.
+  # signature stays valid.
   # https://grafana.com/docs/grafana-cloud/machine-learning/assistant/get-started/self-managed/
   grafana-assistant-app = pkgs.grafanaPlugins.grafanaPlugin {
     pname = "grafana-assistant-app";
@@ -18,6 +17,48 @@ let
       x86_64-linux = "sha256-rECRtpjAscBl8b3Y01R+HgdhM00+XPCyadQ3sG5pRn0=";
     };
   };
+
+  # Declarative Grafana Cloud connection via YAML provisioning. Disabled for now
+  # in favour of the plugin's "Connect to Grafana Cloud" UI flow (which persists
+  # the connection to the DB, already covered by the restic backup). Re-enable
+  # this if we want the connection reproducible from config; it needs the
+  # grafana-assistant-access-token agenix secret (see below) created first, in
+  # the form "<instanceId>:<rawAccessToken>".
+  # Ref: https://community.grafana.com/t/oss-how-to-configure-grafana-assistant-via-yaml-provisioning/163046
+  #
+  # assistantAppProvision = (pkgs.formats.yaml { }).generate "grafana-assistant-app.yaml" {
+  #   apiVersion = 1;
+  #   apps = [{
+  #     type = "grafana-assistant-app";
+  #     org_id = 1;
+  #     disabled = false;
+  #     jsonData = {
+  #       backendUrl = "https://assistant-prod-gb-south-1.grafana.net/assistant";
+  #       instanceId = "1737073";
+  #       isAccessTokenSet = true;
+  #       ossMode = true;
+  #     };
+  #     secureJsonData = {
+  #       accessToken = "$__file{${config.age.secrets."grafana-assistant-access-token".path}}";
+  #     };
+  #   }];
+  # };
+  #
+  # The NixOS module's provisioning dir is a read-only store path with an empty
+  # plugins/ dir and no provision.apps option, so merge our app config into a
+  # copy of it and point paths.provisioning at the result. The base dir is the
+  # module's own default; reached via getSubOptions because `settings` is a
+  # freeform submodule, and reading the default (not the config value) avoids
+  # infinite recursion with the paths.provisioning override below.
+  # baseProvisioningDir =
+  #   (options.services.grafana.settings.type.getSubOptions [ ]).paths.provisioning.default;
+  # provisioningWithAssistant =
+  #   pkgs.runCommand "grafana-provisioning-assistant" { } ''
+  #     mkdir -p $out
+  #     cp -rL ${baseProvisioningDir}/. $out/
+  #     chmod -R u+w $out
+  #     install -Dm444 ${assistantAppProvision} $out/plugins/grafana-assistant-app.yaml
+  #   '';
 in {
   options.modules.prometheusStack.grafana.enable = mkEnableOption "Deploy Grafana";
 
@@ -38,6 +79,12 @@ in {
       owner = "grafana";
       group = "grafana";
     };
+    # Only needed for the declarative Assistant provisioning above (disabled).
+    # age.secrets."grafana-assistant-access-token" = {
+    #   file = myUtils.secrets.file "grafana-assistant-access-token";
+    #   owner = "grafana";
+    #   group = "grafana";
+    # };
 
     services.caddy.virtualHosts."grafana.${catalog.domain.service}".extraConfig =
       myUtils.caddy.mkServiceVHost {
@@ -51,6 +98,21 @@ in {
         analytics.reporting_enabled = false;
 
         database.wal = true;
+
+        # The Assistant plugin declares an `iam` block, so its backend needs a
+        # Grafana-managed service account (bearer token, passed as
+        # PluginAppClientSecret) plus forwarded user ID tokens to authenticate.
+        # Without these every plugin resource call 401s ("PluginAppClientSecret
+        # not set in config" / "error verifying idToken"). Grafana Cloud enables
+        # these by default; self-managed must opt in. externalServiceAccounts is
+        # still a preview toggle in Grafana 13, and managed service accounts only
+        # support single-org deployments (fine here).
+        feature_toggles.externalServiceAccounts = true;
+        service_accounts.managed_service_accounts_enabled = true;
+
+        # Merge our Assistant app provisioning into the module's generated dir.
+        # Disabled for now; connect via the plugin UI instead. See let-binding.
+        # paths.provisioning = provisioningWithAssistant;
 
         server = {
           root_url = "https://grafana.${catalog.domain.service}";
