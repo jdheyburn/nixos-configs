@@ -204,8 +204,6 @@
       dashy.icon = "hl-prometheus";
     };
 
-    promtail = { port = 28183; };
-
     proxmox = {
       host = nodes.dee;
       port = 8006;
@@ -254,6 +252,8 @@
       # that actually publishes this vhost. It requires caddy to also be enabled.
       modules = [ "unifi-proxy" ];
     };
+
+    vector = { port = 28183; };
 
     victoriametrics = {
       host = nodes.charlie;

@@ -5,11 +5,11 @@ with lib;
 let cfg = config.modules.monitoring;
 in {
 
-  imports = [ ./promtail.nix ];
+  imports = [ ./vector.nix ];
 
   options.modules.monitoring = {
     enable = mkEnableOption "Enable Prometheus monitoring of this box";
-    enablePromtail = mkOption {
+    enableLogShipping = mkOption {
       default = true;
       type = types.bool;
     };
@@ -26,7 +26,7 @@ in {
       port = catalog.services.nodeExporter.port;
     };
 
-    modules.promtail.enable = cfg.enablePromtail;
+    modules.vector.enable = cfg.enableLogShipping;
   };
 }
 
