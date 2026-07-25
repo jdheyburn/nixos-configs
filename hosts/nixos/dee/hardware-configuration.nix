@@ -5,16 +5,13 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  # boot.initrd.availableKernelModules = [ "xhci_pci" "usbhid" ];
   boot.initrd.kernelModules = [ ];
-  # boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
   boot.loader.grub.enable = false;
   boot.loader.generic-extlinux-compatible.enable = true;
   boot.initrd.availableKernelModules = [ "pcie-brcmstb" "reset-raspberrypi" ];
   hardware.deviceTree.enable = true;
-  hardware.deviceTree.filter = "bcm2711-rpi-*.dtb";
 
   hardware.i2c.enable = true;
   boot.kernelModules = [ "i2c-dev" "i2c-bcm2835" ];
