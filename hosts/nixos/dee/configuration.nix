@@ -108,6 +108,7 @@
   modules.navidrome.enable = false;
   modules.nfs-server.enable = true;
   modules.plex.enable = true;
+  modules.unifi-proxy.enable = true;
 
   # Disabled while I don't have ZFS
   services.prometheus.exporters.zfs.enable = false;

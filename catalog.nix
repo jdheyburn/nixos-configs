@@ -243,12 +243,16 @@
     };
 
     unifi = {
-      host = nodes.ucg;
-      port = 80;
+      host = nodes.dee;
+      backendHost = nodes.ucg;
+      port = 443;
       dashy.section = "networks";
       dashy.description = "UniFi controller";
       dashy.icon = "hl-unifi-controller";
-      modules = [ "unifi" ];
+      # unifi-proxy creates the Caddy vhost that reverse proxies to the Cloud
+      # Gateway; gating DNS/scrape on it (rather than caddy) tracks the module
+      # that actually publishes this vhost. It requires caddy to also be enabled.
+      modules = [ "unifi-proxy" ];
     };
 
     victoriametrics = {
