@@ -2,7 +2,22 @@
 
 with lib;
 
-let cfg = config.modules.prometheusStack;
+let
+  cfg = config.modules.prometheusStack;
+
+  # Grafana Assistant (self-managed). Not packaged in nixpkgs, so we build it
+  # from the official signed release zip. The backend binary (gpx_dash) is a
+  # statically linked Go binary, so no patchelf is needed and Grafana's plugin
+  # signature stays valid. Connect it to Grafana Cloud via the plugin UI once
+  # after deploy ("Connect to Grafana Cloud"); the token persists in the DB.
+  # https://grafana.com/docs/grafana-cloud/machine-learning/assistant/get-started/self-managed/
+  grafana-assistant-app = pkgs.grafanaPlugins.grafanaPlugin {
+    pname = "grafana-assistant-app";
+    version = "2.0.38";
+    zipHash = {
+      x86_64-linux = "sha256-rECRtpjAscBl8b3Y01R+HgdhM00+XPCyadQ3sG5pRn0=";
+    };
+  };
 in {
   options.modules.prometheusStack.grafana.enable = mkEnableOption "Deploy Grafana";
 
@@ -57,7 +72,10 @@ in {
         };
       };
 
-      declarativePlugins = with pkgs.grafanaPlugins; [ grafana-piechart-panel ];
+      declarativePlugins = [
+        pkgs.grafanaPlugins.grafana-piechart-panel
+        grafana-assistant-app
+      ];
 
       provision = {
         enable = true;
