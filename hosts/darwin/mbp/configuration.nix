@@ -1,4 +1,4 @@
-{ lib, pkgs, deploy-rs, ... }: {
+{ lib, pkgs, ... }: {
 
   homebrew.casks = [
     "google-chrome"
@@ -8,7 +8,6 @@
 
   environment.systemPackages = with pkgs; [
     rclone
-    deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   services.tailscale.enable = true;
