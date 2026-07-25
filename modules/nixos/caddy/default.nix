@@ -1,4 +1,4 @@
-{ catalog, config, pkgs, lib, myUtils, ... }:
+{ config, pkgs, lib, myUtils, ... }:
 
 with lib;
 
@@ -7,14 +7,6 @@ let
   cfg = config.modules.caddy;
 
   caddyMetricsPort = 2019;
-
-  thisHost = catalog.nodes.${config.networking.hostName};
-
-  # Any service whose catalog entry lives on this host AND declares a
-  # separate backendHost gets an auto-generated reverse proxy vhost.
-  proxiedServices = attrValues (filterAttrs
-    (name: svc: (svc ? host) && (svc ? backendHost) && svc.host == thisHost)
-    catalog.services);
 in
 {
 
@@ -45,25 +37,6 @@ in
         plugins = [ "github.com/caddy-dns/cloudflare@v0.2.4" ];
         hash = "sha256-7GoH8YLCoPmPExQxoga2FHB58zQDoZVf1BBwkVi0SsQ=";
       };
-      virtualHosts = listToAttrs (map
-        (svc: {
-          name = "${svc.name}.${catalog.domain.service}";
-          value.extraConfig = ''
-            tls {
-              dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-            }
-            reverse_proxy https://${svc.backendHost.ip.private}:${toString svc.port} {
-                transport http {
-                    tls_insecure_skip_verify
-                }
-                # UniFi OS (and similar) validate the WebSocket Origin against
-                # the backend's own address; rewrite it so /api/ws/* upgrades
-                # aren't rejected with a 500 when proxied behind a vhost.
-                header_up Origin https://{upstream_hostport}
-            }
-          '';
-        })
-        proxiedServices);
     };
 
     systemd.services.caddy = {

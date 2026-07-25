@@ -249,8 +249,10 @@
       dashy.section = "networks";
       dashy.description = "UniFi controller";
       dashy.icon = "hl-unifi-controller";
-      # Caddy is used because it's used to proxy to unfi
-      modules = [ "caddy" ];
+      # unifi-proxy creates the Caddy vhost that reverse proxies to the Cloud
+      # Gateway; gating DNS/scrape on it (rather than caddy) tracks the module
+      # that actually publishes this vhost. It requires caddy to also be enabled.
+      modules = [ "unifi-proxy" ];
     };
 
     victoriametrics = {
