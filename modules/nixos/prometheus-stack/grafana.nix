@@ -13,6 +13,11 @@ in {
       owner = "grafana";
       group = "grafana";
     };
+    age.secrets."grafana-secret-key" = {
+      file = myUtils.secrets.file "grafana-secret-key";
+      owner = "grafana";
+      group = "grafana";
+    };
     age.secrets."smtp-password" = {
       file = myUtils.secrets.file "smtp-password";
       owner = "grafana";
@@ -41,6 +46,7 @@ in {
 
         security = {
           admin_password = "$__file{${config.age.secrets."grafana-admin-password".path}}";
+          secret_key = "$__file{${config.age.secrets."grafana-secret-key".path}}";
         };
 
         smtp = {

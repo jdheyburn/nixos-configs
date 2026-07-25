@@ -24,6 +24,7 @@ in
   "aria2-password.age".publicKeys = default;
   "caddy-environment-file.age".publicKeys = default;
   "grafana-admin-password.age".publicKeys = default;
+  "grafana-secret-key.age".publicKeys = default;
   "healthchecks-secrets-file.age".publicKeys = default;
   "healthchecks-smtp-password.age".publicKeys = default;
   "healthchecks-superuser-password.age".publicKeys = default;

@@ -184,17 +184,33 @@ These profiles map to directories in `home/profiles/`. Multiple profiles can be 
 
 ## Deployment
 
-[deploy-rs](https://github.com/serokell/deploy-rs) is used to deploy the configurations.
+[deploy-rs](https://github.com/serokell/deploy-rs) is used to deploy the configurations. It should be available on `$PATH` at `deploy` if the below is set:
+
+```nix
+{ deploy-rs, ... }: {
+  environment.systemPackages = with pkgs; [
+    deploy-rs.packages.${pkgs.system}.default
+  ];
+}
+```
+
+Else you can run it as:
+
+```bash
+nix run github:serokell/deploy-rs -- ${PARAMS...}
+```
+
+### Example usages
 
 ```bash
 # all hosts
-nix run github:serokell/deploy-rs -- -s "."
+deploy -s "."
 
 # per host
-nix run github:serokell/deploy-rs -- -s ".#dee"
+deploy -s ".#dee"
 
 # more explicit parameters
-nix run github:serokell/deploy-rs -- --keep-result --auto-rollback false --magic-rollback false --activation-timeout 3600 -s ".#dee"
+deploy --keep-result --auto-rollback false --magic-rollback false --activation-timeout 3600 -s ".#dee"
 ```
 
 ## Runbooks
