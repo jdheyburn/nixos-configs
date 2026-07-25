@@ -25,11 +25,6 @@ in
         "ruby-lsp@claude-plugins-official" = true;
       };
 
-      # extraKnownMarketplaces.lapdog.source = {
-      #   source = "github";
-      #   repo = "DataDog/dd-apm-test-agent";
-      # };
-
       alwaysThinkingEnabled = true;
       effortLevel = "high";
       tui = "fullscreen";
