@@ -12,44 +12,35 @@ in {
   options.modules.ssh-client = { enable = mkEnableOption "ssh client"; };
 
   config = mkIf cfg.enable {
-    services.ssh-agent.enable = ! builtins.elem pkgs.system ["aarch64-darwin"];
+    services.ssh-agent.enable = ! builtins.elem pkgs.stdenv.hostPlatform.system ["aarch64-darwin"];
     
     programs.ssh = {
       enable = true;
-      matchBlocks = {
+      enableDefaultConfig = false;
+      settings = {
         # TODO be dynamic, don't create session for self
-        charlie = {
-          extraOptions = tmuxSettings;
-        };
+        charlie = tmuxSettings;
         charlie-no-tmux = {
-          hostname = "charlie";
+          HostName = "charlie";
         };
-        dee = {
-          extraOptions = tmuxSettings;
-        };
+        dee = tmuxSettings;
         dee-no-tmux = {
-          hostname = "dee";
+          HostName = "dee";
         };
-        dennis = {
-          extraOptions = tmuxSettings;
-        };
+        dennis = tmuxSettings;
         dennis-no-tmux = {
-          hostname = "dennis";
+          HostName = "dennis";
         };
-        mac = {
-          extraOptions = tmuxSettings;
-        };
+        mac = tmuxSettings;
         mac-no-tmux = {
-          hostname = "mac";
+          HostName = "mac";
         };
         "gitlab.com" = {
-          user = "git";
+          User = "git";
         };
         "github.com" = {
-          user = "git";
-          extraOptions = {
-            IdentityFile = "~/.ssh/id_ed25519";
-          };
+          User = "git";
+          IdentityFile = "~/.ssh/id_ed25519";
         };
       };
     };

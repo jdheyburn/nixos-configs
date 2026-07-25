@@ -8,7 +8,7 @@
 
   environment.systemPackages = with pkgs; [
     rclone
-    deploy-rs.packages.${pkgs.system}.default
+    deploy-rs.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   services.tailscale.enable = true;
