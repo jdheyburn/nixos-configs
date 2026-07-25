@@ -24,10 +24,6 @@ in
   ];
 
   home.packages = with pkgs; [
-    awscli2
-
-    discord
-
     # obsidian
 
     # Secrets management
@@ -44,5 +40,4 @@ in
   # programs.zsh.sessionVariables.NODE_EXTRA_CA_CERTS = "/Users/joseph.heyburn/.node-certs/ZscalerRootCertificate.pem";
 
   modules.kubernetes-client.enable = true;
-  modules.vscode.enable = true;
 }
