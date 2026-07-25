@@ -96,12 +96,12 @@
         # Creates a list of imports for a given user, and hostname specific configs for the user if they exist
         mkUserImports = user: hostname: system: 
           let
-            # Look up user's profiles from catalog, defaulting to empty list if not defined
+            # Look up user's profiles from catalog, defaulting to empty list if not defined.
+            # Profiles are paths (see catalog.homeProfiles), so they import directly.
             userProfiles = catalog.users.${user}.profiles or { };
-            profileNames = 
+            profileImports =
               if (isNixOS system) then (userProfiles.nixos or [])
               else (userProfiles.darwin or []);
-            profileImports = map (profile: ./home/profiles + "/${profile}") profileNames;
             baseImports = [
               catppuccin.homeModules.catppuccin
               ./home/common

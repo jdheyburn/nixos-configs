@@ -273,13 +273,21 @@
     })
     (builtins.attrNames servicesBase));
 
-  usersBase = {
+  # Home-manager profiles, referenced directly by users below rather than by
+  # name. Paths resolve relative to this file (repo root); the directory under
+  # ./home/profiles is the source of truth for each profile.
+  homeProfiles = {
+    desktop = ./home/profiles/desktop;
+    server = ./home/profiles/server;
+  };
+
+  usersBase = with homeProfiles; {
     jdheyburn = {
-      profiles.nixos = [ "server" ];
-      profiles.darwin = [ "desktop" ];
+      profiles.nixos = [ server ];
+      profiles.darwin = [ desktop ];
     };
     "joseph.heyburn" = {
-      profiles.darwin = [ "desktop" ];
+      profiles.darwin = [ desktop ];
     };
   };
 
