@@ -250,5 +250,22 @@
             value = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
           })
           flake-utils.lib.defaultSystems);
+
+        # `nix develop` / direnv shell with the repo's tooling on PATH.
+        # CLIs come from the same locked inputs the flake deploys with.
+        devShells = builtins.listToAttrs (map
+          (system: {
+            name = system;
+            value = {
+              default = nixpkgs.legacyPackages.${system}.mkShell {
+                packages = [
+                  agenix.packages.${system}.default
+                  deploy-rs.packages.${system}.default
+                  nixpkgs.legacyPackages.${system}.nixpkgs-fmt
+                ];
+              };
+            };
+          })
+          flake-utils.lib.defaultSystems);
       };
 }

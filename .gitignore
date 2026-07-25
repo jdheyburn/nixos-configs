@@ -7,3 +7,6 @@ result
 # deploy-rs build cache for when --keep-result is defined
 .deploy-gc
 
+# nix-direnv cache
+.direnv/
+
