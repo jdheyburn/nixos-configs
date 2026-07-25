@@ -95,13 +95,13 @@
   };
 
   modules.backup.usb = {
-    enable = false;
+    enable = true;
     rcloneConfigFile = config.age.secrets."rclone.conf".path;
   };
   modules.caddy.enable = true;
   modules.dns.enable = true;
   # TODO get healthchecks to build
-  modules.healthchecks.enable = false;
+  modules.healthchecks.enable = true;
   modules.minio.enable = false;
   modules.monitoring.enable = false;
   modules.mopidy.enable = false;
