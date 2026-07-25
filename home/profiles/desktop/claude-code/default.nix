@@ -19,14 +19,10 @@ in
       };
 
       enabledPlugins = {
-        "superpowers@claude-plugins-official" = true;
+        "superpowers@superpowers-marketplace" = true;
         "gopls-lsp@claude-plugins-official" = true;
         "clangd-lsp@claude-plugins-official" = true;
-        "github-skills@platform-claude-skills" = true;
-        "ruby-skills@platform-claude-skills" = true;
-        "document-skills@anthropic-agent-skills" = true;
-        "example-skills@anthropic-agent-skills" = false;
-        # "lapdog@lapdog" = true;
+        "ruby-lsp@claude-plugins-official" = true;
       };
 
       # extraKnownMarketplaces.lapdog.source = {
