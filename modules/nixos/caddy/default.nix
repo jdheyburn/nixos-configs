@@ -56,6 +56,10 @@ in
                 transport http {
                     tls_insecure_skip_verify
                 }
+                # UniFi OS (and similar) validate the WebSocket Origin against
+                # the backend's own address; rewrite it so /api/ws/* upgrades
+                # aren't rejected with a 500 when proxied behind a vhost.
+                header_up Origin https://{upstream_hostport}
             }
           '';
         })
