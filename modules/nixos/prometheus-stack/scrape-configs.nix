@@ -108,9 +108,9 @@ let
   nixOSNodes = attrValues
     (filterAttrs (node_name: node_def: node_def ? "system" && isNixOS node_def.system) catalog.nodes);
 
-  promtail_targets = map
+  vector_targets = map
     (node:
-      "${node.hostName}.${catalog.domain.tailscale}:${toString catalog.services.promtail.port}"
+      "${node.hostName}.${catalog.domain.tailscale}:${toString catalog.services.vector.port}"
     )
     nixOSNodes;
 
@@ -211,8 +211,8 @@ in
     }];
   }
   {
-    job_name = "promtail";
-    static_configs = [{ targets = promtail_targets; }];
+    job_name = "vector";
+    static_configs = [{ targets = vector_targets; }];
   }
   {
     job_name = "zfs";
