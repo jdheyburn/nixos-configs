@@ -64,9 +64,6 @@ in
           echo "rcloning music -> gdrive:media/music"
           ${pkgs.rclone}/bin/rclone -v sync /mnt/nfs/media/music gdrive:media/music --config=$RCLONE_CONF_PATH
 
-          echo "rcloning minio -> b2:minio"
-          ${pkgs.rclone}/bin/rclone -v sync minio: b2:iifu8Noi-backups/minio --config=$RCLONE_CONF_PATH
-
           ${pkgs.curl}/bin/curl ${healthcheckRcloneMedia}
         '';
       };
