@@ -3,7 +3,7 @@
 with lib;
 
 let
-  version = "release-3.1.1";
+  version = "release-4.5.0";
 
   cfg = config.modules.dashy;
 
