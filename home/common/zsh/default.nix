@@ -20,6 +20,7 @@
       h = "history";
       ls = "${pkgs.eza}/bin/eza";
       mv = "mv -v";
+      rp = "realpath";
       venv = "source .venv/bin/activate";
     };
 
