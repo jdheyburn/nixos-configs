@@ -13,13 +13,23 @@ in
     settings = {
       permissions.allow = [ "Bash(find:*)" ];
 
+      # Register the official plugin marketplace so enabledPlugins below resolve
+      # on a fresh machine without a manual `/plugin marketplace add`. The name
+      # `claude-plugins-official` is reserved by Claude Code and *must* use a
+      # GitHub source from the `anthropics` org — a nix-store `directory` source
+      # is rejected, so this cannot be pinned via a flake input.
+      extraKnownMarketplaces.claude-plugins-official.source = {
+        source = "github";
+        repo = "anthropics/claude-plugins-official";
+      };
+
       statusLine = {
         type = "command";
         command = "bash ${claudeHome}/statusline-command.sh";
       };
 
       enabledPlugins = {
-        "superpowers@superpowers-marketplace" = true;
+        "superpowers@claude-plugins-official" = true;
         "gopls-lsp@claude-plugins-official" = true;
         "clangd-lsp@claude-plugins-official" = true;
         "ruby-lsp@claude-plugins-official" = true;
