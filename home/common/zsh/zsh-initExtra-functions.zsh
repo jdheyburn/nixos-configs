@@ -401,23 +401,32 @@ worktree-pr() {
   fi
 
   if [[ "$state" == "MERGED" ]]; then
-    git fetch upstream
-    git worktree add "$worktree_path" "$merge_commit"
+    git fetch upstream || return 1
+    git worktree add "$worktree_path" "$merge_commit" || return 1
     echo "Merged PR — detached HEAD at ${merge_commit:0:7}"
   else
     # Add fork remote if it doesn't exist
     if ! git remote get-url "$owner" &>/dev/null; then
       local fork_url="git@github.com:${owner}/${fork_name}.git"
       echo "Adding remote: ${owner} -> ${fork_url}"
-      git remote add "$owner" "$fork_url"
+      git remote add "$owner" "$fork_url" || return 1
     fi
-    git fetch "$owner" "$branch_name"
-    git worktree add "$worktree_path" -b "$worktree_name" "${owner}/${branch_name}"
+    git fetch "$owner" "$branch_name" || return 1
+
+    # Clean up an orphaned branch from a prior failed run (branch exists,
+    # but no worktree is attached to it) so -b can recreate it fresh.
+    if git show-ref --verify --quiet "refs/heads/${worktree_name}" \
+       && ! git worktree list --porcelain | grep -q "branch refs/heads/${worktree_name}$"; then
+      echo "Removing orphaned branch ${worktree_name} from a prior failed run"
+      git branch -D "$worktree_name" || return 1
+    fi
+
+    git worktree add "$worktree_path" -b "$worktree_name" "${owner}/${branch_name}" || return 1
     echo "Worktree ready at ${worktree_path}"
     echo "Push changes back with: git push ${owner} HEAD:${branch_name}"
   fi
 
-  cd $worktree_path
+  cd "$worktree_path"
 }
 
 # worktree-clean: clean up PR worktrees that are no longer needed
