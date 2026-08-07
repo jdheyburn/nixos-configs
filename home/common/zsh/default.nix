@@ -29,6 +29,7 @@
       G = "| grep -i ";
       # Output to yaml then cat it, useful on k8s resources
       YC = "-o yaml | cat";
+      HCD = "--helm-chart-dir \"$PWD/../helm-charts\"";
     };
 
     # sessionVariables get prefixed with `export`
