@@ -5,6 +5,7 @@
     ignores = [
       "**/.DS_Store"
       "**/.claude/settings.local.json"
+      "**/docs/superpowers"
     ];
     settings = {
       user = {
