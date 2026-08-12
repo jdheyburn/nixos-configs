@@ -12,7 +12,6 @@
   ];
 
   homebrew.casks = [
-    "claude"
     "docker"
     "google-drive"
     "sdm"

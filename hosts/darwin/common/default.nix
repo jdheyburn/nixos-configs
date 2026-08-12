@@ -56,6 +56,7 @@
     "1password"
     "alt-tab"
     "audacity"
+    "claude"
     "firefox"
     "focusrite-control"
     "obsidian"
