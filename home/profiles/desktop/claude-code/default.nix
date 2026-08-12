@@ -23,6 +23,13 @@ in
         repo = "anthropics/claude-plugins-official";
       };
 
+      # Third-party marketplace for Obsidian skills (kepano/obsidian-skills).
+      # Not a reserved name, so a plain GitHub source is accepted.
+      extraKnownMarketplaces.obsidian-skills.source = {
+        source = "github";
+        repo = "kepano/obsidian-skills";
+      };
+
       statusLine = {
         type = "command";
         command = "bash ${claudeHome}/statusline-command.sh";
@@ -33,6 +40,7 @@ in
         "gopls-lsp@claude-plugins-official" = true;
         "clangd-lsp@claude-plugins-official" = true;
         "ruby-lsp@claude-plugins-official" = true;
+        "obsidian@obsidian-skills" = true;
       };
 
       alwaysThinkingEnabled = true;
@@ -45,6 +53,10 @@ in
       voiceEnabled = true;
       skipWorkflowUsageWarning = true;
       theme = "dark";
+    };
+
+    skills = {
+      wait-what = "${inputs.mattpocock-skills}/skills/productivity/wait-what";
     };
   };
 

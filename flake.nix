@@ -35,6 +35,11 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    mattpocock-skills = {
+      url = "github:mattpocock/skills";
+      flake = false;
+    };
+
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
