@@ -1,7 +1,16 @@
-{ config, inputs, system, ... }:
+{ config, lib, inputs, system, ... }:
 let
   claudeDir = ".claude";
   claudeHome = "${config.home.homeDirectory}/${claudeDir}";
+
+  # mattpocock productivity skills — the skill name matches its directory name.
+  mattpocockSkills = [
+    "grill-me"
+    "grilling"
+    "teach"
+    "wait-what"
+    "writing-for-agents"
+  ];
 in
 {
   programs.claude-code = {
@@ -55,9 +64,9 @@ in
       theme = "dark";
     };
 
-    skills = {
-      wait-what = "${inputs.mattpocock-skills}/skills/productivity/wait-what";
-    };
+    skills = lib.genAttrs mattpocockSkills (
+      name: "${inputs.mattpocock-skills}/skills/productivity/${name}"
+    );
   };
 
   home.file."${claudeDir}/statusline-command.sh" = {
