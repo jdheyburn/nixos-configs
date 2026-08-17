@@ -40,7 +40,6 @@
     libraspberrypi
     iotop
     smartmontools
-    kid3
     python3
     restic
     sysstat

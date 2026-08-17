@@ -408,7 +408,28 @@
         "llm-agents": "llm-agents",
         "mattpocock-skills": "mattpocock-skills",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs_6"
+        "nixpkgs": "nixpkgs_6",
+        "scratch": "scratch"
+      }
+    },
+    "scratch": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786930303,
+        "narHash": "sha256-p4afKtPC4fes4TVchbdhUf+QMAR7nx89SjCW8HOj5vk=",
+        "ref": "refs/heads/main",
+        "rev": "1881fc09ebb61e2edc878cfeea7dde34fc994d33",
+        "revCount": 5,
+        "type": "git",
+        "url": "ssh://git@github.com/jdheyburn/scratch"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/jdheyburn/scratch"
       }
     },
     "systems": {
