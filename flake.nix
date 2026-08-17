@@ -43,6 +43,13 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+
+    # My scratch repo, for the tools in it worth installing declaratively.
+    # ssh rather than https so it works whether or not the repo is public.
+    scratch = {
+      url = "git+ssh://git@github.com/jdheyburn/scratch";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
