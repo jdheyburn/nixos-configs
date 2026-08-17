@@ -60,6 +60,9 @@ in
     # data parsing, in testing
     miller
 
+    # git hook runner, drop-in for pre-commit
+    prek
+
     tldr
 
     wget
