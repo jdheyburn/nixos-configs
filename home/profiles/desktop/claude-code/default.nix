@@ -39,6 +39,7 @@ in
         # gh (read-only)
         "Bash(gh pr view:*)"
         "Bash(gh pr diff:*)"
+        "Bash(gh search:*)"
 
         # Go (local build / test / format)
         "Bash(go build:*)"
@@ -58,6 +59,11 @@ in
 
         # kubectl (read-only)
         "Bash(kubectl get:*)"
+
+        # Python testing
+        "Bash(uv run python -m pytest:*)"
+        "Bash(uv run pytest:*)"
+        "Bash(pytest:*)"
       ];
 
       # Register the official plugin marketplace so enabledPlugins below resolve
