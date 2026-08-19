@@ -20,9 +20,44 @@ in
     context = ./CLAUDE.md;
 
     settings = {
+      # Global command allowlist. These are promoted from per-project
+      # settings.local.json where they recurred across repos — all read-only
+      # or pure-local (inspect / build / format), nothing that mutates remote
+      # state or runs arbitrary code.
       permissions.allow = [
+        # Shell inspection
         "Bash(find:*)"
+        "Bash(grep:*)"
+        "Bash(ls:*)"
+
+        # git (read-only)
+        "Bash(git status:*)"
+        "Bash(git diff:*)"
+        "Bash(git show:*)"
+        "Bash(git log:*)"
+
+        # gh (read-only)
         "Bash(gh pr view:*)"
+        "Bash(gh pr diff:*)"
+
+        # Go (local build / test / format)
+        "Bash(go build:*)"
+        "Bash(go test:*)"
+        "Bash(go vet:*)"
+        "Bash(gofmt:*)"
+
+        # Helm (local render / lint)
+        "Bash(helm template:*)"
+        "Bash(helm lint:*)"
+        "Bash(helm unittest:*)"
+        "Bash(helm version:*)"
+
+        # Terraform (local, non-mutating)
+        "Bash(terraform fmt:*)"
+        "Bash(terraform validate:*)"
+
+        # kubectl (read-only)
+        "Bash(kubectl get:*)"
       ];
 
       # Register the official plugin marketplace so enabledPlugins below resolve
