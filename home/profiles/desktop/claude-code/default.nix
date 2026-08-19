@@ -20,7 +20,10 @@ in
     context = ./CLAUDE.md;
 
     settings = {
-      permissions.allow = [ "Bash(find:*)" ];
+      permissions.allow = [
+        "Bash(find:*)"
+        "Bash(gh pr view:*)"
+      ];
 
       # Register the official plugin marketplace so enabledPlugins below resolve
       # on a fresh machine without a manual `/plugin marketplace add`. The name
