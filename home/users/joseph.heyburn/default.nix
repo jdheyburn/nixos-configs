@@ -21,6 +21,7 @@ in
 {
   imports = [
     ./velero
+    ./windmill-cli
   ];
 
   home.packages = with pkgs; [
