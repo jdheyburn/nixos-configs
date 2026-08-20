@@ -190,6 +190,7 @@
         packages = eachSystemMap supportedSystems (system:
           let pkgs = nixpkgs.legacyPackages.${system}; in {
             windmill-cli = pkgs.callPackage ./home/users/joseph.heyburn/windmill-cli/package.nix { };
+            beetcamp     = pkgs.callPackage ./home/modules/beets/beetcamp { };
           });
 
         # home-manager standalone installations
