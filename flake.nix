@@ -62,6 +62,7 @@
         isNixOS = system: builtins.elem system [ "x86_64-linux" "aarch64-linux" ];
 
         inherit (flake-utils.lib) eachSystemMap system;
+        supportedSystems = [ "aarch64-darwin" "x86_64-linux" "aarch64-linux" ];
         catalog = import ./catalog.nix { inherit nixos-hardware; };
 
         ## Modules under ./modules/nixos
@@ -183,6 +184,13 @@
       {
 
         overlays.default = final: prev: (import ./overlays inputs) final prev;
+
+        # Hand-maintained packages exposed so `nix-update --flake <name>` can
+        # reach them (and `nix build .#<name>` works).
+        packages = eachSystemMap supportedSystems (system:
+          let pkgs = nixpkgs.legacyPackages.${system}; in {
+            windmill-cli = pkgs.callPackage ./home/users/joseph.heyburn/windmill-cli/package.nix { };
+          });
 
         # home-manager standalone installations
         homeConfigurations = builtins.listToAttrs (map
