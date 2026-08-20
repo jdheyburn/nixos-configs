@@ -110,7 +110,10 @@ in
 
     skills = lib.genAttrs mattpocockSkills (
       name: "${inputs.mattpocock-skills}/skills/productivity/${name}"
-    );
+    ) // {
+      # Repo-local skills vendored under ./skills/<name>/SKILL.md.
+      kubernetes-operator-design = ./skills/kubernetes-operator-design;
+    };
   };
 
   home.file."${claudeDir}/statusline-command.sh" = {
