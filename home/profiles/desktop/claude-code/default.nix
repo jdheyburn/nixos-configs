@@ -35,6 +35,7 @@ in
         "Bash(git diff:*)"
         "Bash(git show:*)"
         "Bash(git log:*)"
+        "Bash(git check-ignore:*)"
 
         # gh (read-only)
         "Bash(gh pr view:*)"
@@ -64,6 +65,25 @@ in
         "Bash(uv run python -m pytest:*)"
         "Bash(uv run pytest:*)"
         "Bash(pytest:*)"
+
+        # Installed plugins: read/list any plugin's files. These live outside the
+        # project root, so listing them is gated as a filesystem read (not by
+        # Bash(ls:*)). Promoted from per-project grants.
+        "Read(/${claudeHome}/plugins/**)"
+
+        # Execute superpowers plugin scripts (SDD, brainstorming, etc). The
+        # version segment is wildcarded so allows survive plugin upgrades
+        # (6.2.0 -> 6.3.0 -> git-sha) instead of re-prompting on every bump.
+        #
+        # JDH: Commented out in case I want it in future
+        # "Bash(${claudeHome}/plugins/cache/claude-plugins-official/superpowers/*/skills/*/scripts/*:*)"
+
+        # superpowers SDD writes its plans, task briefs, and progress files under
+        # a .superpowers/ scratch dir (at any depth, incl. inside worktrees).
+        # Scoped to that dir only — never touches source. Write covers file
+        # creation; Edit covers the skill's later updates to those files.
+        "Write(**/.superpowers/**)"
+        "Edit(**/.superpowers/**)"
       ];
 
       # Register the official plugin marketplace so enabledPlugins below resolve
