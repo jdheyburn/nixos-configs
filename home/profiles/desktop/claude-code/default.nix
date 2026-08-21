@@ -29,6 +29,9 @@ in
         "Bash(find:*)"
         "Bash(grep:*)"
         "Bash(ls:*)"
+        "Bash(tail:*)"
+        "Bash(head:*)"
+        "Bash(echo:*)"
 
         # git (read-only)
         "Bash(git status:*)"
@@ -61,10 +64,12 @@ in
         # kubectl (read-only)
         "Bash(kubectl get:*)"
 
-        # Python testing
+        # Python testing / linting
         "Bash(uv run python -m pytest:*)"
         "Bash(uv run pytest:*)"
+        "Bash(uv run ruff:*)"
         "Bash(pytest:*)"
+        "Bash(ruff:*)"
 
         # Installed plugins: read/list any plugin's files. These live outside the
         # project root, so listing them is gated as a filesystem read (not by
