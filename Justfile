@@ -5,9 +5,11 @@ default:
 # Full update: flake inputs, then hand-maintained packages. Review the diff before committing.
 update: update-flake update-nix-pkgs update-containers
 
-# Bump flake inputs (nixpkgs et al.)
+# Bump flake inputs (nixpkgs et al.). --refresh re-resolves mutable refs (e.g.
+# the unpinned llm-agents input tracking main) so fast-churn inputs can't be
+# served a stale cached rev and jump backward to an older commit.
 update-flake:
-    nix flake update
+    nix flake update --refresh
 
 # Bump hand-maintained Nix source packages (windmill-cli, beetcamp)
 update-nix-pkgs:
