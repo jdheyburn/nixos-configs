@@ -20,6 +20,8 @@ in
     context = ./CLAUDE.md;
 
     settings = {
+      outputStyle = "Concise";
+
       # Global command allowlist. These are promoted from per-project
       # settings.local.json where they recurred across repos — all read-only
       # or pure-local (inspect / build / format), nothing that mutates remote
@@ -91,21 +93,23 @@ in
         "Edit(**/.superpowers/**)"
       ];
 
-      # Register the official plugin marketplace so enabledPlugins below resolve
-      # on a fresh machine without a manual `/plugin marketplace add`. The name
-      # `claude-plugins-official` is reserved by Claude Code and *must* use a
-      # GitHub source from the `anthropics` org — a nix-store `directory` source
-      # is rejected, so this cannot be pinned via a flake input.
-      extraKnownMarketplaces.claude-plugins-official.source = {
-        source = "github";
-        repo = "anthropics/claude-plugins-official";
-      };
+      extraKnownMarketplaces = {
+        # Register the official plugin marketplace so enabledPlugins below resolve
+        # on a fresh machine without a manual `/plugin marketplace add`. The name
+        # `claude-plugins-official` is reserved by Claude Code and *must* use a
+        # GitHub source from the `anthropics` org — a nix-store `directory` source
+        # is rejected, so this cannot be pinned via a flake input.
+        claude-plugins-official.source = {
+          source = "github";
+          repo = "anthropics/claude-plugins-official";
+        };
 
-      # Third-party marketplace for Obsidian skills (kepano/obsidian-skills).
-      # Not a reserved name, so a plain GitHub source is accepted.
-      extraKnownMarketplaces.obsidian-skills.source = {
-        source = "github";
-        repo = "kepano/obsidian-skills";
+        # Third-party marketplace for Obsidian skills (kepano/obsidian-skills).
+        # Not a reserved name, so a plain GitHub source is accepted.
+        obsidian-skills.source = {
+          source = "github";
+          repo = "kepano/obsidian-skills";
+        };
       };
 
       statusLine = {
