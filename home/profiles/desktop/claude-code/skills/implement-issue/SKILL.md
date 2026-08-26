@@ -1,6 +1,6 @@
 ---
 name: implement-issue
-description: Use when asked to implement a valkey-operator GitHub issue end to end (e.g. "/implement-issue 265", "pick up issue 187", "implement this issue").
+description: Use when asked to implement a GitHub issue end to end (e.g. "/implement-issue 265", "pick up issue 187", "implement this issue").
 ---
 
 # Implementing a GitHub issue
