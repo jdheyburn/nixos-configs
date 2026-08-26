@@ -142,6 +142,8 @@ in
     ) // {
       # Repo-local skills vendored under ./skills/<name>/SKILL.md.
       kubernetes-operator-design = ./skills/kubernetes-operator-design;
+      review-valkey-operator-pr = ./skills/review-valkey-operator-pr;
+      implement-issue = ./skills/implement-issue;
     };
   };
 
