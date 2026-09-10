@@ -1,15 +1,28 @@
-{ config, pkgs, lib, ... }:
+{ config, lib, system, inputs, ... }:
 
 with lib;
 
 let
   cfg = config.modules.vscode;
+  # legacyPackages has unfree disallowed by default; vscode's license needs
+  # allowUnfree, which our own nixpkgs instance sets via nixpkgs.config in
+  # hosts/nixos/common and hosts/darwin/common, but that config doesn't
+  # carry over to a separately-imported nixpkgs-unstable instance.
+  pkgsUnstable = import inputs.nixpkgs-unstable {
+    inherit system;
+    config.allowUnfree = true;
+  };
 in {
   options.modules.vscode = { enable = mkEnableOption "VSCode"; };
 
   config = mkIf cfg.enable {
     programs.vscode = {
       enable = true;
+
+      # nixos-26.05 (the pin used everywhere else) is a stable branch and
+      # doesn't get routine VS Code version bumps, so pull the editor itself
+      # from nixpkgs-unstable to stay on current releases.
+      package = pkgsUnstable.vscode;
 
       # Means I cannot install extensions in vscode GUI, they have to be done via Nix
       # Might not strictly need it, as `"extensions.autoUpdate" = false;` might be all I need
@@ -19,7 +32,7 @@ in {
         # This is a list of extensions I had manually installed
         # I'm not sure what's really needed for what, they're commented out
         # until I then need them
-        extensions = with pkgs.vscode-extensions; [
+        extensions = with pkgsUnstable.vscode-extensions; [
           anthropic.claude-code
 
           # Nix language support for Visual Studio Code.
@@ -81,7 +94,7 @@ in {
           # wingrunr21.vscode-ruby
         ]
         # Install other extension from the marketplace that aren't in nixpkgs
-        ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+        ++ pkgsUnstable.vscode-utils.extensionsFromVscodeMarketplace [
           # AI pair programmer tool that helps you write code faster and smarter.
           # {
           #   name = "copilot";
@@ -121,7 +134,7 @@ in {
           ## Catppuccin
           "workbench.colorTheme" = "Catppuccin Macchiato";
           "workbench.iconTheme" = "catppuccin-macchiato";
-          # "catppuccin.accentColor" = "mauve";
+          "catppuccin.accentColor" = "mauve";
 
           ## Material theme
           # Material theme seems to want to remove this config and to use its own instead
@@ -137,6 +150,7 @@ in {
 
           "editor.accessibilitySupport" = "off";
           "editor.formatOnSave" = true;
+          "editor.semanticHighlighting.enabled" = true;
           "editor.stickyScroll.enabled" = true;
 
           "explorer.confirmDelete" = false;
@@ -175,9 +189,12 @@ in {
           "terminal.integrated.enableMultiLinePasteWarning" = false;
           "terminal.integrated.fontFamily" = "'MesloLGS NF', 'Meslo LG M DZ for Powerline', monospace";
           "terminal.integrated.fontSize" = 12;
+          "terminal.integrated.minimumContrastRatio" = 1;
 
           # Disable automatic updates
           "update.mode" = "none";
+
+          "window.titleBarStyle" = "custom";
 
           # Do not close tabs if you didn't edit them
           "workbench.editor.enablePreview" = false;
