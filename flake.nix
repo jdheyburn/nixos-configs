@@ -44,6 +44,10 @@
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
+    # Tracks nixpkgs-unstable for packages that need to be newer than the
+    # stable branch provides (e.g. vscode, see home/modules/vscode).
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
     # My scratch repo, for the tools in it worth installing declaratively.
     # ssh rather than https so it works whether or not the repo is public.
     scratch = {
