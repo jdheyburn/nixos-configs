@@ -22,6 +22,9 @@ in
     settings = {
       outputStyle = "Concise";
 
+      # Retain local chat transcripts for 180 days (default is 30).
+      cleanupPeriodDays = 180;
+
       # Global command allowlist. These are promoted from per-project
       # settings.local.json where they recurred across repos — all read-only
       # or pure-local (inspect / build / format), nothing that mutates remote
