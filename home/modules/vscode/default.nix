@@ -25,7 +25,7 @@ in {
       package = pkgsUnstable.vscode;
 
       # Means I cannot install extensions in vscode GUI, they have to be done via Nix
-      # Might not strictly need it, as `"extensions.autoUpdate" = false;` might be all I need
+      # Might not strictly need it, as `"extensions.autoUpdate" = "off";` might be all I need
       mutableExtensionsDir = false;
 
       profiles.default = {
@@ -158,7 +158,7 @@ in {
 
           # Prevent vscode from automatically updating extensions
           # We manage extensions and their versioning in Nix
-          "extensions.autoUpdate" = false;
+          "extensions.autoUpdate" = "off";
 
           "files.autoSave" = "afterDelay";
           "files.autoSaveDelay" = 1000;
