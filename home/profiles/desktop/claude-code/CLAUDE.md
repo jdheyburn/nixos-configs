@@ -8,6 +8,10 @@
 - Use `ty` for type checking.
 - Use `prek` ([j178/prek](https://github.com/j178/prek)) to manage pre-commit hooks. It is a drop-in, faster replacement for `pre-commit` that reads the same `.pre-commit-config.yaml`. Run hooks with `prek run` and install with `prek install`. The `ruff` hook belongs in this config.
 
+## Project logs
+
+Long-running projects keep a log of work, decisions, and issues in the Obsidian vault at `$HOME/Obsidian/Get-Started/projects/`. Read `projects/README.md` there and write to the matching project when work on it makes a decision, finds or resolves an issue, or finishes a chunk of work.
+
 ## Writing style
 
 Applies to all prose you write: chat replies, commit messages, PR descriptions, docs, comments.
