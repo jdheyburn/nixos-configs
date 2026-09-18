@@ -6,6 +6,7 @@
       "**/.DS_Store"
       "**/.claude/settings.local.json"
       "**/docs/superpowers"
+      "**/.worktrees"
     ];
     settings = {
       user = {
