@@ -13,7 +13,7 @@ Validate the change on a real kind cluster, run the code-review skill, and write
    - PR number given: `gh pr view <n> --json state,title,body,headRefName`. Open PR → check it out in a worktree under `.worktrees/`. Merged PR → review its merge commit on `main`.
    - No number: use the current branch/worktree as-is; find its PR with `gh pr view --json number,title,body`.
 2. **Understand the change.** Read the diff, the PR description, and every issue the PR references (`gh issue view <n>` — the body plus any repro steps or acceptance criteria in comments). Derive (a) the behaviors to exercise — including a scenario reproducing the referenced issue's original failure, so the review confirms the PR resolves what it claims to close — and (b) the cluster shape they need — node count, zone labels, cert-manager, anything the scenarios depend on.
-3. **Kick off code review in the background.** Invoke the `code-review` skill on the target diff at `medium` effort. It runs while the cluster work proceeds; its findings feed steps 6 and 7.
+3. **Kick off static review in the background.** Invoke the `code-review` skill on the target diff at `medium` effort. When the diff touches API types (anything under `api/`, a `*_types.go`, or a generated CRD under `config/crd/`), also invoke the `kubernetes-operator-design` skill on those files. That skill judges the API shape rather than the behaviour: field types and optionality, bool/map/enum choices, status conditions, naming, cross-namespace references, and whether the change belongs in the API at all. Both run while the cluster work proceeds; their findings feed steps 6 and 7.
 4. **Create a dedicated cluster** — always a fresh one, named for this review, so concurrent agents and in-flight work never share a cluster. `make setup-test-e2e KIND_CLUSTER=pr-<n>-review` gives the standard 1 control-plane + 2 workers; hand-write a kind config instead when the change needs more (zone labels, extra workers). If `pr-<n>-review` already exists it is a leftover from a previous run of this same review: `kind delete cluster --name pr-<n>-review` first. The cluster outlives the review — record its name in the report and leave teardown to your human partner.
 
    Then pin a kubeconfig. The ambient kubectl context may be a **production cluster**, and `make install`/`deploy`/`undeploy` invoke kubectl on whatever context is ambient:
@@ -33,14 +33,15 @@ Validate the change on a real kind cluster, run the code-review skill, and write
    make deploy IMG=valkey-operator:pr-<n>
    kubectl -n valkey-operator-system rollout status deploy --timeout=180s
    ```
-6. **Validate.** Design scenarios from the diff: exercise the changed behavior directly (apply CRs, mutate specs, watch conditions and operator logs), including at least one scenario that would fail without the change. When the code-review findings from step 3 arrive, add a scenario for any finding the cluster can confirm or refute. Capture every command and its observed output as you go — the report quotes them verbatim. When done, delete the CRs you created; keep the cluster.
+6. **Validate.** Design scenarios from the diff: exercise the changed behavior directly (apply CRs, mutate specs, watch conditions and operator logs), including at least one scenario that would fail without the change. When the step 3 findings arrive, add a scenario for any finding the cluster can confirm or refute. Capture every command and its observed output as you go — the report quotes them verbatim. When done, delete the CRs you created; keep the cluster.
 7. **Report.** Write `docs/superpowers/reviews/PR-<n>.md` (branch name as filename when there is no PR). Leave it untracked — your human partner stages and commits. Sections, in order:
    1. Verdict
    2. Change summary
    3. Environment — cluster name and config, image tag, commit SHAs
    4. Validation scenarios — per scenario: purpose, commands, observed output, pass/fail
    5. Code review findings
-   6. Follow-ups
+   6. API design findings, when the diff touches API types. State whether the shape is right for the fix, not only whether it works.
+   7. Follow-ups
 
 ## Gotchas
 
