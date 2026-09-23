@@ -1,4 +1,4 @@
-# A second Claude Code install, logged into another work account, that
+# A second Claude Code install, that
 # shares the primary's config. `claude-alt` sets CLAUDE_CONFIG_DIR, so login
 # (Keychain) and .claude.json stay per-account while everything else links
 # back into the primary config dir.
