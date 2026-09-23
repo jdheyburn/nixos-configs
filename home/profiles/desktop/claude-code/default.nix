@@ -137,6 +137,8 @@ in
         "todoist@doist" = true;
       };
 
+      # Allegedly saves 10% tokens: https://www.reddit.com/r/ClaudeAI/comments/1wm8adm/psa_claude_code_turn_off_prompt_suggestions_save/
+      promptSuggestionEnabled = false;
       alwaysThinkingEnabled = true;
       effortLevel = "high";
       tui = "fullscreen";
