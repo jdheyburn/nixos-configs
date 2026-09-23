@@ -186,4 +186,11 @@ in
     source = ./statusline-command.sh;
     executable = true;
   };
+
+  # Quick one-shot questions: `ask why is the sky blue?`, or pipe context in
+  # with `cmd | ask explain this`. noglob stops `?` and `*` being expanded.
+  programs.zsh.initContent = ''
+    _claude_query() { claude -p --model sonnet --effort low "$*" }
+  '';
+  programs.zsh.shellAliases.ask = "noglob _claude_query";
 }
