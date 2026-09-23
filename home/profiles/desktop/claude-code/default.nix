@@ -90,9 +90,9 @@ in
 
         # superpowers SDD writes its plans, task briefs, and progress files under
         # a .superpowers/ scratch dir (at any depth, incl. inside worktrees).
-        # Scoped to that dir only — never touches source. Write covers file
-        # creation; Edit covers the skill's later updates to those files.
-        "Write(**/.superpowers/**)"
+        # Scoped to that dir only — never touches source. An Edit() rule covers
+        # every file-editing tool, Write included; a Write() rule matches
+        # nothing and Claude Code warns about it on startup.
         "Edit(**/.superpowers/**)"
       ];
 
@@ -140,7 +140,27 @@ in
       # Allegedly saves 10% tokens: https://www.reddit.com/r/ClaudeAI/comments/1wm8adm/psa_claude_code_turn_off_prompt_suggestions_save/
       promptSuggestionEnabled = false;
       alwaysThinkingEnabled = true;
+
+      # Legacy as of v2.1.251
       effortLevel = "high";
+      #
+      # Every effort-capable model in the account's catalog is pinned so a
+      # change to a model's own default can't move it. Claude Code matches each
+      # entry to that model's alias, date-suffixed, [1m] and provider-specific
+      # IDs, so the canonical name is enough. Haiku 4.5 is absent: it has no
+      # effort control. Opus 5.5 defaults to medium and Opus 4.7 to xhigh; the
+      # rest already default to high.
+      modelSettings = {
+        "claude-opus-5-5".effortLevel = "high";
+        "claude-fable-5-1".effortLevel = "high";
+        "claude-sonnet-5".effortLevel = "high";
+        "claude-opus-5".effortLevel = "high";
+        "claude-fable-5".effortLevel = "high";
+        "claude-opus-4-8".effortLevel = "high";
+        "claude-opus-4-7".effortLevel = "high";
+        "claude-opus-4-6".effortLevel = "high";
+        "claude-sonnet-4-6".effortLevel = "high";
+      };
       tui = "fullscreen";
       voice = {
         enabled = true;
