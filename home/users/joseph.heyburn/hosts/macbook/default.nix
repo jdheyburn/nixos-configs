@@ -1,0 +1,5 @@
+{ ... }: {
+  imports = [
+    ./claude-alt.nix
+  ];
+}
