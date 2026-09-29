@@ -1,0 +1,36 @@
+# .github/workflows/update-tooling.yml
+# Checks the `just update` tooling and the packages it bumps.
+name: update-tooling
+on:
+  pull_request:
+    paths: &paths
+      - .github/workflows/update-tooling.yml
+      - Justfile
+      - flake.nix
+      - flake.lock
+      - update/**
+      - home/users/joseph.heyburn/windmill-cli/**
+      - home/modules/beets/beetcamp/**
+  push:
+    branches: [main]
+    paths: *paths
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04-arm   # native aarch64, public repo
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: jdheyburn-joannet
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+
+      # just and uv come from the flake's locked nixpkgs, not the registry.
+      - name: Run update/ tests
+        run: nix shell --inputs-from . nixpkgs#just nixpkgs#uv --command just test
+
+      - name: Build hand-maintained packages
+        run: nix build .#windmill-cli .#beetcamp --print-build-logs
