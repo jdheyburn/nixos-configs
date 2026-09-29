@@ -7,6 +7,7 @@ in
 {
   imports = [
     ./claude-code
+    ./herdr
   ];
 
   home.packages = with pkgs; [

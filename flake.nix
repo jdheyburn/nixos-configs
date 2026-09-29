@@ -30,6 +30,10 @@
 
     flake-utils.url = "github:numtide/flake-utils";
 
+    # Terminal multiplexer for coding agents. Upstream's flake rather than
+    # nixpkgs, which lags their frequent releases. Builds from source.
+    herdr.url = "github:herdrdev/herdr/v0.9.3";
+
     home-manager.url = "github:nix-community/home-manager/release-26.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
