@@ -217,13 +217,21 @@ deploy --keep-result --auto-rollback false --magic-rollback false --activation-t
 
 ### Upgrading to latest versions
 
-1. Update nix flake
+1. From the repo root (inside `nix develop`, or prefix with `nix run nixpkgs#just --`), run:
 
     ```bash
-    nix flake upgrade
+    just update
     ```
 
-2. Check for anywhere `version` is being hardcoded and update them
+    This bumps the flake inputs, the hand-maintained packages (windmill-cli, beetcamp) and the pinned container image tags (dashy, lubelogger). It edits the working tree only. Run `just --list` for the individual recipes, and `just update-containers --dry-run` to preview image bumps.
+
+2. Review `git diff`, build what changed (e.g. `nix build .#windmill-cli .#beetcamp`), then commit.
+
+3. These are pinned on purpose and `just update` leaves them alone. Bump them by hand when the remote side moves:
+
+    - `terraform_1_11_3` in `home/users/joseph.heyburn/default.nix`
+    - `kubectl_1_33_6` in `home/modules/kubernetes-client/default.nix`
+    - `velero` 1.13.0 in `home/users/joseph.heyburn/velero/default.nix`
 
 ### Adding secrets
 

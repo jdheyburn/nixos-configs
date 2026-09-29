@@ -9,14 +9,14 @@
 # that beets can discover as a plugin
 python3.pkgs.buildPythonPackage rec {
   pname = "beetcamp";
-  version = "0.24.3";
+  version = "0.25.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "snejus";
     repo = "beetcamp";
     rev = version;
-    hash = "sha256-kKFYuTJys4j67+cak2PDmn6z2vNzVitFXIZXy2bClY8=";
+    hash = "sha256-uNt6c009rb5CYERFdryoZKigBK8aE/rC+nsOLCRTFts=";
   };
 
   build-system = [ python3.pkgs.poetry-core ];
