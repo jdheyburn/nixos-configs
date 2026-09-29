@@ -19,3 +19,7 @@ update-nix-pkgs:
 # Bump pinned OCI image tags (dashy, lubelogger). Pass --dry-run to preview.
 update-containers *ARGS:
     uv run update/containers.py {{ARGS}}
+
+# Run the update/ script tests
+test:
+    uv run --with pytest pytest update/

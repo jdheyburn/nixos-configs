@@ -291,6 +291,9 @@
                   agenix.packages.${system}.default
                   deploy-rs.packages.${system}.default
                   nixpkgs.legacyPackages.${system}.nixpkgs-fmt
+                  # Justfile recipes; update/*.py runs under uv
+                  nixpkgs.legacyPackages.${system}.just
+                  nixpkgs.legacyPackages.${system}.uv
                 ];
               };
             };
