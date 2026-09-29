@@ -18,6 +18,14 @@ latest="$(nix run nixpkgs#curl -- -fsSL https://registry.npmjs.org/windmill-cli 
   | nix run nixpkgs#jq -- -r '."dist-tags".latest')"
 echo "    latest = ${latest}"
 
+# Regenerating the lockfile re-resolves transitive deps to their newest
+# in-range versions, so skip the rest when the pin is already current.
+current="$(sed -nE 's/^[[:space:]]*version = "([^"]+)";/\1/p' "$pkg_dir/package.nix" | head -n1)"
+if [[ "$current" == "$latest" ]]; then
+  echo "    already at ${current}, nothing to do"
+  exit 0
+fi
+
 echo "==> Regenerating package-lock.json for windmill-cli@${latest}"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT

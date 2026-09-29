@@ -10,6 +10,7 @@ result
 # nix-direnv cache
 .direnv/
 
-# Python bytecode cache (from update/ scripts)
+# Python bytecode and pytest caches (from update/ scripts)
 __pycache__/
+.pytest_cache/
 
