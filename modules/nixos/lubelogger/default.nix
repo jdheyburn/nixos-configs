@@ -5,7 +5,7 @@ with lib;
 
 let
   dataDir = "/var/lib/lubelogger";
-  version = "1.7.0";
+  version = "1.7.3";
   cfg = config.modules.lubelogger;
   port = catalog.services.lubelogger.port;
 in
