@@ -75,6 +75,8 @@
 
   # Allow sudo using fingerprint authentication
   security.pam.services.sudo_local.touchIdAuth = true;
+  # Reattach to the GUI session so Touch ID works inside multiplexers (herdr, tmux)
+  security.pam.services.sudo_local.reattach = true;
 
   system.defaults = {
     CustomUserPreferences = {
