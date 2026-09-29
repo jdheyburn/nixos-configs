@@ -1,6 +1,6 @@
 { buildNpmPackage, fetchurl }:
 let
-  version = "1.792.2";
+  version = "1.820.0";
 in
 # `windmill-cli` isn't in nixpkgs (only the `windmill` server is), so build
 # the npm package ourselves. `npm install -g windmill-cli` provides the
@@ -13,7 +13,7 @@ buildNpmPackage {
 
   src = fetchurl {
     url = "https://registry.npmjs.org/windmill-cli/-/windmill-cli-${version}.tgz";
-    hash = "sha256-1g/sU0558j1o+OQamOaHZWX6u+PZoG/G8/X6eJjM8Z4=";
+    hash = "sha256-80EODTmk7Mpipbk94cVBYqTgtwg1S3FP5pnKtbL5yxk=";
   };
 
   # The published npm tarball ships no lockfile; supply the one generated with
@@ -24,7 +24,7 @@ buildNpmPackage {
     cp ${./package-lock.json} package-lock.json
   '';
 
-  npmDepsHash = "sha256-/yBt6hAaFXYO4jaSY6xOQJcd0JSKWpXNt5Ihez+WtZk=";
+  npmDepsHash = "sha256-Ikt+60dZubCxgVK0dxd1hquGr6IdXASprUZK/lZh1Go=";
 
   # esbuild's postinstall downloads a platform binary over the network, which
   # the build sandbox forbids. Skipping install scripts is safe: npm still
