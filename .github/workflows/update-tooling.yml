@@ -23,11 +23,6 @@ jobs:
 
       - uses: DeterminateSystems/nix-installer-action@main
 
-      - uses: cachix/cachix-action@v15
-        with:
-          name: jdheyburn-joannet
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-
       # just and uv come from the flake's locked nixpkgs, not the registry.
       - name: Run update/ tests
         run: nix shell --inputs-from . nixpkgs#just nixpkgs#uv --command just test
