@@ -32,6 +32,10 @@ in
     executable = true;
   };
 
+  # Teaches Claude to drive herdr from inside a pane (splits, reading output,
+  # waiting on other agents). Same release as the pinned binary.
+  programs.claude-code.skills.herdr = "${inputs.herdr}/skills/herdr";
+
   programs.claude-code.settings.hooks.SessionStart = [
     {
       matcher = "^(startup|resume|clear|compact|fork)$";
