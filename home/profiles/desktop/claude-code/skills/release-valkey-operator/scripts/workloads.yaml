@@ -1,0 +1,71 @@
+# Upgrade-gate workloads in namespace `rel`. Check each field exists in the
+# previous release's API before applying.
+#   plain: 3x1, PVC persistence, zone spread per shard
+#   tlsc:  3x1, TLS, no persistence, server cert with DNS SANs only
+# Both carry ACL user app/apppass for the loader.
+apiVersion: v1
+kind: Namespace
+metadata: {name: rel}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata: {name: selfsigned, namespace: rel}
+spec: {selfSigned: {}}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata: {name: rel-ca, namespace: rel}
+spec: {isCA: true, commonName: rel-ca, secretName: rel-ca, privateKey: {algorithm: ECDSA, size: 256}, issuerRef: {name: selfsigned, kind: Issuer}}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata: {name: rel-ca, namespace: rel}
+spec: {ca: {secretName: rel-ca}}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata: {name: tlsc-server, namespace: rel}
+spec:
+  secretName: tlsc-server
+  commonName: valkey-tlsc.rel.svc.cluster.local
+  dnsNames: [valkey-tlsc.rel.svc.cluster.local, "*.valkey-tlsc.rel.svc.cluster.local"]
+  usages: [server auth, client auth]
+  issuerRef: {name: rel-ca, kind: Issuer}
+---
+apiVersion: v1
+kind: Secret
+metadata: {name: app-user, namespace: rel}
+stringData: {pw: apppass}
+---
+apiVersion: valkey.io/v1alpha1
+kind: ValkeyCluster
+metadata: {name: plain, namespace: rel}
+spec:
+  shards: 3
+  replicas: 1
+  persistence: {size: 256Mi}
+  scheduling:
+    zone:
+      spread:
+        shard: {mode: Required}
+  users:
+  - name: app
+    enabled: true
+    passwordSecret: {name: app-user, keys: [pw]}
+    permissions: "+@all -@admin -@dangerous ~* &*"
+---
+apiVersion: valkey.io/v1alpha1
+kind: ValkeyCluster
+metadata: {name: tlsc, namespace: rel}
+spec:
+  shards: 3
+  replicas: 1
+  networking:
+    tls:
+      certificates:
+        server: {secretName: tlsc-server}
+  users:
+  - name: app
+    enabled: true
+    passwordSecret: {name: app-user, keys: [pw]}
+    permissions: "+@all -@admin -@dangerous ~* &*"

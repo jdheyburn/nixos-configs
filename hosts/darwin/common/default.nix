@@ -139,6 +139,8 @@
       "com.apple.swipescrolldirection" = false;
       # Set the speed of the cursor on the trackpad
       "com.apple.trackpad.scaling" = 2.0;
+      # Trackpad > More Gestures > Swipe between pages: Off
+      AppleEnableSwipeNavigateWithScrolls = false;
       # Use dark mode
       AppleInterfaceStyle = "Dark";
     };

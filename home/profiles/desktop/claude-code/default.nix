@@ -121,6 +121,14 @@ in
           source = "github";
           repo = "doist/todoist-mcp";
         };
+
+        # Every's writing toolbox (EveryInc/compound-writing). A full plugin
+        # with skills, subagents and commands, so installed via its own
+        # marketplace instead of vendoring individual skills.
+        compound-writing.source = {
+          source = "github";
+          repo = "EveryInc/compound-writing";
+        };
       };
 
       statusLine = {
@@ -135,6 +143,7 @@ in
         "ruby-lsp@claude-plugins-official" = true;
         "obsidian@obsidian-skills" = true;
         "todoist@doist" = true;
+        "compound-writing@compound-writing" = true;
       };
 
       # Allegedly saves 10% tokens: https://www.reddit.com/r/ClaudeAI/comments/1wm8adm/psa_claude_code_turn_off_prompt_suggestions_save/
@@ -177,6 +186,7 @@ in
       # Repo-local skills vendored under ./skills/<name>/SKILL.md.
       kubernetes-operator-design = ./skills/kubernetes-operator-design;
       review-valkey-operator-pr = ./skills/review-valkey-operator-pr;
+      release-valkey-operator = ./skills/release-valkey-operator;
       implement-issue = ./skills/implement-issue;
       project-log = ./skills/project-log;
     };
