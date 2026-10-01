@@ -2,6 +2,10 @@
 default:
     @just --list
 
+# Apply the nix-darwin config to this Mac (pass host=macbook on the work laptop)
+switch host="paddys":
+    sudo darwin-rebuild switch --flake .#{{host}}
+
 # Full update: flake inputs, then hand-maintained packages. Review the diff before committing.
 update: update-flake update-nix-pkgs update-containers
 

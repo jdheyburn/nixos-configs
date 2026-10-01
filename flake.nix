@@ -210,7 +210,8 @@
               modules = (mkUserImports user.name null "x86_64-linux");
             };
           })
-          # Currently hardcoded to jdheyburn, for paddys
+          # Hardcoded to jdheyburn. Built for the old Linux paddys host, which
+          # is retired; the paddys name now belongs to the MacBook.
           [ catalog.users.jdheyburn ]);
 
         # macOS installations
