@@ -17,11 +17,6 @@
 
   services.openssh.enable = true;
 
-  # Below key may be old paddys one (before NixOS)
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIZdFaYhR7tRI5KyV3XG+jWb0CAT86QYdleQZCVBjUSY"
-  ];
-
   ###############################################################################
   ## Modules
   ###############################################################################

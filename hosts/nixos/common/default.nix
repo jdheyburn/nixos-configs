@@ -129,7 +129,6 @@
       openssh.authorizedKeys.keys = [
         # Not sure what below is for
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIj0aUriXCgY/wNnYMvGoXajOqAr3EXdu7AeGA23s8ZG"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMmocucDbkSd6A2xCE4JTQXDZSuOQH3p3c9khu1/0LIe jdheyburn@paddys.joannet.casa"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILe14GNyaLe1K09LMSdj1RuD3U6HHSJAZ7rBF40N2C6m jdheyburn@dee"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEWeXT9AHOdW+DO8vWnx/QnYBPb79wK0ep4V9cX+vOtB jdheyburn@mbp"
       ];

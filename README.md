@@ -40,7 +40,7 @@ hosts
 ├── darwin
 │   ├── common
 │   ├── macbook
-│   └── mbp
+│   └── paddys
 └── nixos
     ├── charlie
     ├── common
@@ -99,7 +99,7 @@ home/users/jdheyburn
 ├── default.nix
 └── hosts
     ├── dee
-    └── mbp
+    └── paddys
 ```
 
 ### lib
@@ -146,7 +146,7 @@ Services is a mapping of service name to service attributes, it can accept:
   - hetzner server auction that comes and goes
 - macbook
   - MBP with nix-darwin
-- mbp
+- paddys
   - my own MBP for home
 
 Hosts are defined in `nodes`, which can have these attributes:

@@ -12,7 +12,6 @@ let
   jdheyburn = [
     # Not sure what below is
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIozTzNnp+KQAwlMUdJuIcvuQmM+Dz5wlB7H15Qx3iZT"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIZdFaYhR7tRI5KyV3XG+jWb0CAT86QYdleQZCVBjUSY jdheyburn@paddys.joannet.casa"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEWeXT9AHOdW+DO8vWnx/QnYBPb79wK0ep4V9cX+vOtB jdheyburn@mbp"
   ];
   users = jdheyburn;
