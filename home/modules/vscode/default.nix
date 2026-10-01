@@ -199,6 +199,7 @@ in {
           # Do not close tabs if you didn't edit them
           "workbench.editor.enablePreview" = false;
           "workbench.startupEditor" = "none";
+          "workbench.sideBar.location" = "left";
 
           "claudeCode.disableLoginPrompt" = true;
           "claudeCode.preferredLocation"  = "sidebar";
