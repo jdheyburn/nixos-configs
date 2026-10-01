@@ -25,6 +25,9 @@ in
       # Retain local chat transcripts for 180 days (default is 30).
       cleanupPeriodDays = 180;
 
+      # No Co-Authored-By trailer on commits, no "Generated with" line on PRs.
+      attribution = { commit = ""; pr = ""; };
+
       # Global command allowlist. These are promoted from per-project
       # settings.local.json where they recurred across repos — all read-only
       # or pure-local (inspect / build / format), nothing that mutates remote
