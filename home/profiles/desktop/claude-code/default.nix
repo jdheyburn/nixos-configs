@@ -152,6 +152,7 @@ in
       # Allegedly saves 10% tokens: https://www.reddit.com/r/ClaudeAI/comments/1wm8adm/psa_claude_code_turn_off_prompt_suggestions_save/
       promptSuggestionEnabled = false;
       alwaysThinkingEnabled = true;
+      model = "opus[1m]";
 
       # Legacy as of v2.1.251
       effortLevel = "high";
