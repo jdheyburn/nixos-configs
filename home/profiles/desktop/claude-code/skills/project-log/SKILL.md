@@ -5,11 +5,11 @@ description: Use when asked to update, write, or catch up the project log (e.g. 
 
 # Updating the project log
 
-Long-running projects keep their history in the Obsidian vault at `~/Obsidian/Get-Started/projects/`. `projects/README.md` is the source of truth for layout, note templates, and the supersede and amend rules. This skill is the procedure for bringing a project up to date from the current session.
+Long-running projects keep their history in the Obsidian vault at `~/Obsidian/Get-Started/agent/projects/`. `agent/projects/README.md` is the source of truth for layout, note templates, and the supersede and amend rules. This skill is the procedure for bringing a project up to date from the current session.
 
 ## Steps
 
-1. **Read the conventions.** Read `~/Obsidian/Get-Started/projects/README.md` in full, even when you think you know it. Done when you have read it this session.
+1. **Read the conventions.** Read `~/Obsidian/Get-Started/agent/projects/README.md` in full, even when you think you know it. Done when you have read it this session.
 2. **Pick the project.** Follow "Picking a project" in the README. If no project matches, ask the user and stop until they answer.
 3. **Read the project's current state.** Read `_index.md`, the last few entries of `log.md`, every open issue, and each decision the session touched. Done when you can say, for each thing the session changed, whether a note for it already exists.
 4. **Inventory the session.** Go through the whole conversation, including anything compacted into a summary, and list each item under one of:

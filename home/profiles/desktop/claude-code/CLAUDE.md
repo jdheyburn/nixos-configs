@@ -10,7 +10,7 @@
 
 ## Project logs
 
-Long-running projects keep a log of work, decisions, and issues in the Obsidian vault at `$HOME/Obsidian/Get-Started/projects/`. Read `projects/README.md` there and write to the matching project when work on it makes a decision, finds or resolves an issue, or finishes a chunk of work.
+Long-running projects keep a log of work, decisions, and issues in the Obsidian vault at `$HOME/Obsidian/Get-Started/agent/projects/`. Read `agent/projects/README.md` there and write to the matching project when work on it makes a decision, finds or resolves an issue, or finishes a chunk of work.
 
 ## Writing style
 
