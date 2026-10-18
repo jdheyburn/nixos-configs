@@ -32,8 +32,7 @@
       rcloneConfigFile = config.age.secrets."rclone.conf".path;
       missingAttachmentsHealthcheck =
         "https://healthchecks.${catalog.domain.service}/ping/0453e7de-cfc6-4460-96bf-7b5a4143b869";
-      # Set after obsidian-backfill has run
-      # history.enable = true;
+      history.enable = true;
     };
     small-files = {
       enable = true;

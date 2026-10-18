@@ -42,9 +42,10 @@ def ls_tree(git_dir: Path) -> list[str]:
     return [p for p in out.split("\0") if p]
 
 
-def run_main(vault: Vault, git_dir: Path, tmp_path: Path, ignored: str = "") -> int:
+def run_main(vault: Vault, git_dir: Path, tmp_path: Path, ignored: str | None = "") -> int:
     ignore_file = tmp_path / "ignored"
-    ignore_file.write_text(ignored)
+    if ignored is not None:
+        ignore_file.write_text(ignored)
     return main(
         [
             "--vault", str(vault.root),
@@ -140,6 +141,13 @@ def test_main_pings_fail_with_missing_list(vault: Vault, git_dir: Path, tmp_path
 def test_main_respects_ignore_file(vault: Vault, git_dir: Path, tmp_path: Path, pings: list) -> None:
     vault({"a.md": "![[gone.png]] ![[old.png]]"})
     run_main(vault, git_dir, tmp_path, ignored="old.png\n\n")
+    assert pings == [(URL, False, "a.md: gone.png\n")]
+
+
+def test_main_without_ignore_file(vault: Vault, git_dir: Path, tmp_path: Path, pings: list) -> None:
+    # The ignore file lives on the host, outside the repo, and may not exist yet
+    vault({"a.md": "![[gone.png]]"})
+    assert run_main(vault, git_dir, tmp_path, ignored=None) == 0
     assert pings == [(URL, False, "a.md: gone.png\n")]
 
 

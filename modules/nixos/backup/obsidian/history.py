@@ -97,11 +97,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--vault", type=Path, required=True)
     parser.add_argument("--git-dir", type=Path, required=True)
     parser.add_argument("--exclude-file", type=Path, required=True)
-    parser.add_argument("--ignore-file", type=Path, required=True)
+    parser.add_argument("--ignore-file", type=Path, required=True, help="known-missing targets, one per line; may be absent")
     parser.add_argument("--healthcheck", required=True)
     args = parser.parse_args(argv)
 
-    ignored = {line.strip() for line in args.ignore_file.read_text().splitlines() if line.strip()}
+    lines = args.ignore_file.read_text().splitlines() if args.ignore_file.exists() else []
+    ignored = {line.strip() for line in lines if line.strip()}
 
     ensure_repo(args.git_dir, args.exclude_file)
     missing = missing_attachments(args.vault, ignored)

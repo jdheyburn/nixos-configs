@@ -29,8 +29,9 @@ let
   };
   python = "${pkgs.python3}/bin/python3 -E -s";
 
-  ignoreFile = pkgs.writeText "obsidian-ignored-missing-attachments"
-    (concatLines cfg.ignoredMissingAttachments);
+  # Attachment targets known to be missing, one per line. Kept on the host
+  # because the names come from the vault and this repo is public.
+  ignoreFile = "${dataDir}/ignored-missing-attachments";
 
   obsidian-history = pkgs.writeShellScriptBin "obsidian-history" ''
     export PATH=${makeBinPath [ pkgs.git ]}:$PATH
@@ -69,12 +70,6 @@ in
       type = types.nullOr types.str;
       default = null;
       description = "Healthchecks ping URL for the missing-attachment check.";
-    };
-
-    ignoredMissingAttachments = mkOption {
-      type = types.listOf types.str;
-      default = [ ];
-      description = "Attachment targets already known to be missing, which don't alert.";
     };
   };
 
