@@ -28,7 +28,7 @@
 
   modules.backup = {
     obsidian = {
-      enable = true;
+      enable = false;
       rcloneConfigFile = config.age.secrets."rclone.conf".path;
     };
     small-files = {
