@@ -168,12 +168,6 @@
       modules = [ "minio" ];
     };
 
-    obsidian = {
-      host = nodes.charlie;
-      port = 3050;
-      modules = [ "backup.obsidian" ];
-    };
-
     paperless = {
       host = nodes.charlie;
       port = 28981;

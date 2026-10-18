@@ -26,6 +26,6 @@ update-nix-pkgs:
 update-containers *ARGS:
     uv run update/containers.py {{ARGS}}
 
-# Run the update/ script tests
+# Run the update/ and Obsidian backup script tests
 test:
-    uv run --with pytest pytest update/
+    uv run --with pytest pytest update/ modules/nixos/backup/obsidian/
