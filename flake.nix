@@ -44,6 +44,14 @@
       flake = false;
     };
 
+    # Readwise's agent skills. Only the skills are taken; the repo's plugin
+    # also bundles the Readwise MCP server, which the claude.ai connector
+    # already provides.
+    readwise-skills = {
+      url = "github:readwiseio/readwise-skills";
+      flake = false;
+    };
+
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
@@ -199,6 +207,7 @@
           let pkgs = nixpkgs.legacyPackages.${system}; in {
             windmill-cli = pkgs.callPackage ./home/users/joseph.heyburn/windmill-cli/package.nix { };
             beetcamp     = pkgs.callPackage ./home/modules/beets/beetcamp { };
+            readwise-cli = pkgs.callPackage ./home/profiles/desktop/readwise/package.nix { };
           });
 
         # home-manager standalone installations

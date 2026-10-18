@@ -117,14 +117,6 @@ in
           repo = "kepano/obsidian-skills";
         };
 
-        # Todoist MCP integration (doist/todoist-mcp). The marketplace declares
-        # its own name as "doist" in its manifest, so that's the key here and
-        # the suffix on the plugin below, not the repo name.
-        doist.source = {
-          source = "github";
-          repo = "doist/todoist-mcp";
-        };
-
         # Every's writing toolbox (EveryInc/compound-writing). A full plugin
         # with skills, subagents and commands, so installed via its own
         # marketplace instead of vendoring individual skills.
@@ -145,7 +137,6 @@ in
         "clangd-lsp@claude-plugins-official" = true;
         "ruby-lsp@claude-plugins-official" = true;
         "obsidian@obsidian-skills" = true;
-        "todoist@doist" = true;
         "compound-writing@compound-writing" = true;
       };
 

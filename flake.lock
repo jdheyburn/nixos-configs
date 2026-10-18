@@ -403,6 +403,22 @@
         "type": "github"
       }
     },
+    "readwise-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781846831,
+        "narHash": "sha256-237UfiTbQXEnrxPeGHZTVbhTaGU4zBk2N9AaG3s5Fb4=",
+        "owner": "readwiseio",
+        "repo": "readwise-skills",
+        "rev": "2d1ce9627c611d24f510dfc2e05a123fa509d2f6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "readwiseio",
+        "repo": "readwise-skills",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -418,6 +434,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_7",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "readwise-skills": "readwise-skills",
         "scratch": "scratch"
       }
     },

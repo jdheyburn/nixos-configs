@@ -15,10 +15,11 @@ update: update-flake update-nix-pkgs update-containers
 update-flake:
     nix flake update --refresh
 
-# Bump hand-maintained Nix source packages (windmill-cli, beetcamp)
+# Bump hand-maintained Nix source packages (windmill-cli, beetcamp, readwise-cli)
 update-nix-pkgs:
     ./update/windmill-cli.sh
     nix run nixpkgs#nix-update -- --flake beetcamp
+    nix run nixpkgs#nix-update -- --flake readwise-cli
 
 # Bump pinned OCI image tags (dashy, lubelogger). Pass --dry-run to preview.
 update-containers *ARGS:
