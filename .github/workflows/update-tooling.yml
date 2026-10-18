@@ -11,6 +11,7 @@ on:
       - update/**
       - home/users/joseph.heyburn/windmill-cli/**
       - home/modules/beets/beetcamp/**
+      - home/profiles/desktop/readwise/package.nix
   push:
     branches: [main]
     paths: *paths
@@ -28,4 +29,4 @@ jobs:
         run: nix shell --inputs-from . nixpkgs#just nixpkgs#uv --command just test
 
       - name: Build hand-maintained packages
-        run: nix build .#windmill-cli .#beetcamp --print-build-logs
+        run: nix build .#windmill-cli .#beetcamp .#readwise-cli --print-build-logs

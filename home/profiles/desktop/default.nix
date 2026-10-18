@@ -8,6 +8,7 @@ in
   imports = [
     ./claude-code
     ./herdr
+    ./readwise
   ];
 
   home.packages = with pkgs; [
