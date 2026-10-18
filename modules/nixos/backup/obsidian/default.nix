@@ -25,7 +25,7 @@ let
 
   scripts = fileset.toSource {
     root = ./.;
-    fileset = fileset.unions [ ./vault.py ./history.py ./backfill.py ./vault-exclude ];
+    fileset = fileset.unions [ ./vault.py ./history.py ./backfill.py ./mirror.py ./vault-exclude ];
   };
   python = "${pkgs.python3}/bin/python3 -E -s";
 
@@ -41,6 +41,13 @@ let
       --exclude-file ${scripts}/vault-exclude \
       --ignore-file ${ignoreFile} \
       --healthcheck ${toString cfg.missingAttachmentsHealthcheck} \
+      "$@"
+  '';
+
+  obsidian-sync-check = pkgs.writeShellScriptBin "obsidian-sync-check" ''
+    exec ${python} ${scripts}/mirror.py \
+      --state-dir ${dataDir}/.config/obsidian-headless/sync \
+      --healthcheck ${toString cfg.staleMirrorHealthcheck} \
       "$@"
   '';
 
@@ -70,6 +77,12 @@ in
       type = types.nullOr types.str;
       default = null;
       description = "Healthchecks ping URL for the missing-attachment check.";
+    };
+
+    staleMirrorHealthcheck = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Healthchecks ping URL, failed when the mirror hasn't synced for 15 minutes.";
     };
   };
 
@@ -136,6 +149,23 @@ in
         UMask = "0027";
         ExecStart = getExe obsidian-history;
       };
+    };
+
+    systemd.services.obsidian-sync-check = mkIf (cfg.staleMirrorHealthcheck != null) {
+      description = "Alert when the Obsidian Sync mirror goes stale";
+      wants = [ "network-online.target" ];
+      after = [ "network-online.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        User = "obsidian";
+        Group = "obsidian";
+        ExecStart = getExe obsidian-sync-check;
+      };
+    };
+
+    systemd.timers.obsidian-sync-check = mkIf (cfg.staleMirrorHealthcheck != null) {
+      wantedBy = [ "timers.target" ];
+      timerConfig.OnCalendar = "*:0/10";
     };
 
     # Five minutes before restic's hourly run, so each snapshot has the latest commit
