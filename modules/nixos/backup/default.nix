@@ -2,6 +2,6 @@
 
 {
 
-  imports = [ ./obsidian.nix ./small-files.nix ./usb.nix ];
+  imports = [ ./obsidian ./small-files.nix ./usb.nix ];
 
 }

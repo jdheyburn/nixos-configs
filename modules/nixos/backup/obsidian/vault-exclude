@@ -1,0 +1,10 @@
+*
+!*/
+!*.md
+!*.canvas
+!*.base
+!/.obsidian/*.json
+/.obsidian/workspace*.json
+!/.obsidian/plugins/*/manifest.json
+!/.obsidian/plugins/*/data.json
+/.trash/

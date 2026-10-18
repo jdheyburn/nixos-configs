@@ -28,8 +28,13 @@
 
   modules.backup = {
     obsidian = {
-      enable = false;
+      enable = true;
       rcloneConfigFile = config.age.secrets."rclone.conf".path;
+      missingAttachmentsHealthcheck =
+        "https://healthchecks.${catalog.domain.service}/ping/0453e7de-cfc6-4460-96bf-7b5a4143b869";
+      staleMirrorHealthcheck =
+        "https://healthchecks.${catalog.domain.service}/ping/2d9463f8-b671-4622-891e-bb1ca65009cb";
+      history.enable = true;
     };
     small-files = {
       enable = true;
@@ -44,7 +49,8 @@
   modules.lubelogger.enable = true;
   modules.monitoring.enable = true;
   modules.nfs-client.enable = true;
-  modules.paperless.enable = true;
+  # Off until it's onboarded properly
+  modules.paperless.enable = false;
   modules.prometheusStack = {
     enable = true;
     blackbox.enable = true;
