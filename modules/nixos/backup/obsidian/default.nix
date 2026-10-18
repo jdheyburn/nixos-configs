@@ -106,7 +106,8 @@ in
       config.safe.directory = [ historyDir ];
     };
 
-    environment.systemPackages = [ obsidian-backfill ]
+    # ob is needed by hand for login, sync-setup and sync-status
+    environment.systemPackages = [ pkgsUnstable.obsidian-headless obsidian-backfill ]
       ++ optional cfg.history.enable obsidian-history;
 
     systemd.services.obsidian-sync = {
