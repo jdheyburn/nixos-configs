@@ -18,6 +18,7 @@ spec:
     image: python:3.12-slim
     command: [sh, -c, "pip install -q --root-user-action=ignore valkey==6.1.0 && python /app/loader.py write"]
     env: [{name: VK_HOST, value: valkey-$c.$ns.svc.cluster.local}, {name: VK_TLS, value: "$tls"}]
+    resources: {requests: {cpu: 100m, memory: 128Mi}, limits: {memory: 512Mi}}
     volumeMounts: [{name: app, mountPath: /app}, {name: data, mountPath: /data}, {name: tls, mountPath: /tls}]
   volumes:
   - {name: app, configMap: {name: loader}}

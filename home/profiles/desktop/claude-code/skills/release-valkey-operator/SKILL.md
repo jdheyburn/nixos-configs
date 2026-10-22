@@ -9,7 +9,7 @@ argument-hint: <version, e.g. 0.8.0> [phase]
 
 Take `vX.Y.Z` from a **candidate** commit to a published release and its Helm chart PRs, in four phases. Start at the phase the request names ("draft notes for 0.7.1" starts at phase 3), but always run phase 1 first: every later phase reads its change table.
 
-The release is a **minor** when Z is 0 and a **patch** otherwise. The two differ only in how much readiness testing runs.
+The release is a **minor** when Z is 0 and a **patch** otherwise. The two differ only in how much readiness testing runs. When the request names no version, propose one from the change table at the end of phase 1: a minor when the table has a `feature` or `api` change, a patch otherwise.
 
 ## Ground rules
 
@@ -31,18 +31,19 @@ The release is a **minor** when Z is 0 and a **patch** otherwise. The two differ
    - `k8s-min`: the minimum Kubernetes version in `docs/quickstart.md`.
    - `feature`: new user-facing behaviour.
 
-Phase 1 is done when you have the candidate SHA, the previous tag, and a change table (PR, title, closes, areas) that the user has seen.
+Phase 1 is done when you have the candidate SHA, the previous tag, a change table (PR, title, closes, areas) that the user has seen, and a version the user has confirmed.
 
 ## Phase 2: Readiness
 
 Read [`references/readiness.md`](references/readiness.md) before planning. It holds the cluster setup, the **upgrade gate**, the scenario matrix and the known pitfalls.
 
 1. Start the static review subagent in the background (prompt in the reference).
-2. Write the test plan: the upgrade gate, plus the scenarios the change table's areas call for. Show it to the user before running anything.
+2. Write the test plan: the upgrade gate, plus the scenarios the change table's areas call for. Show it to the user before running anything. When the static review returns, give each of its hypotheses a check: inside a matrix row when one covers it, else a row of its own (H1, H2, ...), and show the user the added rows.
 3. Run the plan on kind. Record each scenario's commands, observed output and verdict as you go.
-4. Publish a findings artifact (layout in the reference).
-5. For each **blocker**, draft a bug issue using the repo's template. Show the drafts; the user decides which block the release and when each is posted.
-6. When blocker fixes merge, redo phase 1 and rerun the upgrade gate, plus any scenario the fix touches, against the new candidate. Update the artifact.
+4. Classify each failure. List the open data-safety bugs first (`gh issue list --label data-safety --state open`): a failure that matches one is a **known issue** for the release notes, and one that matches none is a candidate **blocker**.
+5. Publish a findings artifact (layout in the reference).
+6. For each **blocker**, draft a bug issue using the repo's template. Show the drafts; the user decides which block the release and when each is posted. The template is a YAML form, so `gh issue create --body-file` takes a body you build from its headings, starting with its pre-flight checkboxes ticked (`- [x]`).
+7. When blocker fixes merge, redo phase 1 and rerun the upgrade gate, plus any scenario the fix touches, against the new candidate. Update the artifact.
 
 Phase 2 is done when every planned scenario has a verdict backed by evidence, and the user has ruled on every blocker.
 
@@ -66,6 +67,8 @@ Phase 4 is done when both chart PRs are open, `helm lint` and `helm unittest` pa
 - `workloads.yaml`: the gate's two ValkeyClusters, with their CA, certs and ACL user.
 - `loader.py` and `loader-pod.sh`: write sequential keys, record each **acked write**, and verify them all later.
 - `monitor.sh`: logs StatefulSet count, pods without an owner, cluster state and not-ready pods every 3s.
+- `oplog.sh`: appends the operator's log to a file for the whole run, following each new manager pod.
 - `vcli.sh`: `valkey-cli` as the operator user inside a pod, with TLS handled.
+- `metrics.sh`: a pod's exporter metrics, fetched from the loader pod.
 - `hardkill.sh`: SIGKILLs a pod's `valkey-server` from its kind node.
 - `podipt.sh`: runs `iptables` in a pod's network namespace, for bus partitions.
