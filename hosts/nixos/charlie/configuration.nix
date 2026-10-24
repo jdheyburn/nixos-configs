@@ -45,6 +45,7 @@
     };
   };
   modules.caddy.enable = true;
+  modules.claude-remote-control.enable = true;
   modules.dashy.enable = true;
   modules.lubelogger.enable = true;
   modules.monitoring.enable = true;
