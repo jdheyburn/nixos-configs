@@ -45,7 +45,11 @@
     };
   };
   modules.caddy.enable = true;
-  modules.claude-remote-control.enable = true;
+  # Claude Code Remote Control, inside a container rather than on the host
+  modules.claude-container = {
+    enable = true;
+    externalInterface = "eth0";
+  };
   modules.dashy.enable = true;
   modules.lubelogger.enable = true;
   modules.monitoring.enable = true;
