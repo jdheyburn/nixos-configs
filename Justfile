@@ -8,7 +8,7 @@ switch host=`hostname -s`:
     sudo {{ if os() == "macos" { "darwin-rebuild" } else { "nixos-rebuild" } }} switch --flake .#{{host}}
 
 # Full update: flake inputs, then hand-maintained packages. Review the diff before committing.
-update: update-flake update-nix-pkgs update-containers
+update: update-flake update-nix-pkgs update-containers update-caddy-plugins
 
 # Bump flake inputs (nixpkgs et al.). --refresh re-resolves mutable refs (e.g.
 # the unpinned llm-agents input tracking main) so fast-churn inputs can't be
@@ -25,6 +25,10 @@ update-nix-pkgs:
 # Bump pinned OCI image tags (dashy, lubelogger). Pass --dry-run to preview.
 update-containers *ARGS:
     uv run update/containers.py {{ARGS}}
+
+# Bump the Caddy cloudflare plugin and recompute its hash (run after update-flake)
+update-caddy-plugins:
+    ./update/caddy-plugins.sh
 
 # Run the update/ and Obsidian backup script tests
 test:
