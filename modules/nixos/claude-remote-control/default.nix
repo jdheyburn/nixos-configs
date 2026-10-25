@@ -144,11 +144,10 @@ let
   ] ++ cfg.extraPackages;
 
   # Empty files and directories the sandbox mounts over protected paths in a
-  # session's working directory. They show up as untracked and make
-  # `git add -A` fail, so every clone ignores them. Worktrees share the
-  # main checkout's info/exclude.
+  # session's working directory, and Claude Code's own scratch directory.
+  # They show up as untracked and make `git add -A` fail, so git ignores
+  # them in every repo and worktree (core.excludesFile below).
   placeholderExcludes = pkgs.writeText "claude-sandbox-excludes" ''
-    # Claude Code sandbox placeholders, added by claude-remote-control
     /.bash_profile
     /.bashrc
     /.profile
@@ -161,6 +160,7 @@ let
     /.idea
     /.vscode
     /.claude/worktrees/
+    /.claude/.cc-writes/
   '';
 
   # One loop per server. It clones the repo first if it's missing: inside a
@@ -177,11 +177,6 @@ let
       sleep 30
     done
     cd ${serverDir name}
-    exclude=.git/info/exclude
-    if ! ${pkgs.gnugrep}/bin/grep -qsF "added by claude-remote-control" "$exclude"; then
-      mkdir -p .git/info
-      cat ${placeholderExcludes} >> "$exclude"
-    fi
     ${optionalString (server.spawn == "worktree") ''
       # Kept across restarts: the server only brings its sessions back when
       # it starts again in the same directory.
@@ -433,6 +428,7 @@ in
       enable = true;
       config = {
         credential."https://github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
+        core.excludesFile = "${placeholderExcludes}";
         user = {
           name = "Joseph Heyburn";
           email = "jdheyburn@gmail.com";
