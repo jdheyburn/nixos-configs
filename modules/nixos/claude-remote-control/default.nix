@@ -82,11 +82,10 @@ let
     };
 
     # Only these claude.ai connectors load. Anything added to the account
-    # later stays off until it's listed here.
-    allowedMcpServers = [
-      { serverName = "claude.ai Claude Docs"; }
-      { serverName = "claude.ai Todoist"; }
-    ];
+    # later stays off until it's listed here. An allowlist serverName can't
+    # contain spaces or dots, so "claude.ai Todoist" fails validation:
+    # connectors are matched by their proxy URL instead.
+    allowedMcpServers = map (url: { serverUrl = url; }) cfg.connectorUrls;
 
     permissions = {
       # The file tools sit outside the bash sandbox, so deny them separately.
@@ -322,6 +321,19 @@ in
           };
         };
       }));
+    };
+
+    connectorUrls = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      example = [ "https://mcp-proxy.anthropic.com/v1/mcp/mcpsrv_018FS2YdTHWo4C4jDbymwhVk" ];
+      description = ''
+        claude.ai connectors sessions may use, by the URL Claude Code connects
+        to (https://mcp-proxy.anthropic.com/v1/mcp/mcpsrv_<id>). The IDs are
+        per account; find them in the laptop's
+        ~/Library/Caches/claude-cli-nodejs/*/mcp-logs-claude-ai-<name>/ logs.
+        Empty allows no connectors.
+      '';
     };
 
     extraPackages = mkOption {

@@ -65,6 +65,10 @@
       nixos-configs.repo = "jdheyburn/nixos-configs";
       scratch.repo = "jdheyburn/scratch";
     };
+    service.connectorUrls = [
+      "https://mcp-proxy.anthropic.com/v1/mcp/mcpsrv_014Fj7srWvLMyCuRCS8J9W3d" # Claude Docs
+      "https://mcp-proxy.anthropic.com/v1/mcp/mcpsrv_018FS2YdTHWo4C4jDbymwhVk" # Todoist
+    ];
   };
   modules.dashy.enable = true;
   modules.lubelogger.enable = true;
