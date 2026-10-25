@@ -59,6 +59,13 @@ sudo nixos-container root-login claude
 sudo -u claude -i herdr
 ```
 
+The container's Herdr prefix is `ctrl+b`, so it still works from inside a pane of the laptop's Herdr. `ctrl+b q` detaches and leaves the servers running. Then `exit` out of the container shell. Closing the terminal instead can leave the login's `su` as a zombie inside the container, and the next container stop then hangs on it. If a stop or switch fails with `Machine 'claude' already exists`:
+
+```sh
+sudo machinectl terminate claude
+sudo systemctl reset-failed container@claude && sudo systemctl start container@claude
+```
+
 The host can't SSH into the container: the firewall drops every packet from `ve-claude` to the host, replies included.
 
 ## Accepted risks
