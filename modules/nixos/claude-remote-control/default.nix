@@ -84,7 +84,8 @@ let
     # Only these claude.ai connectors load. Anything added to the account
     # later stays off until it's listed here. An allowlist serverName can't
     # contain spaces or dots, so "claude.ai Todoist" fails validation:
-    # connectors are matched by their proxy URL instead.
+    # connectors are matched by their own URL instead, as `claude mcp list`
+    # prints it (not the mcp-proxy.anthropic.com URL they connect through).
     allowedMcpServers = map (url: { serverUrl = url; }) cfg.connectorUrls;
 
     permissions = {
@@ -325,14 +326,13 @@ in
 
     connectorUrls = mkOption {
       type = types.listOf types.str;
-      default = [ ];
-      example = [ "https://mcp-proxy.anthropic.com/v1/mcp/mcpsrv_018FS2YdTHWo4C4jDbymwhVk" ];
+      default = [
+        "https://api.anthropic.com/v1/pages/mcp" # Claude Docs
+        "https://ai.todoist.net/mcp" # Todoist
+      ];
       description = ''
-        claude.ai connectors sessions may use, by the URL Claude Code connects
-        to (https://mcp-proxy.anthropic.com/v1/mcp/mcpsrv_<id>). The IDs are
-        per account; find them in the laptop's
-        ~/Library/Caches/claude-cli-nodejs/*/mcp-logs-claude-ai-<name>/ logs.
-        Empty allows no connectors.
+        claude.ai connectors sessions may use, by the connector's own URL as
+        `claude mcp list` prints it. Empty allows no connectors.
       '';
     };
 
