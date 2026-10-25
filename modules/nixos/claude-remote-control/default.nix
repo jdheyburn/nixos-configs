@@ -367,6 +367,9 @@ in
     home-manager.users.${cfg.user} = {
       imports = [ ../../../home/profiles/agent ];
       home.stateVersion = config.system.stateVersion;
+      # Attaching usually happens from a pane of the laptop's herdr, which
+      # keeps ctrl+space for itself.
+      modules.herdr.prefix = "ctrl+b";
     };
 
     # Prebuilt binaries from PyPI wheels (ruff, ty) expect a standard
