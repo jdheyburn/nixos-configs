@@ -1,9 +1,10 @@
 """Mark directories as trusted in Claude Code's ~/.claude.json.
 
 `claude remote-control` exits with "Workspace not trusted" until someone
-answers the trust prompt in a terminal. Setting
-projects["<dir>"].hasTrustDialogAccepted ahead of time skips that prompt.
-The file also holds Claude Code's own state, so every other key is kept.
+answers the trust prompt in a terminal, and on first run it waits at
+"Enable Remote Control? (y/n)". Setting projects["<dir>"].hasTrustDialogAccepted
+and remoteDialogSeen ahead of time skips both prompts. The file also holds
+Claude Code's own state, so every other key is kept.
 """
 
 import argparse
@@ -24,6 +25,7 @@ def seed_trust(claude_json: Path, dirs: list[str]) -> None:
     projects = data.setdefault("projects", {})
     for d in dirs:
         projects.setdefault(d, {})["hasTrustDialogAccepted"] = True
+    data["remoteDialogSeen"] = True
 
     fd, tmp = tempfile.mkstemp(dir=claude_json.parent, prefix=".claude.json.")
     try:

@@ -138,7 +138,8 @@ let
     done
   '';
 
-  # Pre-trusts every server directory. Trust is keyed on the path, so it can
+  # Pre-trusts every server directory and marks the "Enable Remote Control?"
+  # prompt as answered. Trust is keyed on the path, so it can
   # be seeded before the loop clones the repo. Nothing here needs the
   # network: the service runs during boot, and a slow step here delays boot
   # past the container's start timeout.
