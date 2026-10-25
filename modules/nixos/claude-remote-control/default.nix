@@ -60,6 +60,10 @@ let
         allowLocalBinding = false;
       };
 
+      # Package caches, so uv and prek don't start cold in every session. The
+      # directories are created by tmpfiles below.
+      filesystem.allowWrite = [ "~/.cache/uv" "~/.cache/prek" ];
+
       credentials.files = map (path: { inherit path; mode = "deny"; }) [
         # Claude's own login is a full-scope token: keep it away from the
         # commands Claude runs.
@@ -131,7 +135,28 @@ let
     herdrPkg
     python3
     uv
+    prek
   ] ++ cfg.extraPackages;
+
+  # Empty files and directories the sandbox mounts over protected paths in a
+  # session's working directory. They show up as untracked and make
+  # `git add -A` fail, so every clone ignores them. Worktrees share the
+  # main checkout's info/exclude.
+  placeholderExcludes = pkgs.writeText "claude-sandbox-excludes" ''
+    # Claude Code sandbox placeholders, added by claude-remote-control
+    /.bash_profile
+    /.bashrc
+    /.profile
+    /.zprofile
+    /.zshrc
+    /.gitconfig
+    /.gitmodules
+    /.ripgreprc
+    /.mcp.json
+    /.idea
+    /.vscode
+    /.claude/worktrees/
+  '';
 
   # One loop per server. It clones the repo first if it's missing: inside a
   # container the network only comes up once boot has finished, so the
@@ -145,6 +170,11 @@ let
       sleep 30
     done
     cd ${serverDir name}
+    exclude=.git/info/exclude
+    if ! ${pkgs.gnugrep}/bin/grep -qsF "added by claude-remote-control" "$exclude"; then
+      mkdir -p .git/info
+      cat ${placeholderExcludes} >> "$exclude"
+    fi
     while :; do
       ${escapeShellArgs ([
         claude
@@ -398,6 +428,9 @@ in
     systemd.tmpfiles.rules = [
       "d ${home} 0750 ${cfg.user} ${cfg.user} -"
       "d ${home}/code 0750 ${cfg.user} ${cfg.user} -"
+      "d ${home}/.cache 0700 ${cfg.user} ${cfg.user} -"
+      "d ${home}/.cache/uv 0700 ${cfg.user} ${cfg.user} -"
+      "d ${home}/.cache/prek 0700 ${cfg.user} ${cfg.user} -"
     ];
 
     systemd.services.claude-remote-control = {
