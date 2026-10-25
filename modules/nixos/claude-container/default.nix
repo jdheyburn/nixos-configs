@@ -77,6 +77,19 @@ in
       '';
     };
 
+    githubTokenFile = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      example = "/run/claude-secrets/gh-token";
+      description = ''
+        Host file holding `GH_TOKEN=<token>`, used as the servers'
+        environmentFile. Its directory is bind-mounted read-only at the same
+        path, so put it in a directory of its own, and as a real file
+        (agenix `symlink = false`): agenix replaces the file on every
+        activation, and a bind of the file itself would keep the old one.
+      '';
+    };
+
     uid = mkOption {
       type = types.int;
       default = 3500;
@@ -130,12 +143,20 @@ in
       # Not ephemeral: the claude.ai login has to survive restarts.
       ephemeral = false;
 
-      bindMounts = mkIf (cfg.bindCode != null) {
-        "/var/lib/claude-remote-control/code" = {
-          hostPath = cfg.bindCode;
-          isReadOnly = false;
-        };
-      };
+      bindMounts = mkMerge [
+        (mkIf (cfg.bindCode != null) {
+          "/var/lib/claude-remote-control/code" = {
+            hostPath = cfg.bindCode;
+            isReadOnly = false;
+          };
+        })
+        (mkIf (cfg.githubTokenFile != null) {
+          ${dirOf cfg.githubTokenFile} = {
+            hostPath = dirOf cfg.githubTokenFile;
+            isReadOnly = true;
+          };
+        })
+      ];
 
       # The container is evaluated separately, so it needs the flake inputs
       # the inner modules and the shared home-manager profile take.
@@ -173,6 +194,7 @@ in
           # Inside, hostName is the container's name; sessions and Claude's
           # instructions should name the host.
           hostLabel = config.networking.hostName;
+          environmentFile = cfg.githubTokenFile;
           # bubblewrap can't mount a fresh /proc inside nspawn; the
           # container is the real boundary here.
           sandbox.weakerNested = true;

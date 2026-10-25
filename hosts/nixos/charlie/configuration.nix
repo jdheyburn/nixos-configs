@@ -46,9 +46,21 @@
   };
   modules.caddy.enable = true;
   # Claude Code Remote Control, inside a container rather than on the host
+  # Fine-grained token for nixos-configs and scratch, as GH_TOKEN=<token>.
+  # A real file in its own directory: the directory is bind-mounted into the
+  # container, and a symlink would point outside it.
+  age.secrets."claude-gh-token" = {
+    file = myUtils.secrets.file "claude-gh-token";
+    path = "/run/claude-secrets/gh-token";
+    symlink = false;
+    owner = "claude";
+    group = "claude";
+    mode = "0400";
+  };
   modules.claude-container = {
     enable = true;
     externalInterface = "eth0";
+    githubTokenFile = config.age.secrets."claude-gh-token".path;
   };
   modules.dashy.enable = true;
   modules.lubelogger.enable = true;
