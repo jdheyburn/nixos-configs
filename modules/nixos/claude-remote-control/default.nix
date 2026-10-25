@@ -30,6 +30,11 @@ let
   claude = "${cfg.package}/bin/claude";
 
   serverDir = name: "${home}/code/${name}";
+  # Where a worktree-mode server runs: its own worktree on a detached HEAD.
+  # The server pre-creates a session in its cwd, and this keeps that
+  # session out of the main checkout. It sits outside .claude/worktrees so
+  # Claude's worktree cleanup leaves it alone.
+  homeDir = name: "${home}/rc/${name}";
 
   # Enforced via /etc/claude-code/managed-settings.d, which sits above user,
   # project and --settings values. Disabling the unsandboxed retry there
@@ -160,7 +165,9 @@ let
 
   # One loop per server. It clones the repo first if it's missing: inside a
   # container the network only comes up once boot has finished, so the
-  # clone can't happen during boot. The server exits after ~10 minutes
+  # clone can't happen during boot. Without --no-create-session-in-dir, a
+  # restarted server resumes the sessions it was serving (for about four
+  # hours), so a deploy doesn't lose them. The server exits after ~10 minutes
   # without network and on auth errors, so keep bringing it back, with a
   # pause so a missing login doesn't spin.
   loopFor = name: server: pkgs.writeShellScript "claude-rc-loop-${name}" ''
@@ -175,6 +182,18 @@ let
       mkdir -p .git/info
       cat ${placeholderExcludes} >> "$exclude"
     fi
+    ${optionalString (server.spawn == "worktree") ''
+      # Kept across restarts: the server only brings its sessions back when
+      # it starts again in the same directory.
+      until [ -e ${homeDir name}/.git ]; do
+        ${pkgs.git}/bin/git fetch -q origin \
+          && ${pkgs.git}/bin/git worktree add -q --detach ${homeDir name} origin/HEAD \
+          && break
+        echo "creating ${homeDir name} failed; retrying in 30s"
+        sleep 30
+      done
+      cd ${homeDir name}
+    ''}
     while :; do
       ${escapeShellArgs ([
         claude
@@ -183,10 +202,6 @@ let
         server.displayName
         "--spawn"
         server.spawn
-      ] ++ optionals (server.spawn == "worktree") [
-        # The server pre-creates one session in cwd, which would work in
-        # the main checkout. Every session should get its own worktree.
-        "--no-create-session-in-dir"
       ] ++ optionals (server.capacity != null && server.spawn != "session") [
         "--capacity"
         (toString server.capacity)
@@ -428,6 +443,7 @@ in
     systemd.tmpfiles.rules = [
       "d ${home} 0750 ${cfg.user} ${cfg.user} -"
       "d ${home}/code 0750 ${cfg.user} ${cfg.user} -"
+      "d ${home}/rc 0750 ${cfg.user} ${cfg.user} -"
       "d ${home}/.cache 0700 ${cfg.user} ${cfg.user} -"
       "d ${home}/.cache/uv 0700 ${cfg.user} ${cfg.user} -"
       "d ${home}/.cache/prek 0700 ${cfg.user} ${cfg.user} -"
