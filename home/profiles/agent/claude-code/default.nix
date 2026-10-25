@@ -1,0 +1,152 @@
+{ config, lib, inputs, system, ... }:
+let
+  claudeDir = ".claude";
+  claudeHome = "${config.home.homeDirectory}/${claudeDir}";
+
+  # mattpocock productivity skills — the skill name matches its directory name.
+  mattpocockSkills = [
+    "grill-me"
+    "grilling"
+    "teach"
+    "wait-what"
+    "writing-for-agents"
+  ];
+in
+{
+  programs.claude-code = {
+    enable = true;
+    package = inputs.llm-agents.packages.${system}.claude-code;
+
+    context = ./CLAUDE.md;
+
+    settings = {
+      outputStyle = "Concise";
+
+      # Retain local chat transcripts for 180 days (default is 30).
+      cleanupPeriodDays = 180;
+
+      # No Co-Authored-By trailer on commits, no "Generated with" line on PRs.
+      attribution = { commit = ""; pr = ""; };
+
+      # Global command allowlist. These are promoted from per-project
+      # settings.local.json where they recurred across repos — all read-only
+      # or pure-local (inspect / build / format), nothing that mutates remote
+      # state or runs arbitrary code. Toolchain-specific entries live in the
+      # desktop profile.
+      permissions.allow = [
+        # Shell inspection
+        "Bash(find:*)"
+        "Bash(grep:*)"
+        "Bash(ls:*)"
+        "Bash(tail:*)"
+        "Bash(head:*)"
+        "Bash(echo:*)"
+
+        # git (read-only)
+        "Bash(git status:*)"
+        "Bash(git diff:*)"
+        "Bash(git show:*)"
+        "Bash(git log:*)"
+        "Bash(git check-ignore:*)"
+
+        # gh (read-only)
+        "Bash(gh pr view:*)"
+        "Bash(gh pr diff:*)"
+        "Bash(gh search:*)"
+
+        # Python testing / linting
+        "Bash(uv run python -m pytest:*)"
+        "Bash(uv run pytest:*)"
+        "Bash(uv run ruff:*)"
+        "Bash(pytest:*)"
+        "Bash(ruff:*)"
+
+        # Installed plugins: read/list any plugin's files. These live outside the
+        # project root, so listing them is gated as a filesystem read (not by
+        # Bash(ls:*)). Promoted from per-project grants.
+        "Read(/${claudeHome}/plugins/**)"
+
+        # Execute superpowers plugin scripts (SDD, brainstorming, etc). The
+        # version segment is wildcarded so allows survive plugin upgrades
+        # (6.2.0 -> 6.3.0 -> git-sha) instead of re-prompting on every bump.
+        #
+        # JDH: Commented out in case I want it in future
+        # "Bash(${claudeHome}/plugins/cache/claude-plugins-official/superpowers/*/skills/*/scripts/*:*)"
+
+        # superpowers SDD writes its plans, task briefs, and progress files under
+        # a .superpowers/ scratch dir (at any depth, incl. inside worktrees).
+        # Scoped to that dir only — never touches source. An Edit() rule covers
+        # every file-editing tool, Write included; a Write() rule matches
+        # nothing and Claude Code warns about it on startup.
+        "Edit(**/.superpowers/**)"
+      ];
+
+      extraKnownMarketplaces = {
+        # Register the official plugin marketplace so enabledPlugins below resolve
+        # on a fresh machine without a manual `/plugin marketplace add`. The name
+        # `claude-plugins-official` is reserved by Claude Code and *must* use a
+        # GitHub source from the `anthropics` org — a nix-store `directory` source
+        # is rejected, so this cannot be pinned via a flake input.
+        claude-plugins-official.source = {
+          source = "github";
+          repo = "anthropics/claude-plugins-official";
+        };
+
+        # Third-party marketplace for Obsidian skills (kepano/obsidian-skills).
+        # Not a reserved name, so a plain GitHub source is accepted.
+        obsidian-skills.source = {
+          source = "github";
+          repo = "kepano/obsidian-skills";
+        };
+
+        # Every's writing toolbox (EveryInc/compound-writing). A full plugin
+        # with skills, subagents and commands, so installed via its own
+        # marketplace instead of vendoring individual skills.
+        compound-writing.source = {
+          source = "github";
+          repo = "EveryInc/compound-writing";
+        };
+      };
+
+      enabledPlugins = {
+        "superpowers@claude-plugins-official" = true;
+        "obsidian@obsidian-skills" = true;
+      };
+
+      # Allegedly saves 10% tokens: https://www.reddit.com/r/ClaudeAI/comments/1wm8adm/psa_claude_code_turn_off_prompt_suggestions_save/
+      promptSuggestionEnabled = false;
+      alwaysThinkingEnabled = true;
+      model = "opus[1m]";
+
+      # Legacy as of v2.1.251
+      effortLevel = "high";
+      #
+      # Every effort-capable model in the account's catalog is pinned so a
+      # change to a model's own default can't move it. Claude Code matches each
+      # entry to that model's alias, date-suffixed, [1m] and provider-specific
+      # IDs, so the canonical name is enough. Haiku 4.5 is absent: it has no
+      # effort control. Opus 5.5 defaults to medium and Opus 4.7 to xhigh; the
+      # rest already default to high.
+      modelSettings = {
+        "claude-opus-5-5".effortLevel = "high";
+        "claude-fable-5-1".effortLevel = "high";
+        "claude-sonnet-5".effortLevel = "high";
+        "claude-opus-5".effortLevel = "high";
+        "claude-fable-5".effortLevel = "high";
+        "claude-opus-4-8".effortLevel = "high";
+        "claude-opus-4-7".effortLevel = "high";
+        "claude-opus-4-6".effortLevel = "high";
+        "claude-sonnet-4-6".effortLevel = "high";
+      };
+      skipWorkflowUsageWarning = true;
+    };
+
+    skills = lib.genAttrs mattpocockSkills (
+      name: "${inputs.mattpocock-skills}/skills/productivity/${name}"
+    ) // {
+      # Repo-local skills vendored under ./skills/<name>/SKILL.md.
+      implement-issue = ./skills/implement-issue;
+      project-log = ./skills/project-log;
+    };
+  };
+}

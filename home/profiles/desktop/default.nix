@@ -6,8 +6,8 @@ let
 in
 {
   imports = [
+    ../agent
     ./claude-code
-    ./herdr
     ./readwise
   ];
 
