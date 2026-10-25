@@ -61,6 +61,10 @@
     enable = true;
     externalInterface = "eth0";
     githubTokenFile = config.age.secrets."claude-gh-token".path;
+    service.servers = {
+      nixos-configs.repo = "jdheyburn/nixos-configs";
+      scratch.repo = "jdheyburn/scratch";
+    };
   };
   modules.dashy.enable = true;
   modules.lubelogger.enable = true;
