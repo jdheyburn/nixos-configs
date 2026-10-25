@@ -106,8 +106,32 @@ let
 
     - Push branches and open PRs. Never push to `main` and never merge a PR. Joe reviews and merges.
     - Nix isn't available here. Don't try to build or evaluate anything. Say in every PR that touches Nix files that the change is unbuilt.
+    - Stage files by path. `git add -A` fails on empty placeholder files the sandbox creates in the repo (`.bashrc`, `.gitconfig`, `.mcp.json` and similar).
     - The Obsidian vault isn't available here. Skip project-log updates and put decisions in the PR description.
   '';
+
+  # Commands sessions can run, plus the sandbox's own deps. Herdr panes
+  # start a login shell, which takes PATH from /etc/profile rather than the
+  # service, so these go on the claude user's profile as well.
+  tools = with pkgs; [
+    bash
+    coreutils
+    findutils
+    gnugrep
+    gnused
+    gawk
+    git
+    gh
+    openssh
+    ripgrep
+    jq
+    curl
+    bubblewrap
+    socat
+    herdrPkg
+    python3
+    uv
+  ] ++ cfg.extraPackages;
 
   # One loop per server. It clones the repo first if it's missing: inside a
   # container the network only comes up once boot has finished, so the
@@ -129,6 +153,10 @@ let
         server.displayName
         "--spawn"
         server.spawn
+      ] ++ optionals (server.spawn == "worktree") [
+        # The server pre-creates one session in cwd, which would work in
+        # the main checkout. Every session should get its own worktree.
+        "--no-create-session-in-dir"
       ] ++ optionals (server.capacity != null && server.spawn != "session") [
         "--capacity"
         (toString server.capacity)
@@ -331,6 +359,7 @@ in
       createHome = true;
       # A real shell, so `sudo -u claude -i` works for the login and attach.
       shell = pkgs.bashInteractive;
+      packages = tools;
     };
     users.groups.${cfg.user}.gid = cfg.uid;
 
@@ -339,6 +368,10 @@ in
       imports = [ ../../../home/profiles/agent ];
       home.stateVersion = config.system.stateVersion;
     };
+
+    # Prebuilt binaries from PyPI wheels (ruff, ty) expect a standard
+    # dynamic loader.
+    programs.nix-ld.enable = true;
 
     # On PATH system-wide for the one-time login step above.
     environment.systemPackages = [ cfg.package ];
@@ -370,25 +403,7 @@ in
       wants = [ "network-online.target" ];
       after = [ "network-online.target" ];
 
-      # Sessions run shell commands through this PATH, so give them the
-      # basics they'd have in a login shell, plus the sandbox's own deps.
-      path = with pkgs; [
-        bash
-        coreutils
-        findutils
-        gnugrep
-        gnused
-        gawk
-        git
-        gh
-        openssh
-        ripgrep
-        jq
-        curl
-        bubblewrap
-        socat
-        herdrPkg
-      ] ++ cfg.extraPackages;
+      path = tools;
 
       environment = {
         HOME = home;
@@ -396,6 +411,8 @@ in
         SHELL = "${pkgs.bashInteractive}/bin/bash";
         # Nix owns the binary; the self-updater can't write to the store anyway.
         DISABLE_AUTOUPDATER = "1";
+        # uv's downloaded Pythons are built for other distros; use Nix's.
+        UV_PYTHON_DOWNLOADS = "never";
       };
 
       serviceConfig = {
