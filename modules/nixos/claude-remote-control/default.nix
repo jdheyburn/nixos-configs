@@ -109,10 +109,18 @@ let
     - The Obsidian vault isn't available here. Skip project-log updates and put decisions in the PR description.
   '';
 
-  # One loop per server. The server exits after ~10 minutes without network
-  # and on auth errors, so keep bringing it back, with a pause so a missing
-  # login doesn't spin.
+  # One loop per server. It clones the repo first if it's missing: inside a
+  # container the network only comes up once boot has finished, so the
+  # clone can't happen during boot. The server exits after ~10 minutes
+  # without network and on auth errors, so keep bringing it back, with a
+  # pause so a missing login doesn't spin.
   loopFor = name: server: pkgs.writeShellScript "claude-rc-loop-${name}" ''
+    until [ -d ${serverDir name}/.git ]; do
+      ${pkgs.git}/bin/git clone https://github.com/${server.repo}.git ${serverDir name} && break
+      echo "clone of ${server.repo} failed; retrying in 30s"
+      sleep 30
+    done
+    cd ${serverDir name}
     while :; do
       ${escapeShellArgs ([
         claude
@@ -130,21 +138,15 @@ let
     done
   '';
 
-  # Clones missing repos and pre-trusts every server directory. Clones retry
-  # for about a minute, since DNS can be down when the container boots. A
-  # clone that still fails (no token yet, a typo) is logged and skipped so
-  # the other servers still start.
+  # Pre-trusts every server directory. Trust is keyed on the path, so it can
+  # be seeded before the loop clones the repo. Nothing here needs the
+  # network: the service runs during boot, and a slow step here delays boot
+  # past the container's start timeout.
   prepare = pkgs.writeShellApplication {
     name = "claude-remote-control-prepare";
-    runtimeInputs = [ pkgs.git pkgs.coreutils ];
+    runtimeInputs = [ pkgs.coreutils ];
     text = ''
       mkdir -p ${home}/code
-      ${concatStrings (mapAttrsToList (name: server: ''
-        if [ ! -d ${serverDir name}/.git ]; then
-          ${pkgs.runtimeShell} ${./clone_repo.sh} https://github.com/${server.repo}.git ${serverDir name} \
-            || echo "clone of ${server.repo} failed; skipping the ${name} server"
-        fi
-      '') cfg.servers)}
       ${optionalString (cfg.servers != { }) ''
         ${pkgs.python3}/bin/python3 -E -s ${./seed_trust.py} \
           --claude-json ${home}/.claude.json \
@@ -167,16 +169,12 @@ let
       herdr status server | grep -q 'status: running'
 
       ${concatStrings (mapAttrsToList (name: server: ''
-        if [ -d ${serverDir name}/.git ]; then
-          herdr workspace list \
-            | jq -r --arg label ${name} '.result.workspaces[] | select(.label == $label) | .workspace_id' \
-            | while read -r id; do herdr workspace close "$id"; done
-          pane=$(herdr workspace create --cwd ${serverDir name} --label ${name} --no-focus \
-            | jq -r '.result.root_pane.pane_id')
-          herdr pane run "$pane" ${loopFor name server}
-        else
-          echo "${serverDir name} is not a git checkout; not starting the ${name} server"
-        fi
+        herdr workspace list \
+          | jq -r --arg label ${name} '.result.workspaces[] | select(.label == $label) | .workspace_id' \
+          | while read -r id; do herdr workspace close "$id"; done
+        pane=$(herdr workspace create --cwd ${home}/code --label ${name} --no-focus \
+          | jq -r '.result.root_pane.pane_id')
+        herdr pane run "$pane" ${loopFor name server}
       '') cfg.servers)}
     '';
   };

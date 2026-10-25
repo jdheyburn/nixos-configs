@@ -27,7 +27,7 @@ Runs Claude Code Remote Control servers in a NixOS container, one per repo, so C
 | Layer | What it does |
 | ----- | ------------ |
 | Container `claude` | systemd-nspawn with its own network namespace, NATed out of `externalInterface`. Host firewall rules drop everything from `ve-claude` to the host and forward nothing to private ranges, the tailnet or `169.254.0.0/16`. |
-| `claude-remote-control.service` (inside) | Runs `herdr server` as the `claude` user with systemd hardening. Before start it clones missing repos into `~/code/<name>` and pre-trusts them in `~/.claude.json`. After start it opens one Herdr workspace per server, each looping `claude remote-control --spawn worktree`. |
+| `claude-remote-control.service` (inside) | Runs `herdr server` as the `claude` user with systemd hardening. Before start it pre-trusts `~/code/<name>` in `~/.claude.json`. After start it opens one Herdr workspace per server, which clones the repo if it is missing (the container has no network until boot finishes) and then loops `claude remote-control --spawn worktree`. |
 | Managed settings | `/etc/claude-code/managed-settings.d/claude-remote-control.json`: sandbox on with no unsandboxed retries, a domain allowlist, no unix sockets, only the Claude Docs and Todoist connectors, and deny rules for `gh pr merge` and pushes to `main`. `/etc/claude-code/CLAUDE.md` tells Claude it can't use Nix or the vault and must only open PRs. |
 | home-manager | The `claude` user gets `home/profiles/agent`, the Claude Code and Herdr config shared with the desktop. |
 
