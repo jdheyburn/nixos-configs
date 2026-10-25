@@ -24,6 +24,9 @@ in
           compactor = {
             working_directory = lokiDir;
             compactor_ring.kvstore.store = "inmemory";
+            # Delete chunks older than limits_config.retention_period
+            retention_enabled = true;
+            delete_request_store = "filesystem";
           };
 
           ingester = {
@@ -74,11 +77,8 @@ in
             allow_structured_metadata = false;
             reject_old_samples = true;
             reject_old_samples_max_age = "168h";
-          };
-
-          table_manager = {
-            retention_deletes_enabled = false;
-            retention_period = "0s";
+            # Must be a multiple of the 24h index period
+            retention_period = "720h";
           };
 
           ruler = {
