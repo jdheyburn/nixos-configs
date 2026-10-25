@@ -1,4 +1,4 @@
-{ config, lib, llm-agents, ... }:
+{ config, lib, flake-self, llm-agents, herdr, ... }:
 
 # Runs the claude-remote-control service inside a NixOS container
 # (systemd-nspawn), so the host's filesystem, users and services are out of
@@ -13,9 +13,9 @@
 #
 #   sudo nixos-container root-login claude
 #   sudo -u claude -i claude auth login        # choose the claude.ai option
-#   sudo -u claude -i sh -c 'cd ~/code && claude remote-control'
-#                                              # answer y, then Ctrl-C
 #   systemctl restart claude-remote-control && exit
+#
+# See README.md for attaching to Herdr and the rest of the setup.
 #
 # Don't also enable modules.claude-remote-control on the host.
 
@@ -137,12 +137,27 @@ in
         };
       };
 
-      # The container is evaluated separately, so it needs the same flake
-      # input the module takes.
-      specialArgs = { inherit llm-agents; };
+      # The container is evaluated separately, so it needs the flake inputs
+      # the inner modules and the shared home-manager profile take.
+      specialArgs = {
+        inherit llm-agents herdr;
+        inherit (flake-self) inputs;
+      };
 
-      config = { lib, ... }: {
-        imports = [ ../claude-remote-control ];
+      config = { lib, pkgs, inputs, ... }: {
+        imports = [
+          inputs.home-manager.nixosModules.home-manager
+          ../claude-remote-control
+        ];
+
+        home-manager = {
+          useGlobalPkgs = true;
+          useUserPackages = true;
+          extraSpecialArgs = {
+            inherit inputs;
+            system = pkgs.stdenv.hostPlatform.system;
+          };
+        };
 
         system.stateVersion = config.system.stateVersion;
         time.timeZone = config.time.timeZone;
@@ -155,13 +170,24 @@ in
         modules.claude-remote-control = {
           enable = true;
           inherit (cfg) uid;
-          name = "${config.networking.hostName}-${cfg.name}";
+          # Inside, hostName is the container's name; sessions and Claude's
+          # instructions should name the host.
+          hostLabel = config.networking.hostName;
           # bubblewrap can't mount a fresh /proc inside nspawn; the
           # container is the real boundary here.
           sandbox.weakerNested = true;
         } // cfg.service;
       };
     };
+
+    # Owns host paths bind-mounted into the container (the GitHub token),
+    # with the same uid as the container's claude user.
+    users.users.claude = {
+      isSystemUser = true;
+      inherit (cfg) uid;
+      group = "claude";
+    };
+    users.groups.claude.gid = cfg.uid;
 
     # Make sure the bind-mount source exists on the host.
     systemd.tmpfiles.rules = optional (cfg.bindCode != null)

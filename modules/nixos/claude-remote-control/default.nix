@@ -100,9 +100,9 @@ let
   # Managed memory: loaded in every session and not overridable by the user
   # or a repo's CLAUDE.md.
   managedMemory = ''
-    # Running on ${config.networking.hostName}
+    # Running on ${cfg.hostLabel}
 
-    You run inside a container on ${config.networking.hostName}, started from Joe's phone or browser through Remote Control.
+    You run on ${cfg.hostLabel}, started from Joe's phone or browser through Remote Control.
 
     - Push branches and open PRs. Never push to `main` and never merge a PR. Joe reviews and merges.
     - Nix isn't available here. Don't try to build or evaluate anything. Say in every PR that touches Nix files that the change is unbuilt.
@@ -213,6 +213,12 @@ in
       description = "Home of the user: login, trust, Herdr state and repos live here. The only writable path.";
     };
 
+    hostLabel = mkOption {
+      type = types.str;
+      default = config.networking.hostName;
+      description = "Machine name used in session titles and Claude's instructions. Inside a container, set it to the host's name.";
+    };
+
     servers = mkOption {
       default = { };
       example = literalExpression ''{ nixos-configs.repo = "jdheyburn/nixos-configs"; }'';
@@ -231,7 +237,7 @@ in
 
           displayName = mkOption {
             type = types.str;
-            default = "${config.networking.hostName}-${name}";
+            default = "${cfg.hostLabel}-${name}";
             description = "Session title shown in the claude.ai/code session list.";
           };
 
@@ -411,6 +417,9 @@ in
         ReadWritePaths = [ home ];
         # /home, /root and /run/user are hidden.
         ProtectHome = true;
+        # NixOS containers always bind the host's daemon socket in. Hide it
+        # from the servers and everything they start, on top of the sandbox.
+        InaccessiblePaths = [ "-/nix/var/nix/daemon-socket" ];
         PrivateTmp = true;
         PrivateDevices = true;
         NoNewPrivileges = true;
