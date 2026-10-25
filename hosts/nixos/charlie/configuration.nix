@@ -60,6 +60,10 @@
   };
   modules.remote-builder.enable = true;
 
+  # Remote builds filled the 75G root disk faster than the weekly GC could clear it
+  nix.settings.min-free = 5 * 1024 * 1024 * 1024;
+  nix.settings.max-free = 15 * 1024 * 1024 * 1024;
+
   environment.systemPackages = [
     pkgs.ffmpeg
     pkgs.restic
