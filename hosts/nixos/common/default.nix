@@ -154,7 +154,7 @@
     nix.settings.auto-optimise-store = true;
 
     # Cap the persistent journal
-    services.journald.settings.Journal.SystemMaxUse = "1G";
+    services.journald.extraConfig = "SystemMaxUse=1G";
 
     # Enable flakes
     nix.package = pkgs.nixVersions.stable;
