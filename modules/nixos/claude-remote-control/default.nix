@@ -130,9 +130,10 @@ let
     done
   '';
 
-  # Clones missing repos and pre-trusts every server directory. A failed
-  # clone (no token yet, a typo) is logged and skipped so the other servers
-  # still start.
+  # Clones missing repos and pre-trusts every server directory. Clones retry
+  # for about a minute, since DNS can be down when the container boots. A
+  # clone that still fails (no token yet, a typo) is logged and skipped so
+  # the other servers still start.
   prepare = pkgs.writeShellApplication {
     name = "claude-remote-control-prepare";
     runtimeInputs = [ pkgs.git pkgs.coreutils ];
@@ -140,7 +141,7 @@ let
       mkdir -p ${home}/code
       ${concatStrings (mapAttrsToList (name: server: ''
         if [ ! -d ${serverDir name}/.git ]; then
-          git clone https://github.com/${server.repo}.git ${serverDir name} \
+          ${pkgs.runtimeShell} ${./clone_repo.sh} https://github.com/${server.repo}.git ${serverDir name} \
             || echo "clone of ${server.repo} failed; skipping the ${name} server"
         fi
       '') cfg.servers)}
