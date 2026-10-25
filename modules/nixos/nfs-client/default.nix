@@ -14,8 +14,10 @@ in {
       fsType = "nfs";
       options = [
         "x-systemd.automount"
+        # Also orders the mount After=tailscaled, so it unmounts before
+        # tailscaled stops. Don't add x-systemd.before=tailscaled.service:
+        # the two orderings form a cycle that deadlocks restarts on switch.
         "x-systemd.requires=tailscaled.service"
-        "x-systemd.before=tailscaled.service"
       ];
     };
 
