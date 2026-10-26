@@ -35,6 +35,7 @@ let
   # session out of the main checkout. It sits outside .claude/worktrees so
   # Claude's worktree cleanup leaves it alone.
   homeDir = name: "${home}/rc/${name}";
+  worktreeServers = attrNames (filterAttrs (_: server: server.spawn == "worktree") cfg.servers);
 
   # Enforced via /etc/claude-code/managed-settings.d, which sits above user,
   # project and --settings values. Disabling the unsandboxed retry there
@@ -92,15 +93,27 @@ let
       # The file tools sit outside the bash sandbox, so deny them separately.
       # The git and gh rules are a soft guard: changes go through PRs that
       # Joe merges.
+      # A `*` in a Bash rule matches any text, spaces included. Mixing it
+      # with the legacy `:*` suffix makes a rule that never matches.
       deny = [
         "Read(~/.claude/.credentials.json)"
         "Edit(~/.claude/.credentials.json)"
         "Read(~/.config/gh/**)"
         "Read(~/.config/herdr/**)"
-        "Bash(gh pr merge:*)"
+        "Bash(gh pr merge *)"
+        "Bash(gh api *merge*)"
         "Bash(git push * main)"
-        "Bash(git push * main:*)"
-        "Bash(git push * HEAD:main)"
+        "Bash(git push * main *)"
+        "Bash(git push * +main)"
+        "Bash(git push * +main *)"
+        "Bash(git push *:main)"
+        "Bash(git push *:main *)"
+        "Bash(git push *refs/heads/main)"
+        "Bash(git push *refs/heads/main *)"
+        "Bash(git push *--all*)"
+        "Bash(git push *--mirror*)"
+        # Sessions push from their own worktree, so they never need -C.
+        "Bash(git -C * push *)"
       ];
       disableBypassPermissionsMode = "disable";
     };
@@ -181,6 +194,9 @@ let
       # Kept across restarts: the server only brings its sessions back when
       # it starts again in the same directory.
       until [ -e ${homeDir name}/.git ]; do
+        # Drops the registration of a deleted ~/rc/<name>, which would
+        # otherwise make `worktree add` fail on every try.
+        ${pkgs.git}/bin/git worktree prune
         ${pkgs.git}/bin/git fetch -q origin \
           && ${pkgs.git}/bin/git worktree add -q --detach ${homeDir name} origin/HEAD \
           && break
@@ -231,11 +247,13 @@ let
     name = "claude-herdr-setup";
     runtimeInputs = [ herdrPkg pkgs.jq pkgs.coreutils pkgs.gnugrep ];
     text = ''
+      # Plain grep rather than grep -q: -q exits at the first match, and under
+      # pipefail the SIGPIPE that herdr then gets fails the pipeline.
       for _ in $(seq 1 30); do
-        if herdr status server | grep -q 'status: running'; then break; fi
+        if herdr status server | grep 'status: running' >/dev/null; then break; fi
         sleep 1
       done
-      herdr status server | grep -q 'status: running'
+      herdr status server | grep 'status: running' >/dev/null
 
       ${concatStrings (mapAttrsToList (name: server: ''
         herdr workspace list \
@@ -473,6 +491,9 @@ in
         DISABLE_AUTOUPDATER = "1";
         # uv's downloaded Pythons are built for other distros; use Nix's.
         UV_PYTHON_DOWNLOADS = "never";
+        # Without a token, a private clone would wait at a password prompt
+        # instead of failing and retrying.
+        GIT_TERMINAL_PROMPT = "0";
       };
 
       serviceConfig = {
@@ -533,6 +554,40 @@ in
 
       # Don't give up after repeated failures (e.g. a long outage).
       startLimitIntervalSec = 0;
+    };
+
+    # Each worktree session leaves its worktree behind, holding its branch.
+    # Removes the ones whose session has ended and whose commits are all on
+    # origin (see prune_worktrees.py).
+    systemd.services.claude-remote-control-prune-worktrees = mkIf (worktreeServers != [ ]) {
+      description = "Remove worktrees of ended Claude Code Remote Control sessions";
+      path = [ pkgs.git pkgs.gh ];
+      environment = {
+        HOME = home;
+        GIT_TERMINAL_PROMPT = "0";
+      };
+      serviceConfig = {
+        Type = "oneshot";
+        User = cfg.user;
+        Group = cfg.user;
+        EnvironmentFile = mkIf (cfg.environmentFile != null) cfg.environmentFile;
+        ExecStart = "${pkgs.python3}/bin/python3 -E -s ${./prune_worktrees.py} ${escapeShellArgs (map serverDir worktreeServers)}";
+        ProtectSystem = "strict";
+        ReadWritePaths = [ home ];
+        ProtectHome = true;
+        PrivateTmp = true;
+        NoNewPrivileges = true;
+        UMask = "0077";
+      };
+    };
+
+    systemd.timers.claude-remote-control-prune-worktrees = mkIf (worktreeServers != [ ]) {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnCalendar = "daily";
+        Persistent = true;
+        RandomizedDelaySec = "1h";
+      };
     };
   };
 }
