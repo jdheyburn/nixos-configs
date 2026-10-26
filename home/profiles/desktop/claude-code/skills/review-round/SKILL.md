@@ -1,6 +1,6 @@
 ---
 name: review-round
-description: One pass over the PRs you review: which are due another round and what changed, then clean up worktrees, kind clusters and review memories that merged or closed PRs left behind.
+description: One pass over the PRs you review: which are due another round and what changed, start the round-2 kind reviews in Herdr tabs, and clean up worktrees, kind clusters and review memories that merged or closed PRs left behind.
 disable-model-invocation: true
 ---
 
@@ -41,17 +41,21 @@ Start one background `general-purpose` subagent per round-due PR, all at once, w
 
 The triage is done when every open ask of every round-due PR has one of the three statuses.
 
-## 3. Plan the cleanup
+## 3. Plan
 
-The scan's `Cleanup` and `Review memories` sections are the plan:
+The plan has the reviews to start and the cleanup.
+
+**Reviews to start**: every round-due PR whose triage next step is a kind re-run. Leave out a PR that already has a live agent named `review-<n>` (`herdr agent list`); name it in the report instead.
+
+**Cleanup**: the scan's `Cleanup` and `Review memories` sections:
 
 - **Worktrees to remove**: under `.worktrees/` or `.claude/worktrees/`, PR merged or closed (or no PR and idle 14 days), clean, no merge or rebase in progress, no process running in it, idle 24 hours, and none of your commits exist only there.
 - **kind clusters to delete**: `pr-<n>-review` clusters whose PR merged or closed.
 - **Review memories**: a memory whose PR merged or closed is to retire. A memory that names a cluster which no longer exists is stale. Read each such memory now. Plan a retiring memory as a delete, unless it records something still unraised (a follow-up, a candidate issue, an F-numbered finding marked not raised): then plan to rewrite it down to that item and the line "PR merged <date>". Plan a stale memory as an edit that says the cluster was deleted. Each memory change includes its line in `MEMORY.md`.
 
-Put the plan to the user in one message: the counts, every memory change, and each worktree kept although its PR merged, with the reason. For a worktree kept because your commits exist only there, add `git -C <path> log --oneline HEAD --not --remotes` so the user can judge them. Wait for approval.
+Put the plan to the user in one message: the reviews to start, the cleanup counts, every memory change, and each worktree kept although its PR merged, with the reason. For a worktree kept because your commits exist only there, add `git -C <path> log --oneline HEAD --not --remotes` so the user can judge them. Wait for approval.
 
-## 4. Apply
+## 4. Apply the cleanup
 
 On approval:
 
@@ -61,11 +65,36 @@ uv run --script ~/.claude/skills/review-round/scripts/review_round.py cleanup --
 
 It re-scans first, so anything that changed since step 1 drops out of the plan. It runs `git worktree remove` without `--force`, prunes, deletes the clusters and their `/tmp/kind-<name>.kubeconfig`, and keeps branches. Then make the approved memory changes. A worktree the user wants gone despite a keep reason is theirs to remove with `--force`.
 
-## 5. Report
+## 5. Start the reviews
+
+Each approved review runs as a Claude agent named `review-<n>` in its own Herdr tab. This needs `HERDR_ENV=1`; without it, write each prompt to `<scratchpad>/review-<n>.md` and list them in the report for the user to start.
+
+Run at most **2** reviews at once: each builds an image and a kind cluster, and Docker has about 7.7 GiB. Start the first two, in the order the plan lists them:
+
+```bash
+herdr tab create --workspace "$HERDR_WORKSPACE_ID" --cwd <root> --label "review #<n>" --no-focus
+herdr agent start review-<n> --kind claude --pane <.result.root_pane.pane_id>
+herdr agent prompt review-<n> "<prompt>"
+```
+
+The prompt is `/review-valkey-operator-pr <n>` on its first line, then: "This is round <k>. Re-validate from these open asks and focus the kind scenarios on what changed since `<reviewedSha>`:" and the PR's triage block from step 2, verbatim.
+
+For each running review, wait in the background (Bash `run_in_background`): `herdr agent wait review-<n> --timeout 5400000`. When one returns, read `herdr agent get review-<n>`:
+
+- `done` or `idle`: the review finished. Start the next queued review.
+- `blocked`: it is waiting on the user (a permission prompt or a question). Name it to the user and wait on it again. Answering it is the user's call.
+- a timeout or `unknown`: read `herdr agent read review-<n> --source recent-unwrapped --lines 80`, tell the user where it stands, and leave its slot taken.
+
+The round leaves every tab it opened in place: the user reads the review there.
+
+## 6. Report
+
+Write the report once the first reviews are started; follow up as each finishes.
 
 1. **Round due**: per PR, its link, the open asks with their statuses, anything new, and the next step. Then first-review PRs as links.
-2. **Cleanup**: worktrees removed and clusters deleted (counts), failures with their errors, and the worktrees kept for a merged or closed PR.
-3. **Memories**: each file deleted, rewritten or edited.
+2. **Reviews**: each `review-<n>` agent with its status (started, queued, blocked, done), and any review skipped because one was already live.
+3. **Cleanup**: worktrees removed and clusters deleted (counts), failures with their errors, and the worktrees kept for a merged or closed PR.
+4. **Memories**: each file deleted, rewritten or edited.
 
 ## Tests
 
