@@ -54,9 +54,11 @@ def test_idempotent(tmp_path, dirs):
     assert p.read_text() == first
 
 
-def test_invalid_json_left_untouched(tmp_path):
+def test_invalid_json_left_untouched(tmp_path, capsys):
+    # A failure here would stop the service and keep every server down, so
+    # warn and leave the file to Claude Code.
     p = tmp_path / ".claude.json"
     p.write_text("{not json")
-    with pytest.raises(SystemExit):
-        seed_trust(p, ["/a"])
+    seed_trust(p, ["/a"])
     assert p.read_text() == "{not json"
+    assert "not valid JSON" in capsys.readouterr().err

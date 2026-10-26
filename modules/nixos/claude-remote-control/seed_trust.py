@@ -20,7 +20,9 @@ def seed_trust(claude_json: Path, dirs: list[str]) -> None:
     try:
         data = json.loads(text) if text.strip() else {}
     except json.JSONDecodeError as e:
-        sys.exit(f"{claude_json}: not valid JSON, leaving it alone: {e}")
+        # Exiting non-zero would fail ExecStartPre and keep every server down.
+        print(f"{claude_json}: not valid JSON, leaving it alone: {e}", file=sys.stderr)
+        return
 
     projects = data.setdefault("projects", {})
     for d in dirs:
