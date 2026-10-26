@@ -557,8 +557,8 @@ in
     };
 
     # Each worktree session leaves its worktree behind, holding its branch.
-    # Removes the ones whose session has ended and whose commits are all on
-    # origin (see prune_worktrees.py).
+    # Removes the ones whose session has ended, untouched for 7 days, with
+    # every commit on origin (see prune_worktrees.py).
     systemd.services.claude-remote-control-prune-worktrees = mkIf (worktreeServers != [ ]) {
       description = "Remove worktrees of ended Claude Code Remote Control sessions";
       path = [ pkgs.git pkgs.gh ];
