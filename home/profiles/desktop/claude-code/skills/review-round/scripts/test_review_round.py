@@ -85,13 +85,14 @@ def test_parse_memory_prefers_description_sha_and_skips_worktree_paths():
         "---\nname: x\n"
         'description: "PR #490 kind-reviewed 2026-10-08 at 397921d; round 2 at 8e46a6a"\n---\n'
         "First pass at 1234567. kind `pr-490-review` and worktree `.worktrees/pr-491-review` left running.\n"
+        "Zoned run on pr-490-review-w4.\n"
     )
     mem = parse_memory("project_pr490_review.md", text)
     assert mem == {
         "pr": 490,
         "file": "project_pr490_review.md",
         "reviewedSha": "8e46a6a",
-        "clusters": ["pr-490-review"],
+        "clusters": ["pr-490-review", "pr-490-review-w4"],
     }
 
 
@@ -209,6 +210,9 @@ def test_worktree_decision(worktree, pr_state, expected):
         ("pr-490-review", "CLOSED", (True, "PR closed")),
         ("pr-490-review", "OPEN", (False, "open PR")),
         ("pr-490-review", None, (False, "PR not found")),
+        ("pr-203-review-w4", "MERGED", (True, "PR merged")),
+        ("pr-203-review-w4", "OPEN", (False, "open PR")),
+        ("pr-203", "MERGED", (False, "not a PR review cluster")),
         ("release-0-8-helm", None, (False, "not a PR review cluster")),
     ],
 )

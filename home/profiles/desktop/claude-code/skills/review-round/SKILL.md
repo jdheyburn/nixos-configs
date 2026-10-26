@@ -50,7 +50,7 @@ The plan has the reviews to start and the cleanup.
 **Cleanup**: the scan's `Cleanup` and `Review memories` sections:
 
 - **Worktrees to remove**: under `.worktrees/` or `.claude/worktrees/`, PR merged or closed (or no PR and idle 14 days), clean, no merge or rebase in progress, no process running in it, idle 24 hours, and none of your commits exist only there.
-- **kind clusters to delete**: `pr-<n>-review` clusters whose PR merged or closed.
+- **kind clusters to delete**: `pr-<n>-review` and `pr-<n>-review-*` clusters whose PR merged or closed.
 - **Orphaned kubeconfigs**: `/tmp/kind-<name>.kubeconfig` files whose cluster no longer exists.
 - **Review memories**: a memory whose PR merged or closed is to retire. A memory that names a cluster which no longer exists is stale. Read each such memory now. Plan a retiring memory as a delete, unless it records something still unraised (a follow-up, a candidate issue, an F-numbered finding marked not raised): then plan to rewrite it down to that item and the line "PR merged <date>". Plan a stale memory as an edit that says the cluster was deleted. Each memory change includes its line in `MEMORY.md`.
 

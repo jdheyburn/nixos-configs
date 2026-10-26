@@ -34,11 +34,12 @@ NO_PR_IDLE = 14 * DAY  # a worktree with no PR is removable once idle this long
 GIT_ENV = {**os.environ, "GIT_OPTIONAL_LOCKS": "0"}
 WORKTREE_DIRS = (".worktrees", ".claude/worktrees")
 PR_NAME = re.compile(r"^pr-(\d+)(?:-|$)")
-REVIEW_CLUSTER = re.compile(r"^pr-(\d+)-review$")
+# pr-<n>-review, plus the variants a review makes for a second shape (pr-203-review-w4).
+REVIEW_CLUSTER = re.compile(r"^pr-(\d+)-review(?:-[a-z0-9-]+)?$")
 MEMORY_FILE = re.compile(r"^project_pr(\d+)_review\.md$")
 SHA_AT = re.compile(r"\bat ([0-9a-f]{7,40})\b")
 # A cluster name, not the tail of a path such as `.worktrees/pr-490-review`.
-CLUSTER_MENTION = re.compile(r"(?<![/\w-])(pr-\d+-review)\b")
+CLUSTER_MENTION = re.compile(r"(?<![/\w-])(pr-\d+-review(?:-[a-z0-9]+)*)\b")
 GITHUB_REMOTE = re.compile(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?$")
 
 
