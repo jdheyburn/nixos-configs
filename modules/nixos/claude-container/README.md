@@ -20,7 +20,7 @@ modules.claude-container = {
 };
 ```
 
-Runs Claude Code Remote Control servers in a NixOS container, one per repo, so Claude can be started and steered from claude.ai/code or the Claude app with no laptop awake. charlie runs it. The design is in `docs/superpowers/specs/2026-10-25-claude-remote-control-design.md` (local, gitignored).
+Runs Claude Code Remote Control servers in a NixOS container, one per repo, so Claude can be started and steered from claude.ai/code or the Claude app with no laptop awake. charlie runs it.
 
 ## How it fits together
 
@@ -36,8 +36,7 @@ Sessions appear in claude.ai/code as `charlie-nixos-configs` and `charlie-scratc
 ## Setting up
 
 1. Create a fine-grained GitHub token for `jdheyburn/nixos-configs` and `jdheyburn/scratch`: contents, pull requests and issues read-write, metadata read-only, no workflows. Save it with `agenix -e secrets/claude-gh-token.age` as one line, `GH_TOKEN=<token>`.
-2. On GitHub, add a ruleset to `main` in nixos-configs that blocks direct pushes and requires a PR, with an empty bypass list. scratch is private on the Free plan, where rulesets don't enforce.
-3. Deploy, then log in from the host:
+2. Deploy, then log in from the host:
 
    ```sh
    sudo nixos-container root-login claude
@@ -45,9 +44,18 @@ Sessions appear in claude.ai/code as `charlie-nixos-configs` and `charlie-scratc
    systemctl restart claude-remote-control && exit
    ```
 
-4. In a session: `/config` and turn on "Push when actions required" and "Push when Claude decides".
-5. If `/mcp` shows Todoist needs authorizing: `sudo -u claude -i claude mcp login "claude.ai Todoist"` inside the container, then open the link on your phone.
-6. Optional: turn on "Require trusted devices" in claude.ai account settings.
+3. Download the plugins once. `enabledPlugins` only switches on plugins whose files are already downloaded, and a fresh container has none. Inside the container:
+
+   ```sh
+   sudo -u claude -i claude plugin install superpowers@claude-plugins-official
+   sudo -u claude -i claude plugin install obsidian@obsidian-skills
+   ```
+
+   Each fails at the end with `EROFS` because `settings.json` is read-only; the plugin is downloaded by then and loads in new sessions.
+4. Turn on push notifications. `/config` only exists in a terminal session, so start one inside the container with `sudo -u claude -i bash -c 'cd ~/rc/scratch && claude'`, run `/config`, turn on "Push when actions required" and "Push when Claude decides", then `/exit`. The settings belong to the account, so once is enough.
+5. Optional: turn on "Require trusted devices" in claude.ai account settings.
+
+Connectors need no setup here: their logins live with the claude.ai account, and the managed allowlist lets through only Claude Docs and Todoist.
 
 ## Attaching
 
@@ -82,7 +90,7 @@ Open sessions resume after the restart.
 ## Accepted risks
 
 - Claude could merge its own PRs. The token is Joe's, and GitHub doesn't let an author approve their own PR, so a required-approval ruleset would lock Joe out. The `gh pr merge` deny and the managed CLAUDE.md are the only guards.
-- scratch has no server-side protection on `main`.
+- Neither repo has a ruleset on `main`. scratch is private on GitHub Free, where rulesets aren't enforced, and nixos-configs has none by choice. The push-to-`main` deny rules and the managed CLAUDE.md are the only guards.
 - `GH_TOKEN` is visible to sandboxed commands, since `gh` needs it. The domain allowlist and the token's scope bound it.
 
 ## Resetting
