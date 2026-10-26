@@ -68,6 +68,17 @@ sudo systemctl reset-failed container@claude && sudo systemctl start container@c
 
 The host can't SSH into the container: the firewall drops every packet from `ve-claude` to the host, replies included.
 
+## Rotating the GitHub token
+
+The servers read `GH_TOKEN` once, when the service starts. A new token in `secrets/claude-gh-token.age` reaches the file on deploy but not the running servers, so pushes fail with 401 until the service restarts:
+
+```sh
+agenix -e secrets/claude-gh-token.age    # on the laptop, then commit, push and deploy
+sudo nixos-container run claude -- systemctl restart claude-remote-control
+```
+
+Open sessions resume after the restart.
+
 ## Accepted risks
 
 - Claude could merge its own PRs. The token is Joe's, and GitHub doesn't let an author approve their own PR, so a required-approval ruleset would lock Joe out. The `gh pr merge` deny and the managed CLAUDE.md are the only guards.

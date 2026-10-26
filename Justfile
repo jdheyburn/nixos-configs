@@ -30,6 +30,6 @@ update-containers *ARGS:
 update-caddy-plugins:
     ./update/caddy-plugins.sh
 
-# Run the update/ and Obsidian backup script tests
+# Run the update/, Obsidian backup and Claude Remote Control script tests
 test:
-    uv run --with pytest pytest update/ modules/nixos/backup/obsidian/
+    uv run --with pytest pytest update/ modules/nixos/backup/obsidian/ modules/nixos/claude-remote-control/

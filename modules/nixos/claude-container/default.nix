@@ -118,6 +118,9 @@ in
     networking.firewall.extraCommands = ''
       # The container can't open connections to the host itself.
       iptables -I nixos-fw -i ${veth} -j DROP
+      # The veth also has IPv6 link-local addresses on both ends.
+      ip6tables -D nixos-fw -i ${veth} -j DROP 2>/dev/null || true
+      ip6tables -I nixos-fw -i ${veth} -j DROP
 
       # ...or be forwarded onto the LAN / tailnet.
       iptables -N ${chain} 2>/dev/null || true
@@ -133,6 +136,7 @@ in
       iptables -D FORWARD -i ${veth} -j ${chain} 2>/dev/null || true
       iptables -F ${chain} 2>/dev/null || true
       iptables -X ${chain} 2>/dev/null || true
+      ip6tables -D nixos-fw -i ${veth} -j DROP 2>/dev/null || true
     '';
 
     containers.${cfg.name} = {

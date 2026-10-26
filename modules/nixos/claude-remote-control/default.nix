@@ -525,6 +525,9 @@ in
         ## Resource limits ####################################################
         MemoryMax = mkIf (cfg.memoryMax != null) cfg.memoryMax;
         CPUQuota = mkIf (cfg.cpuQuota != null) cfg.cpuQuota;
+        # One session hitting MemoryMax shouldn't stop every other session:
+        # the kernel kills that process and the unit keeps running.
+        OOMPolicy = "continue";
         TasksMax = 2048;
       };
 
