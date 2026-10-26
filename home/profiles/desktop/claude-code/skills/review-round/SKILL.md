@@ -19,7 +19,7 @@ Read `round.md`; take exact fields (URLs, SHAs, paths) from `round.json`. An `Er
 
 It sorts each open PR you review (review requested, reviewed by you, or named by a review memory) into:
 
-- **Round due**: something happened since your last review: a new head, a re-request, replies on your threads, or new comments. "Rebased since your review" means the commit you reviewed is no longer in the PR, so the commit list is unavailable.
+- **Round due**: something happened since your last review (a new head, a re-request, replies on your threads, or new comments), or your review exists only in memory and was never posted. "Rebased since your review" means the commit you reviewed is no longer in the PR, so the commit list is unavailable.
 - **First review**: you have never reviewed it.
 - **Waiting on the author**: nothing since your last review.
 
@@ -29,7 +29,7 @@ Your last submitted GitHub review sets the reviewed SHA. The memory's SHA stands
 
 Start one background `general-purpose` subagent per round-due PR, all at once, with this prompt filled in:
 
-> Triage PR <url> for its reviewer's next round. Read-only: post nothing, edit nothing, push nothing.
+> Triage PR <url> for its reviewer's next round. Post, edit and push nothing. To run a test, check the head out in a throwaway worktree (`git -C <root> worktree add --detach <your scratchpad>/pr-<pr> <headOid>`) and remove it (`git -C <root> worktree remove --force <path>`) before you return.
 > The reviewer last reviewed `<reviewedSha>`; the head is now `<headOid>`.
 > <memory file non-null:> Their review notes are in `<memoryDir>/<memory>`. Its numbered asks (R1, R2, …, nits, API asks) are the **open asks**.
 > <memory null:> There are no review notes. Take the open asks from the reviewer's (`<me>`) review comments and threads on the PR.

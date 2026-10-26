@@ -136,8 +136,9 @@ def review_status(pr: dict, me: str, memory: dict | None) -> dict:
     bucket is "first-review" (you have never reviewed it), "round-due" (something
     happened since your last review) or "waiting" (the ball is with the author).
     Your last submitted GitHub review is authoritative; the memory's SHA stands in
-    when there is none. A review whose commit is null reviewed a commit the author
-    has since force-pushed away.
+    when there is none, and a review that exists only in memory was never posted,
+    so it is due. A review whose commit is null reviewed a commit the author has
+    since force-pushed away.
     """
     mine = [r for r in pr["reviews"]["nodes"] if login(r["author"]) == me]
     submitted = sorted((r for r in mine if r["state"] != "PENDING"), key=lambda r: parse_time(r["submittedAt"]))
@@ -161,6 +162,8 @@ def review_status(pr: dict, me: str, memory: dict | None) -> dict:
     ]
 
     reasons = []
+    if memory_sha and not last:
+        reasons.append("review not posted")
     if requested and last:
         reasons.append("re-requested")
     if head_moved:

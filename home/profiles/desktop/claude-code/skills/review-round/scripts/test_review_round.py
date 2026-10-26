@@ -164,9 +164,11 @@ def test_force_pushed_review_commit_counts_as_new_head():
     assert st["reviewedSha"] == "aaaaaaa"
 
 
-def test_memory_sha_stands_in_without_a_github_review():
-    st = review_status(make_pr(head="aaaaaaa123"), ME, {"reviewedSha": "aaaaaaa"})
-    assert st["bucket"] == "waiting"
+def test_review_only_in_memory_is_due_as_not_posted():
+    st = review_status(make_pr(head="aaaaaaa123", reviews=[review("PENDING", None)]), ME, {"reviewedSha": "aaaaaaa"})
+    assert st["bucket"] == "round-due"
+    assert st["reasons"] == ["review not posted"]
+    assert st["reviewedSha"] == "aaaaaaa"
     assert st["lastState"] is None
 
 
