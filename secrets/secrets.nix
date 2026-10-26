@@ -22,6 +22,8 @@ in
   "adguard-password.age".publicKeys = default;
   "aria2-password.age".publicKeys = default;
   "caddy-environment-file.age".publicKeys = default;
+  # Only charlie runs the Claude container
+  "claude-gh-token.age".publicKeys = [ charlie ] ++ users;
   "grafana-admin-password.age".publicKeys = default;
   "grafana-secret-key.age".publicKeys = default;
   "healthchecks-secrets-file.age".publicKeys = default;

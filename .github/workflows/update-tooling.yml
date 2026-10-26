@@ -9,6 +9,7 @@ on:
       - flake.nix
       - flake.lock
       - update/**
+      - modules/nixos/claude-remote-control/**
       - home/users/joseph.heyburn/windmill-cli/**
       - home/modules/beets/beetcamp/**
       - home/profiles/desktop/readwise/package.nix
