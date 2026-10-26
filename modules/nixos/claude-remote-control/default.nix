@@ -66,9 +66,10 @@ let
         allowLocalBinding = false;
       };
 
-      # Package caches, so uv and prek don't start cold in every session. The
+      # Package caches, so uv, prek and Go don't start cold in every session.
+      # GOPATH is moved under ~/.cache by the service environment. The
       # directories are created by tmpfiles below.
-      filesystem.allowWrite = [ "~/.cache/uv" "~/.cache/prek" ];
+      filesystem.allowWrite = [ "~/.cache/uv" "~/.cache/prek" "~/.cache/go" "~/.cache/go-build" ];
 
       credentials.files = map (path: { inherit path; mode = "deny"; }) [
         # Claude's own login is a full-scope token: keep it away from the
@@ -190,6 +191,10 @@ let
       sleep 30
     done
     cd ${serverDir name}
+    # Makes gh treat origin as the base repo. For a fork, gh would otherwise
+    # open PRs against the upstream, which the token can't write to.
+    # Sessions can't set this themselves: the sandbox blocks .git/config.
+    ${pkgs.git}/bin/git config remote.origin.gh-resolved base
     ${optionalString (server.spawn == "worktree") ''
       # Kept across restarts: the server only brings its sessions back when
       # it starts again in the same directory.
@@ -318,7 +323,10 @@ in
           repo = mkOption {
             type = types.str;
             example = "jdheyburn/nixos-configs";
-            description = "GitHub owner/repo, cloned over HTTPS with GH_TOKEN.";
+            description = ''
+              GitHub owner/repo, cloned over HTTPS with GH_TOKEN. The token
+              must have access to it. PRs go to this repo, also for a fork.
+            '';
           };
 
           displayName = mkOption {
@@ -473,6 +481,8 @@ in
       "d ${home}/.cache 0700 ${cfg.user} ${cfg.user} -"
       "d ${home}/.cache/uv 0700 ${cfg.user} ${cfg.user} -"
       "d ${home}/.cache/prek 0700 ${cfg.user} ${cfg.user} -"
+      "d ${home}/.cache/go 0700 ${cfg.user} ${cfg.user} -"
+      "d ${home}/.cache/go-build 0700 ${cfg.user} ${cfg.user} -"
     ];
 
     systemd.services.claude-remote-control = {
@@ -491,6 +501,9 @@ in
         DISABLE_AUTOUPDATER = "1";
         # uv's downloaded Pythons are built for other distros; use Nix's.
         UV_PYTHON_DOWNLOADS = "never";
+        # Go's module cache defaults to ~/go, outside the sandbox's writable
+        # paths. GOCACHE already defaults to ~/.cache/go-build.
+        GOPATH = "${home}/.cache/go";
         # Without a token, a private clone would wait at a password prompt
         # instead of failing and retrying.
         GIT_TERMINAL_PROMPT = "0";

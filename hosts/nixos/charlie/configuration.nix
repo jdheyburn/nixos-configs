@@ -64,7 +64,9 @@
     service.servers = {
       nixos-configs.repo = "jdheyburn/nixos-configs";
       scratch.repo = "jdheyburn/scratch";
+      valkey-operator.repo = "jdheyburn/valkey-operator";
     };
+    service.extraPackages = [ pkgs.go pkgs.gnumake ];
   };
   modules.dashy.enable = true;
   modules.lubelogger.enable = true;

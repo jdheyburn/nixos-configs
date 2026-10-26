@@ -58,6 +58,14 @@ Sessions appear in claude.ai/code as `charlie-nixos-configs` and `charlie-scratc
 
 Connectors need no setup here: their logins live with the claude.ai account, and the managed allowlist lets through only Claude Docs and Todoist.
 
+## Adding a repo
+
+1. Add it to `service.servers`, with any tools its sessions need in `service.extraPackages`.
+2. Add the repo to the GitHub token's repository access in GitHub settings. The token value doesn't change, so the secret stays as it is. Without this, a public repo still clones but every push fails.
+3. Deploy. The loop clones the repo and its Herdr workspace starts a new server.
+
+A fork works too: the loop sets `remote.origin.gh-resolved`, so `gh` opens PRs against the fork and not its upstream.
+
 ## Attaching
 
 Some permission prompts only render in a terminal. To answer one:
