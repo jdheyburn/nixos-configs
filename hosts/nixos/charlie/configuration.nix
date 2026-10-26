@@ -66,7 +66,8 @@
       scratch.repo = "jdheyburn/scratch";
       valkey-operator.repo = "jdheyburn/valkey-operator";
     };
-    service.extraPackages = [ pkgs.go pkgs.gnumake ];
+    # gcc for cgo, which some Go builds and `go test -race` need.
+    service.extraPackages = [ pkgs.go pkgs.gnumake pkgs.gcc ];
   };
   modules.dashy.enable = true;
   modules.lubelogger.enable = true;
