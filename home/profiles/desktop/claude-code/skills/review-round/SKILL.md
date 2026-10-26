@@ -78,7 +78,7 @@ herdr agent start review-<n> --kind claude --pane <.result.root_pane.pane_id>
 herdr agent prompt review-<n> "<prompt>"
 ```
 
-The prompt is `/review-valkey-operator-pr <n>` on its first line, then: "This is round <k>. Re-validate from these open asks and focus the kind scenarios on what changed since `<reviewedSha>`:" and the PR's triage block from step 2, verbatim.
+The prompt is `/review-valkey-operator-pr <n>` on its first line, then: "This is round <k>. The review is local: findings and draft replies go in the report, and the reviewer posts to GitHub himself, so any reply, resolve or post step in the triage below is his. Re-validate from these open asks and focus the kind scenarios on what changed since `<reviewedSha>`:" and the PR's triage block from step 2, verbatim.
 
 For each running review, wait in the background (Bash `run_in_background`): `herdr agent wait review-<n> --timeout 5400000`. When one returns, read `herdr agent get review-<n>`:
 
