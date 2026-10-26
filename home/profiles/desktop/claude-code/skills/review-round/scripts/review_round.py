@@ -212,6 +212,16 @@ def worktree_decision(wt: dict, pr_state: str | None, now: float) -> tuple[bool,
     return True, f"PR {pr_state.lower()}"
 
 
+def orphan_kubeconfigs(paths: list[str], clusters: list[str]) -> list[str]:
+    """`/tmp/kind-<name>.kubeconfig` files whose cluster no longer exists."""
+    out = []
+    for path in paths:
+        name = Path(path).name.removeprefix("kind-").removesuffix(".kubeconfig")
+        if name not in clusters:
+            out.append(path)
+    return sorted(out)
+
+
 def cluster_decision(name: str, pr_state: str | None) -> tuple[bool, str]:
     if not REVIEW_CLUSTER.match(name):
         return False, "not a PR review cluster"
@@ -387,8 +397,9 @@ def scan(include_round: bool = True) -> dict:
     ]
     try:
         clusters = run(["kind", "get", "clusters"], timeout=30).split()
+        kind_ok = True
     except (RuntimeError, FileNotFoundError, subprocess.TimeoutExpired) as e:
-        clusters = []
+        clusters, kind_ok = [], False
         errors.append({"source": "kind", "detail": str(e)})
 
     review_prs: set[int] = set()
@@ -473,6 +484,10 @@ def scan(include_round: bool = True) -> dict:
         n = int(m.group(1)) if m else None
         remove, reason = cluster_decision(c, state(n))
         (cl_remove if remove else cl_keep).append({"name": c, "pr": n, "reason": reason})
+    # Without a cluster list every kubeconfig would look orphaned.
+    kubeconfigs = (
+        orphan_kubeconfigs([str(p) for p in Path("/tmp").glob("kind-*.kubeconfig")], clusters) if kind_ok else []
+    )
 
     memory_rows = [
         {
@@ -497,6 +512,7 @@ def scan(include_round: bool = True) -> dict:
                 "keep": sorted(wt_keep, key=lambda r: r["path"]),
             },
             "clusters": {"remove": cl_remove, "keep": cl_keep},
+            "kubeconfigs": {"remove": kubeconfigs},
         },
         "memories": memory_rows,
     }
@@ -527,6 +543,9 @@ def apply_cleanup(result: dict) -> dict:
             Path(f"/tmp/kind-{row['name']}.kubeconfig").unlink(missing_ok=True)
         else:
             done["failed"].append({"cluster": row["name"], "error": p.stderr.strip()})
+    for path in result["cleanup"]["kubeconfigs"]["remove"]:
+        Path(path).unlink(missing_ok=True)
+    done["kubeconfigs"] = result["cleanup"]["kubeconfigs"]["remove"]
     return done
 
 
@@ -590,6 +609,8 @@ def cleanup_markdown(r: dict) -> list[str]:
     out += ["", f"### kind clusters to delete ({len(c['clusters']['remove'])})"]
     out += [f"- {k['name']}: {k['reason']}" for k in c["clusters"]["remove"]]
     out += [f"- kept {k['name']}: {k['reason']}" for k in c["clusters"]["keep"]]
+    out += ["", f"### Orphaned kubeconfigs to remove ({len(c['kubeconfigs']['remove'])})"]
+    out += [f"- {k}" for k in c["kubeconfigs"]["remove"]]
     return out + [""]
 
 
@@ -637,7 +658,10 @@ def main() -> None:
         lines += [
             "## Applied",
             "",
-            f"- removed {len(applied['worktrees'])} worktrees, deleted {len(applied['clusters'])} clusters",
+            (
+                f"- removed {len(applied['worktrees'])} worktrees, deleted {len(applied['clusters'])} clusters,"
+                f" removed {len(applied['kubeconfigs'])} orphaned kubeconfigs"
+            ),
         ] + [f"- failed: {f}" for f in applied["failed"]]
     print("\n".join(lines))
 

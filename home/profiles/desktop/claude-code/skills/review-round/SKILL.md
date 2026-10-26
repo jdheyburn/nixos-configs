@@ -51,6 +51,7 @@ The plan has the reviews to start and the cleanup.
 
 - **Worktrees to remove**: under `.worktrees/` or `.claude/worktrees/`, PR merged or closed (or no PR and idle 14 days), clean, no merge or rebase in progress, no process running in it, idle 24 hours, and none of your commits exist only there.
 - **kind clusters to delete**: `pr-<n>-review` clusters whose PR merged or closed.
+- **Orphaned kubeconfigs**: `/tmp/kind-<name>.kubeconfig` files whose cluster no longer exists.
 - **Review memories**: a memory whose PR merged or closed is to retire. A memory that names a cluster which no longer exists is stale. Read each such memory now. Plan a retiring memory as a delete, unless it records something still unraised (a follow-up, a candidate issue, an F-numbered finding marked not raised): then plan to rewrite it down to that item and the line "PR merged <date>". Plan a stale memory as an edit that says the cluster was deleted. Each memory change includes its line in `MEMORY.md`.
 
 Put the plan to the user in one message: the reviews to start, the cleanup counts, every memory change, and each worktree kept although its PR merged, with the reason. For a worktree kept because your commits exist only there, add `git -C <path> log --oneline HEAD --not --remotes` so the user can judge them. Wait for approval.
@@ -63,7 +64,7 @@ On approval:
 uv run --script ~/.claude/skills/review-round/scripts/review_round.py cleanup --apply
 ```
 
-It re-scans first, so anything that changed since step 1 drops out of the plan. It runs `git worktree remove` without `--force`, prunes, deletes the clusters and their `/tmp/kind-<name>.kubeconfig`, and keeps branches. Then make the approved memory changes. A worktree the user wants gone despite a keep reason is theirs to remove with `--force`.
+It re-scans first, so anything that changed since step 1 drops out of the plan. It runs `git worktree remove` without `--force`, prunes, deletes the clusters, removes their kubeconfigs and the orphaned ones, and keeps branches. Then make the approved memory changes. A worktree the user wants gone despite a keep reason is theirs to remove with `--force`.
 
 ## 5. Start the reviews
 

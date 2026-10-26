@@ -4,6 +4,7 @@ from review_round import (
     ACTIVE_WINDOW,
     NO_PR_IDLE,
     cluster_decision,
+    orphan_kubeconfigs,
     parse_memory,
     parse_worktrees,
     pr_from_names,
@@ -211,3 +212,15 @@ def test_worktree_decision(worktree, pr_state, expected):
 )
 def test_cluster_decision(name, pr_state, expected):
     assert cluster_decision(name, pr_state) == expected
+
+
+def test_orphan_kubeconfigs():
+    paths = [
+        "/tmp/kind-pr-1-review.kubeconfig",
+        "/tmp/kind-release-0-8-helm.kubeconfig",
+        "/tmp/kind-pr-2-review.kubeconfig",
+    ]
+    assert orphan_kubeconfigs(paths, ["pr-2-review"]) == [
+        "/tmp/kind-pr-1-review.kubeconfig",
+        "/tmp/kind-release-0-8-helm.kubeconfig",
+    ]
