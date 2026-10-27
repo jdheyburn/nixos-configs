@@ -17,5 +17,6 @@
 
   services.tailscale.enable = true;
 
+  modules.podman.enable = true;
   modules.window-tiling.enable = true;
 }

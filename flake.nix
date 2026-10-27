@@ -208,6 +208,8 @@
             windmill-cli = pkgs.callPackage ./home/users/joseph.heyburn/windmill-cli/package.nix { };
             beetcamp     = pkgs.callPackage ./home/modules/beets/beetcamp { };
             readwise-cli = pkgs.callPackage ./home/profiles/desktop/readwise/package.nix { };
+          } // nixpkgs.lib.optionalAttrs pkgs.stdenv.isDarwin {
+            podman-mac-net-connect = pkgs.callPackage ./modules/darwin/podman/package.nix { };
           });
 
         # home-manager standalone installations

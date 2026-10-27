@@ -16,11 +16,13 @@ update: update-flake update-nix-pkgs update-containers update-caddy-plugins
 update-flake:
     nix flake update --refresh
 
-# Bump hand-maintained Nix source packages (windmill-cli, beetcamp, readwise-cli)
+# Bump hand-maintained Nix source packages (windmill-cli, beetcamp, readwise-cli,
+# and podman-mac-net-connect on macOS, the only platform it builds for)
 update-nix-pkgs:
     ./update/windmill-cli.sh
     nix run nixpkgs#nix-update -- --flake beetcamp
     nix run nixpkgs#nix-update -- --flake readwise-cli
+    {{ if os() == "macos" { "nix run nixpkgs#nix-update -- --flake podman-mac-net-connect" } else { "@echo skipping podman-mac-net-connect: darwin-only" } }}
 
 # Bump pinned OCI image tags (dashy, lubelogger). Pass --dry-run to preview.
 update-containers *ARGS:
