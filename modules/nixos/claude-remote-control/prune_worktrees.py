@@ -9,9 +9,17 @@ origin. Its local branch goes with it.
 
 A restart of the server unlocks every worktree, including those of sessions
 that could still be reopened, so the lock alone isn't enough.
+
+The server removes a worktree itself when its session completes. If that
+fails, for example on a read-only directory that setup-envtest made, it can
+leave the directory behind with no worktree registration. Such orphans are
+deleted once they are a week old.
 """
 
 import argparse
+import os
+import shutil
+import stat
 import subprocess
 import sys
 import time
@@ -48,6 +56,18 @@ def last_touched(wt: Worktree) -> float:
     return max(p.stat().st_mtime for p in paths if p.exists())
 
 
+def make_writable(path: Path) -> None:
+    """Give the owner write access to every directory, so its entries can be deleted."""
+    for dirpath, _, _ in os.walk(path):
+        mode = os.lstat(dirpath).st_mode
+        if not mode & stat.S_IWUSR:
+            os.chmod(dirpath, mode | stat.S_IWUSR)
+
+
+def orphan_age(path: Path) -> float:
+    return time.time() - max(p.stat().st_mtime for p in (path, path / ".git") if p.exists())
+
+
 def removable(wt: Worktree, min_age_days: float) -> bool:
     if wt.locked or not wt.path.is_dir():
         return False
@@ -72,9 +92,11 @@ def prune(repo: Path, min_age_days: float = 7) -> list[Path]:
 
     sessions = (repo / ".claude" / "worktrees").resolve()
     removed = []
-    for wt in worktrees(repo):
+    registered = worktrees(repo)
+    for wt in registered:
         if wt.path.resolve().parent != sessions or not removable(wt, min_age_days):
             continue
+        make_writable(wt.path)
         result = git(repo, "worktree", "remove", str(wt.path))
         if result.returncode != 0:
             print(f"{wt.path}: {result.stderr.strip()}", file=sys.stderr)
@@ -83,6 +105,17 @@ def prune(repo: Path, min_age_days: float = 7) -> list[Path]:
             git(repo, "branch", "-q", "-D", wt.branch)
         print(f"removed {wt.path}")
         removed.append(wt.path)
+
+    known = {wt.path.resolve() for wt in registered}
+    for path in sorted(sessions.iterdir()) if sessions.is_dir() else []:
+        if not path.is_dir() or path.is_symlink() or path.resolve() in known:
+            continue
+        if orphan_age(path) < min_age_days * 86400:
+            continue
+        make_writable(path)
+        shutil.rmtree(path)
+        print(f"removed orphaned {path}")
+        removed.append(path)
 
     git(repo, "worktree", "prune")
     return removed
