@@ -24,9 +24,18 @@
   nixpkgs.config.allowUnfree = true;
 
   # Cleanup old files
-  nix.gc.automatic = false;
-  nix.gc.options = "--delete-older-than 30d";
+  # nix.gc.automatic asserts nix.enable, so run the same job as our own daemon.
+  # Use Determinate's nix-collect-garbage so it matches the running nix-daemon.
   nix.optimise.automatic = false;
+  launchd.daemons.nix-gc = {
+    command = "/nix/var/nix/profiles/default/bin/nix-collect-garbage --delete-older-than 30d";
+    serviceConfig = {
+      RunAtLoad = false;
+      StartCalendarInterval = [{ Weekday = 7; Hour = 3; Minute = 15; }];
+      StandardOutPath = "/var/log/nix-gc.log";
+      StandardErrorPath = "/var/log/nix-gc.log";
+    };
+  };
 
   system.activationScripts.postActivation = {
     text = ''
