@@ -169,3 +169,48 @@ def test_prune_does_not_refresh_age(repo):
     before = os.stat(os.path.join(gitdir, "index")).st_mtime
     prune(repo)
     assert os.stat(os.path.join(gitdir, "index")).st_mtime == before
+
+
+def read_only_tools(wt):
+    # setup-envtest installs its binaries in a read-only directory, and git
+    # can't delete a worktree that contains one.
+    (wt.parent.parent.parent / ".git" / "info" / "exclude").write_text("bin/\n")
+    tools = wt / "bin" / "k8s"
+    tools.mkdir(parents=True)
+    (tools / "etcd").write_text("x\n")
+    tools.chmod(0o555)
+
+
+def test_removes_worktree_with_read_only_directory(repo):
+    wt = add_worktree(repo, "s1")
+    read_only_tools(wt)
+    age(wt, 8)
+    assert prune(repo) == [wt]
+    assert not wt.exists()
+
+
+def orphan(repo, name, days):
+    # What a failed removal leaves: the directory, but no worktree registration.
+    path = repo / ".claude" / "worktrees" / name
+    path.mkdir(parents=True)
+    (path / ".git").write_text(f"gitdir: {repo}/.git/worktrees/{name}\n")
+    (path / "cover.out").write_text("x\n")
+    tools = path / "bin" / "k8s"
+    tools.mkdir(parents=True)
+    tools.chmod(0o555)
+    when = time.time() - days * 86400
+    for p in (path, path / ".git"):
+        os.utime(p, (when, when))
+    return path
+
+
+def test_removes_orphaned_directory_older_than_min_age(repo):
+    path = orphan(repo, "s1", 8)
+    assert prune(repo) == [path]
+    assert not path.exists()
+
+
+def test_keeps_recent_orphaned_directory(repo):
+    path = orphan(repo, "s1", 6)
+    assert prune(repo) == []
+    assert path.exists()
