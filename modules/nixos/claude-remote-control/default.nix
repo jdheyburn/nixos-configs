@@ -68,9 +68,17 @@ let
 
       # Package caches, so uv, prek and Go don't start cold in every session.
       # GOPATH is moved under ~/.cache by the service environment. go-tmp
-      # holds Go's build temp files (GOTMPDIR). The directories are created
-      # by tmpfiles below.
-      filesystem.allowWrite = [ "~/.cache/uv" "~/.cache/prek" "~/.cache/go" "~/.cache/go-build" "~/.cache/go-tmp" ];
+      # holds Go's build temp files (GOTMPDIR), and kubebuilder-bin the
+      # Makefile tools of kubebuilder projects (LOCALBIN). The directories
+      # are created by tmpfiles below.
+      filesystem.allowWrite = [
+        "~/.cache/uv"
+        "~/.cache/prek"
+        "~/.cache/go"
+        "~/.cache/go-build"
+        "~/.cache/go-tmp"
+        "~/.cache/kubebuilder-bin"
+      ];
 
       credentials.files = map (path: { inherit path; mode = "deny"; }) [
         # Claude's own login is a full-scope token: keep it away from the
@@ -487,6 +495,7 @@ in
       "d ${home}/.cache/go 0700 ${cfg.user} ${cfg.user} -"
       "d ${home}/.cache/go-build 0700 ${cfg.user} ${cfg.user} -"
       "d ${home}/.cache/go-tmp 0700 ${cfg.user} ${cfg.user} -"
+      "d ${home}/.cache/kubebuilder-bin 0700 ${cfg.user} ${cfg.user} -"
     ];
 
     systemd.services.claude-remote-control = {
@@ -513,6 +522,12 @@ in
         # Use Nix's Go. A newer toolchain would be downloaded from a host
         # the sandbox blocks.
         GOTOOLCHAIN = "local";
+        # Kubebuilder Makefiles install controller-gen, setup-envtest and the
+        # envtest binaries into $(LOCALBIN), which defaults to ./bin. Shared,
+        # they're downloaded once rather than per session worktree. The
+        # envtest binaries are read-only, and in a worktree they made the
+        # server's own removal of it fail.
+        LOCALBIN = "${home}/.cache/kubebuilder-bin";
         # Without a token, a private clone would wait at a password prompt
         # instead of failing and retrying.
         GIT_TERMINAL_PROMPT = "0";
@@ -580,7 +595,8 @@ in
 
     # Each worktree session leaves its worktree behind, holding its branch.
     # Removes the ones whose session has ended, untouched for 7 days, with
-    # every commit on origin (see prune_worktrees.py).
+    # every commit on origin, and directories the server failed to remove
+    # (see prune_worktrees.py).
     systemd.services.claude-remote-control-prune-worktrees = mkIf (worktreeServers != [ ]) {
       description = "Remove worktrees of ended Claude Code Remote Control sessions";
       path = [ pkgs.git pkgs.gh ];
@@ -600,6 +616,38 @@ in
         PrivateTmp = true;
         NoNewPrivileges = true;
         UMask = "0077";
+      };
+    };
+
+    # Go keeps build cache entries for five days after their last use, and a
+    # few builds of a large module fill gigabytes. Entries unused for three
+    # days go sooner; Go rebuilds any it needs. Also clears temp directories
+    # left by builds that were killed.
+    systemd.services.claude-remote-control-trim-caches = {
+      description = "Trim the Go caches of Claude Code Remote Control sessions";
+      path = [ pkgs.findutils pkgs.coreutils ];
+      script = ''
+        find ${home}/.cache/go-build -mindepth 2 -type f -mtime +3 -delete
+        find ${home}/.cache/go-tmp -mindepth 1 -maxdepth 1 -mtime +1 -exec rm -rf {} +
+      '';
+      serviceConfig = {
+        Type = "oneshot";
+        User = cfg.user;
+        Group = cfg.user;
+        ProtectSystem = "strict";
+        ReadWritePaths = [ home ];
+        ProtectHome = true;
+        PrivateTmp = true;
+        NoNewPrivileges = true;
+      };
+    };
+
+    systemd.timers.claude-remote-control-trim-caches = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnCalendar = "daily";
+        Persistent = true;
+        RandomizedDelaySec = "1h";
       };
     };
 

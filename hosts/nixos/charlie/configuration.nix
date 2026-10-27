@@ -68,6 +68,9 @@
     };
     # gcc for cgo, which some Go builds and `go test -race` need.
     service.extraPackages = [ pkgs.go pkgs.gnumake pkgs.gcc ];
+    # One Go build and test of valkey-operator peaked at 3.3G. charlie has
+    # 7.6G, and its other services use about 1G.
+    service.memoryMax = "5G";
   };
   modules.dashy.enable = true;
   modules.lubelogger.enable = true;
