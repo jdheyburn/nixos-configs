@@ -66,9 +66,11 @@ let
         allowLocalBinding = false;
       };
 
-      # Package caches, so uv and prek don't start cold in every session. The
-      # directories are created by tmpfiles below.
-      filesystem.allowWrite = [ "~/.cache/uv" "~/.cache/prek" ];
+      # Package caches, so uv, prek and Go don't start cold in every session.
+      # GOPATH is moved under ~/.cache by the service environment. go-tmp
+      # holds Go's build temp files (GOTMPDIR). The directories are created
+      # by tmpfiles below.
+      filesystem.allowWrite = [ "~/.cache/uv" "~/.cache/prek" "~/.cache/go" "~/.cache/go-build" "~/.cache/go-tmp" ];
 
       credentials.files = map (path: { inherit path; mode = "deny"; }) [
         # Claude's own login is a full-scope token: keep it away from the
@@ -128,6 +130,8 @@ let
 
     - Push branches and open PRs. Never push to `main` and never merge a PR. Joe reviews and merges.
     - Nix isn't available here. Don't try to build or evaluate anything. Say in every PR that touches Nix files that the change is unbuilt.
+    - Open PRs with `gh pr create`. It authenticates with `GH_TOKEN`, so it works although `~/.config/gh` is unreadable.
+    - `.git/config` is read-only: the sandbox puts a `config.lock` placeholder beside it. `git config`, `git push -u` and `gh repo set-default` fail, so push with `git push origin <branch>`.
     - Stage files by path. `git add -A` fails on empty placeholder files the sandbox creates in the repo (`.bashrc`, `.gitconfig`, `.mcp.json` and similar).
     - The Obsidian vault isn't available here. Skip project-log updates and put decisions in the PR description.
   '';
@@ -190,6 +194,10 @@ let
       sleep 30
     done
     cd ${serverDir name}
+    # Makes gh treat origin as the base repo. For a fork, gh would otherwise
+    # open PRs against the upstream, which the token can't write to.
+    # Sessions can't set this themselves: the sandbox blocks .git/config.
+    ${pkgs.git}/bin/git config remote.origin.gh-resolved base
     ${optionalString (server.spawn == "worktree") ''
       # Kept across restarts: the server only brings its sessions back when
       # it starts again in the same directory.
@@ -318,7 +326,10 @@ in
           repo = mkOption {
             type = types.str;
             example = "jdheyburn/nixos-configs";
-            description = "GitHub owner/repo, cloned over HTTPS with GH_TOKEN.";
+            description = ''
+              GitHub owner/repo, cloned over HTTPS with GH_TOKEN. The token
+              must have access to it. PRs go to this repo, also for a fork.
+            '';
           };
 
           displayName = mkOption {
@@ -473,6 +484,9 @@ in
       "d ${home}/.cache 0700 ${cfg.user} ${cfg.user} -"
       "d ${home}/.cache/uv 0700 ${cfg.user} ${cfg.user} -"
       "d ${home}/.cache/prek 0700 ${cfg.user} ${cfg.user} -"
+      "d ${home}/.cache/go 0700 ${cfg.user} ${cfg.user} -"
+      "d ${home}/.cache/go-build 0700 ${cfg.user} ${cfg.user} -"
+      "d ${home}/.cache/go-tmp 0700 ${cfg.user} ${cfg.user} -"
     ];
 
     systemd.services.claude-remote-control = {
@@ -491,6 +505,14 @@ in
         DISABLE_AUTOUPDATER = "1";
         # uv's downloaded Pythons are built for other distros; use Nix's.
         UV_PYTHON_DOWNLOADS = "never";
+        # Go's module cache defaults to ~/go, outside the sandbox's writable
+        # paths. GOCACHE already defaults to ~/.cache/go-build.
+        GOPATH = "${home}/.cache/go";
+        # The sandbox's /tmp is a small tmpfs that a large Go build fills.
+        GOTMPDIR = "${home}/.cache/go-tmp";
+        # Use Nix's Go. A newer toolchain would be downloaded from a host
+        # the sandbox blocks.
+        GOTOOLCHAIN = "local";
         # Without a token, a private clone would wait at a password prompt
         # instead of failing and retrying.
         GIT_TERMINAL_PROMPT = "0";

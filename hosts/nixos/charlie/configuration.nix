@@ -64,7 +64,10 @@
     service.servers = {
       nixos-configs.repo = "jdheyburn/nixos-configs";
       scratch.repo = "jdheyburn/scratch";
+      valkey-operator.repo = "jdheyburn/valkey-operator";
     };
+    # gcc for cgo, which some Go builds and `go test -race` need.
+    service.extraPackages = [ pkgs.go pkgs.gnumake pkgs.gcc ];
   };
   modules.dashy.enable = true;
   modules.lubelogger.enable = true;
