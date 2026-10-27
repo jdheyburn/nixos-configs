@@ -55,6 +55,7 @@ in
       kubernetes-operator-design = ./skills/kubernetes-operator-design;
       review-valkey-operator-pr = ./skills/review-valkey-operator-pr;
       release-valkey-operator = ./skills/release-valkey-operator;
+      review-round = ./skills/review-round;
     };
   };
 
