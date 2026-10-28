@@ -125,6 +125,10 @@ let
         # Sessions push from their own worktree, so they never need -C.
         "Bash(git -C * push *)"
       ];
+      # Sessions may read every clone under ~/code, so a valkey-operator
+      # session can look things up in a reference repo. Writes stay limited
+      # to the session's own directory.
+      allow = [ "Read(~/code/**)" ];
       disableBypassPermissionsMode = "disable";
     };
   };
@@ -142,7 +146,9 @@ let
     - `.git/config` is read-only: the sandbox puts a `config.lock` placeholder beside it. `git config`, `git push -u` and `gh repo set-default` fail, so push with `git push origin <branch>`.
     - Stage files by path. `git add -A` fails on empty placeholder files the sandbox creates in the repo (`.bashrc`, `.gitconfig`, `.mcp.json` and similar).
     - The Obsidian vault isn't available here. Skip project-log updates and put decisions in the PR description.
-  '';
+    ${optionalString (cfg.references != { }) ''
+      - Read-only reference clones, fast-forwarded daily: ${concatStringsSep ", " (mapAttrsToList (name: repo: "`${serverDir name}` (${repo})") cfg.references)}. Read them to answer questions about those projects, and don't edit them.
+    ''}'';
 
   # Commands sessions can run, plus the sandbox's own deps. Herdr panes
   # start a login shell, which takes PATH from /etc/profile rather than the
@@ -361,6 +367,16 @@ in
       }));
     };
 
+    references = mkOption {
+      type = types.attrsOf types.str;
+      default = { };
+      example = literalExpression ''{ valkey = "valkey-io/valkey"; }'';
+      description = ''
+        GitHub owner/repo cloned to ''${stateDir}/code/<name> for sessions to
+        read, with no server of its own. Fast-forwarded daily.
+      '';
+    };
+
     connectorUrls = mkOption {
       type = types.listOf types.str;
       default = [
@@ -435,10 +451,16 @@ in
 
   config = mkIf cfg.enable {
 
-    assertions = [{
-      assertion = config.security.allowUserNamespaces;
-      message = "claude-remote-control: Claude Code's sandbox (bubblewrap) needs user namespaces.";
-    }];
+    assertions = [
+      {
+        assertion = config.security.allowUserNamespaces;
+        message = "claude-remote-control: Claude Code's sandbox (bubblewrap) needs user namespaces.";
+      }
+      {
+        assertion = intersectLists (attrNames cfg.servers) (attrNames cfg.references) == [ ];
+        message = "claude-remote-control: a name is in both servers and references, which share ~/code/<name>.";
+      }
+    ];
 
     users.users.${cfg.user} = {
       isSystemUser = true;
@@ -648,6 +670,56 @@ in
         OnCalendar = "daily";
         Persistent = true;
         RandomizedDelaySec = "1h";
+      };
+    };
+
+    # Clones the reference repos, then keeps them current. Nothing writes to
+    # them, so a fast-forward always applies.
+    systemd.services.claude-remote-control-sync-references = mkIf (cfg.references != { }) {
+      description = "Clone and update the reference repos of Claude Code Remote Control sessions";
+      wants = [ "network-online.target" ];
+      after = [ "network-online.target" ];
+      path = [ pkgs.git pkgs.gh ];
+      environment = {
+        HOME = home;
+        GIT_TERMINAL_PROMPT = "0";
+      };
+      # One failed repo shouldn't stop the others.
+      script = ''
+        status=0
+        ${concatStrings (mapAttrsToList (name: repo: ''
+          if [ -d ${serverDir name}/.git ]; then
+            git -C ${serverDir name} pull -q --ff-only || status=1
+          else
+            git clone -q https://github.com/${repo}.git ${serverDir name} || status=1
+          fi
+        '') cfg.references)}
+        exit $status
+      '';
+      serviceConfig = {
+        Type = "oneshot";
+        User = cfg.user;
+        Group = cfg.user;
+        EnvironmentFile = mkIf (cfg.environmentFile != null) cfg.environmentFile;
+        ProtectSystem = "strict";
+        ReadWritePaths = [ home ];
+        ProtectHome = true;
+        PrivateTmp = true;
+        NoNewPrivileges = true;
+        UMask = "0077";
+      };
+    };
+
+    # OnBootSec covers the first clone: it elapses at once when the timer is
+    # started on a host that booted long ago, as on a first deploy. Inside a
+    # container the network is only up once boot has finished. No random
+    # delay, since it would hold back the first clone too.
+    systemd.timers.claude-remote-control-sync-references = mkIf (cfg.references != { }) {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "5min";
+        OnCalendar = "daily";
+        Persistent = true;
       };
     };
 

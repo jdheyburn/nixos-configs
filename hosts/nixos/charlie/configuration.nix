@@ -66,6 +66,8 @@
       scratch.repo = "jdheyburn/scratch";
       valkey-operator.repo = "jdheyburn/valkey-operator";
     };
+    # Valkey source for valkey-operator sessions to read.
+    service.references.valkey = "valkey-io/valkey";
     # gcc for cgo, which some Go builds and `go test -race` need.
     service.extraPackages = [ pkgs.go pkgs.gnumake pkgs.gcc ];
     # One Go build and test of valkey-operator peaked at 3.3G. charlie has

@@ -17,6 +17,7 @@ modules.claude-container = {
     nixos-configs.repo = "jdheyburn/nixos-configs";
     scratch.repo = "jdheyburn/scratch";
   };
+  service.references.valkey = "valkey-io/valkey";
 };
 ```
 
@@ -30,6 +31,7 @@ Runs Claude Code Remote Control servers in a NixOS container, one per repo, so C
 | `claude-remote-control.service` (inside) | Runs `herdr server` as the `claude` user with systemd hardening. Before start it pre-trusts `~/code/<name>` in `~/.claude.json`. After start it opens one Herdr workspace per server, which clones the repo if it is missing (the container has no network until boot finishes) and then loops `claude remote-control --spawn worktree` from its own worktree at `~/rc/<name>`, so a restart resumes the sessions it was serving. |
 | Managed settings | `/etc/claude-code/managed-settings.d/claude-remote-control.json`: sandbox on with no unsandboxed retries, a domain allowlist, no unix sockets, only the Claude Docs and Todoist connectors, and deny rules for `gh pr merge` and pushes to `main`. `/etc/claude-code/CLAUDE.md` tells Claude it can't use Nix or the vault and must only open PRs. |
 | `claude-remote-control-prune-worktrees.timer` (inside) | Daily. Removes session worktrees in `~/code/<name>/.claude/worktrees/` whose session has ended and that are untouched for 7 days, with no local changes and every commit on origin, and deletes their branches. Also deletes week-old worktree directories the server failed to remove. |
+| `claude-remote-control-sync-references.timer` (inside) | Five minutes after boot, then daily. Clones each repo in `service.references` to `~/code/<name>` and fast-forwards it. |
 | `claude-remote-control-trim-caches.timer` (inside) | Daily. Deletes Go build cache entries unused for 3 days and temp directories left by killed builds. |
 | home-manager | The `claude` user gets `home/profiles/agent`, the Claude Code and Herdr config shared with the desktop. |
 
@@ -66,6 +68,10 @@ Connectors need no setup here: their logins live with the claude.ai account, and
 3. Deploy. The loop clones the repo and its Herdr workspace starts a new server.
 
 A fork works too: the loop sets `remote.origin.gh-resolved`, so `gh` opens PRs against the fork and not its upstream.
+
+## Reference repos
+
+A repo in `service.references` is cloned for sessions to read and gets no server, so it costs no memory while idle. Every session can read all of `~/code` with its file tools and its shell, and the managed CLAUDE.md lists the reference clones, so a valkey-operator session can answer questions from the Valkey source. A public repo needs no change to the GitHub token.
 
 ## Attaching
 
