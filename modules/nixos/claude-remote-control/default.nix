@@ -142,6 +142,7 @@ let
     - `.git/config` is read-only: the sandbox puts a `config.lock` placeholder beside it. `git config`, `git push -u` and `gh repo set-default` fail, so push with `git push origin <branch>`.
     - Stage files by path. `git add -A` fails on empty placeholder files the sandbox creates in the repo (`.bashrc`, `.gitconfig`, `.mcp.json` and similar).
     - The Obsidian vault isn't available here. Skip project-log updates and put decisions in the PR description.
+    - For questions about another project's code, such as Valkey's for valkey-operator, read its source rather than answering from memory. Clone it into `$TMPDIR` with `--depth 1`, or with `--filter=blob:none` when you need its history. `$TMPDIR` is a small tmpfs, so don't make a full clone.
   '';
 
   # Commands sessions can run, plus the sandbox's own deps. Herdr panes
