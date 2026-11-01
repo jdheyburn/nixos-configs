@@ -9,6 +9,7 @@ in
     ../agent
     ./claude-code
     ./readwise
+    ./spicetify
   ];
 
   home.packages = with pkgs; [

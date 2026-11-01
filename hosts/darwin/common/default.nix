@@ -75,7 +75,6 @@
     "raycast"
     # Tiling tool
     "rectangle"
-    "spotify"
     "todoist"
     "vlc"
     "whatsapp"

@@ -62,6 +62,12 @@
 
     # My scratch repo, for the tools in it worth installing declaratively.
     # ssh rather than https so it works whether or not the repo is public.
+    # Spotify with spicetify themes and extensions, for the desktop profile.
+    # No release branches past 24.11, so master tracks unstable. Spotify
+    # itself comes from nixpkgs-unstable (see home/profiles/desktop/spicetify).
+    spicetify-nix.url = "github:Gerg-L/spicetify-nix";
+    spicetify-nix.inputs.nixpkgs.follows = "nixpkgs";
+
     scratch = {
       url = "git+ssh://git@github.com/jdheyburn/scratch";
       inputs.nixpkgs.follows = "nixpkgs";
