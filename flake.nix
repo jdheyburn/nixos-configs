@@ -16,23 +16,27 @@
 
   inputs = {
     agenix.url = "github:ryantm/agenix";
+    agenix.inputs.nixpkgs.follows = "nixpkgs";
     argononed = {
       url = "gitlab:DarkElvenAngel/argononed";
       flake = false;
     };
 
     catppuccin.url = "github:catppuccin/nix/v26.05";
+    catppuccin.inputs.nixpkgs.follows = "nixpkgs";
 
     darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     deploy-rs.url = "github:serokell/deploy-rs";
+    deploy-rs.inputs.nixpkgs.follows = "nixpkgs";
 
     flake-utils.url = "github:numtide/flake-utils";
 
     # Terminal multiplexer for coding agents. Upstream's flake rather than
     # nixpkgs, which lags their frequent releases. Builds from source.
     herdr.url = "github:herdrdev/herdr/v0.9.3";
+    herdr.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     home-manager.url = "github:nix-community/home-manager/release-26.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -53,6 +57,7 @@
     };
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware.inputs.nixpkgs.follows = "nixpkgs";
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
