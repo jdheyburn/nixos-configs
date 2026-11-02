@@ -2,7 +2,7 @@
 name: build
 on:
   push:
-    branches: [main, reenable-configs]
+    branches: [main, add-opengym]
 
 jobs:
   build:
