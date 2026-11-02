@@ -305,7 +305,8 @@
           flake-utils.lib.defaultSystems);
 
         # `nix develop` / direnv shell with the repo's tooling on PATH.
-        # CLIs come from the same locked inputs the flake deploys with.
+        # deploy-rs comes from nixpkgs so it hits cache.nixos.org; the flake
+        # input's package has no binary cache and compiles from source.
         devShells = builtins.listToAttrs (map
           (system: {
             name = system;
@@ -313,7 +314,7 @@
               default = nixpkgs.legacyPackages.${system}.mkShell {
                 packages = [
                   agenix.packages.${system}.default
-                  deploy-rs.packages.${system}.default
+                  nixpkgs.legacyPackages.${system}.deploy-rs
                   nixpkgs.legacyPackages.${system}.nixpkgs-fmt
                   # Justfile recipes; update/*.py runs under uv
                   nixpkgs.legacyPackages.${system}.just
