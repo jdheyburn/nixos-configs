@@ -106,6 +106,12 @@
 
     blackboxExporter = { port = 9115; };
 
+    gym = {
+      host = nodes.charlie;
+      port = 3030;
+      modules = [ "opengym" ];
+    };
+
     healthchecks = {
       host = nodes.dee;
       port = 8000;

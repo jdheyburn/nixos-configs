@@ -76,6 +76,7 @@
   modules.lubelogger.enable = true;
   modules.monitoring.enable = true;
   modules.nfs-client.enable = true;
+  modules.opengym.enable = true;
   # Off until it's onboarded properly
   modules.paperless.enable = false;
   modules.prometheusStack = {

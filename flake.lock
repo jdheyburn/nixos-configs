@@ -403,6 +403,31 @@
         "type": "github"
       }
     },
+    "opengym": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "dir": "contrib/nix",
+        "lastModified": 1793198475,
+        "narHash": "sha256-4aDOgwfkykanvRwBpIMVLIAIy9nSeKW3YXNfikClXQ8=",
+        "owner": "DuarteSantos8",
+        "repo": "openGym",
+        "rev": "b6cfe2bbd3f099523ffbf2677438864e9a09a06f",
+        "type": "github"
+      },
+      "original": {
+        "dir": "contrib/nix",
+        "owner": "DuarteSantos8",
+        "repo": "openGym",
+        "type": "github"
+      }
+    },
     "readwise-skills": {
       "flake": false,
       "locked": {
@@ -434,6 +459,7 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_7",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "opengym": "opengym",
         "readwise-skills": "readwise-skills",
         "scratch": "scratch",
         "spicetify-nix": "spicetify-nix"

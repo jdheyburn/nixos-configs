@@ -56,6 +56,12 @@
 
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
+    # Self-hosted gym tracker. The flake lives in a subdirectory of the repo,
+    # and its module is imported by modules/nixos/opengym.
+    opengym.url = "github:DuarteSantos8/openGym?dir=contrib/nix";
+    opengym.inputs.nixpkgs.follows = "nixpkgs";
+    opengym.inputs.flake-utils.follows = "flake-utils";
+
     # Tracks nixpkgs-unstable for packages that need to be newer than the
     # stable branch provides (e.g. vscode, see home/modules/vscode).
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
