@@ -21,3 +21,6 @@ jobs:
         run: |
           nix build .#nixosConfigurations.dee.config.system.build.toplevel \
             --print-build-logs
+
+      - name: Build devShell
+        run: nix build .#devShells.aarch64-linux.default --print-build-logs
